@@ -424,24 +424,18 @@
             $('body').toggleClass('sidebar-collapsed');
         });
 
-        // Live clock
+        // Live clock (update every 60s to avoid ResizeObserver loops with Chart.js)
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clockTime').textContent = hours + ':' + minutes + ':' + seconds;
-
+            document.getElementById('clockTime').textContent = hours + ':' + minutes;
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const dayName = days[now.getDay()];
-            const monthName = months[now.getMonth()];
-            const day = now.getDate();
-            const year = now.getFullYear();
-            document.getElementById('clockDate').textContent = dayName + ', ' + day + ' ' + monthName + ' ' + year;
+            document.getElementById('clockDate').textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
         }
         updateClock();
-        setInterval(updateClock, 1000);
+        setInterval(updateClock, 60000);
 
         // Dark mode toggle
         function toggleDarkMode() {
