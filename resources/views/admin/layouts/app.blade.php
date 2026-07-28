@@ -106,6 +106,13 @@
                     </a>
                 </li>
                 @endif
+                @if($has('polling-stations.view'))
+                <li>
+                    <a href="{{ route('admin.geographic.index') }}" class="{{ request()->routeIs('admin.geographic.*') ? 'active' : '' }}">
+                        <i class="fas fa-map-marked-alt"></i><span>Geographic</span>
+                    </a>
+                </li>
+                @endif
 
                 <li class="sidebar-section">Content</li>
                 @if($has('news.view'))

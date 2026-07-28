@@ -41,8 +41,36 @@ class AboutController extends Controller
 
     public function stateCommittees()
     {
+        $regions = DB::table('nec_regions')->where('status', 'active')->orderBy('sort_order')->get();
         $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->get();
-        return view('about.state-committees', compact('states'));
+
+        $stateStats = [];
+        foreach ($states as $state) {
+            $state->county_count = DB::table('nec_counties')->where('state_id', $state->id)->where('status', 'active')->count();
+            $state->constituency_count = DB::table('nec_constituencies')->where('state', $state->name)->where('status', 'active')->count();
+            $state->polling_station_count = DB::table('nec_polling_stations')->where('state', $state->name)->where('status', 'active')->count();
+            $state->registered_voters = DB::table('nec_polling_stations')->where('state', $state->name)->where('status', 'active')->sum('registered_voters');
+            $state->payam_count = DB::table('nec_payams')
+                ->whereIn('county_id', fn($q) => $q->select('id')->from('nec_counties')->where('state_id', $state->id))
+                ->where('status', 'active')->count();
+            $state->region_name = $regions->firstWhere('id', $state->region_id)->name ?? '';
+        }
+
+        $totals = [
+            'states' => $states->count(),
+            'counties' => DB::table('nec_counties')->where('status', 'active')->count(),
+            'constituencies' => DB::table('nec_constituencies')->where('status', 'active')->count(),
+            'polling_stations' => DB::table('nec_polling_stations')->where('status', 'active')->count(),
+            'registered_voters' => DB::table('nec_polling_stations')->where('status', 'active')->sum('registered_voters'),
+            'payams' => DB::table('nec_payams')->where('status', 'active')->count(),
+            'bomas' => DB::table('nec_bomas')->where('status', 'active')->count(),
+        ];
+
+        $pollingStations = DB::table('nec_polling_stations')->where('status', 'active')
+            ->select('id', 'name', 'code', 'state', 'county', 'constituency', 'payam', 'registered_voters', 'latitude', 'longitude')
+            ->get();
+
+        return view('about.state-committees', compact('regions', 'states', 'totals', 'pollingStations'));
     }
 
     public function departments()

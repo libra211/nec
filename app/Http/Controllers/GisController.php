@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class GisController extends Controller
 {
     public function map()
     {
-        $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->get();
-        return view('gis.map', compact('states'));
+        return view('gis.map');
     }
 }

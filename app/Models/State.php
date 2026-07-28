@@ -23,4 +23,24 @@ class State extends Model
     {
         return $this->hasMany(County::class);
     }
+
+    public function constituencies()
+    {
+        return $this->hasManyThrough(Constituency::class, County::class, 'state_id', 'county_id');
+    }
+
+    public function pollingStations()
+    {
+        return $this->hasManyThrough(PollingStation::class, County::class, 'state_id', 'county_id');
+    }
+
+    public function payams()
+    {
+        return $this->hasManyThrough(Payam::class, County::class, 'state_id', 'county_id');
+    }
+
+    public function bomas()
+    {
+        return $this->hasManyThrough(Boma::class, Payam::class, 'county_id', 'payam_id');
+    }
 }

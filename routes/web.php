@@ -175,7 +175,7 @@ Route::prefix('voter/portal')->name('voter.portal.')->middleware('voter')->group
 // Newsletter (POST to API)
 Route::post('/newsletter/subscribe', [App\Http\Controllers\Api\ApiNewsletterController::class, 'store'])->name('newsletter.subscribe');
 
-// Geographic API (public, for cascading dropdowns)
+// Geographic API (public, for cascading dropdowns and drill-down)
 Route::prefix('api/geo')->name('api.geo.')->group(function () {
     Route::get('/states', [GeographicController::class, 'states'])->name('states');
     Route::get('/counties', [GeographicController::class, 'counties'])->name('counties');
@@ -183,6 +183,9 @@ Route::prefix('api/geo')->name('api.geo.')->group(function () {
     Route::get('/payams', [GeographicController::class, 'payams'])->name('payams');
     Route::get('/bomas', [GeographicController::class, 'bomas'])->name('bomas');
     Route::get('/polling-stations', [GeographicController::class, 'pollingStations'])->name('polling-stations');
+    Route::get('/state/{id}', [GeographicController::class, 'stateDetail'])->name('state-detail');
+    Route::get('/county/{id}', [GeographicController::class, 'countyDetail'])->name('county-detail');
+    Route::get('/dashboard', [GeographicController::class, 'dashboard'])->name('dashboard');
 });
 
 // Voter duplicate check API (public)
@@ -349,6 +352,26 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Polling Stations
     Route::resource('polling-stations', AdminPollingStationController::class)->except(['show']);
+
+    // Geographic Management
+    Route::get('geographic', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'index'])->name('geographic.index');
+    Route::get('geographic/overview', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'overview'])->name('geographic.overview');
+    Route::get('geographic/states/{state}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'state'])->name('geographic.state');
+    Route::post('geographic/states', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'storeState'])->name('geographic.state.store');
+    Route::put('geographic/states/{state}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'updateState'])->name('geographic.state.update');
+    Route::delete('geographic/states/{state}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'destroyState'])->name('geographic.state.destroy');
+    Route::post('geographic/counties', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'storeCounty'])->name('geographic.county.store');
+    Route::put('geographic/counties/{county}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'updateCounty'])->name('geographic.county.update');
+    Route::delete('geographic/counties/{county}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'destroyCounty'])->name('geographic.county.destroy');
+    Route::post('geographic/constituencies', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'storeConstituency'])->name('geographic.constituency.store');
+    Route::put('geographic/constituencies/{constituency}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'updateConstituency'])->name('geographic.constituency.update');
+    Route::delete('geographic/constituencies/{constituency}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'destroyConstituency'])->name('geographic.constituency.destroy');
+    Route::post('geographic/payams', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'storePayam'])->name('geographic.payam.store');
+    Route::put('geographic/payams/{payam}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'updatePayam'])->name('geographic.payam.update');
+    Route::delete('geographic/payams/{payam}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'destroyPayam'])->name('geographic.payam.destroy');
+    Route::post('geographic/bomas', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'storeBoma'])->name('geographic.boma.store');
+    Route::put('geographic/bomas/{boma}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'updateBoma'])->name('geographic.boma.update');
+    Route::delete('geographic/bomas/{boma}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'destroyBoma'])->name('geographic.boma.destroy');
 
     // Subscribers
     Route::get('subscribers', [AdminSubscriberController::class, 'index'])->name('subscribers.index');

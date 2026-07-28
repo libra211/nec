@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Boma;
 use App\Models\County;
+use App\Models\Payam;
+use App\Models\PollingStation;
 use App\Models\State;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,125 +16,274 @@ class GeographicController extends Controller
 {
     public function states(Request $request): JsonResponse
     {
-        $regionId = $request->input('region_id');
-        $query = State::where('status', 'active');
+        $query = State::where('status', 'active')->orderBy('name');
 
-        if ($regionId) {
-            $query->where('region_id', $regionId);
+        if ($request->has('region_id')) {
+            $query->where('region_id', $request->region_id);
         }
 
-        return response()->json($query->orderBy('name')->get(['id', 'name', 'code', 'capital']));
+        $states = $query->get(['id', 'name', 'code', 'capital', 'region_id']);
+
+        return response()->json($states);
     }
 
     public function counties(Request $request): JsonResponse
     {
-        $stateId = $request->input('state_id');
-        if (!$stateId) {
-            return response()->json([]);
+        if (!$request->has('state_id')) {
+            return response()->json(['error' => 'state_id is required'], 422);
         }
 
-        return response()->json(
-            County::where('state_id', $stateId)
-                ->where('status', 'active')
-                ->orderBy('name')
-                ->get(['id', 'name'])
-        );
+        $counties = County::where('state_id', $request->state_id)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json($counties);
     }
 
     public function constituencies(Request $request): JsonResponse
     {
-        $state = $request->input('state');
-        $county = $request->input('county');
+        $query = DB::table('nec_constituencies')->where('status', 'active');
 
-        $query = DB::table('nec_constituencies')
-            ->where('status', 'active');
-
-        if ($state) {
-            $stateCode = DB::table('nec_states')->where('name', $state)->value('code');
-            $query->where(function ($q) use ($state, $stateCode) {
-                $q->where('state', $state);
-                if ($stateCode) {
-                    $q->orWhere('state', $stateCode);
-                }
+        if ($request->has('state')) {
+            $state = $request->input('state');
+            $query->where(function ($q) use ($state) {
+                $q->where('state', $state)
+                    ->orWhere('state', DB::raw("(SELECT name FROM nec_states WHERE code = '$state' OR name = '$state' LIMIT 1)"));
             });
         }
-        if ($county) {
-            $countyBase = preg_replace('/\s*County$/i', '', $county);
-            $query->where(function ($q) use ($county, $countyBase) {
+
+        if ($request->has('county')) {
+            $county = $request->input('county');
+            $query->where(function ($q) use ($county) {
                 $q->where('county', $county)
-                  ->orWhere('county', $countyBase)
-                  ->orWhere('county', 'LIKE', $countyBase . '%');
+                    ->orWhere('county', str_ireplace(' county', '', $county));
             });
         }
 
-        return response()->json(
-            $query->orderBy('name')->pluck('name', 'id')->toArray()
-        );
+        $results = $query->pluck('name', 'id');
+
+        return response()->json($results);
     }
 
     public function payams(Request $request): JsonResponse
     {
-        $countyId = $request->input('county_id');
-        if (!$countyId) {
-            return response()->json([]);
+        if (!$request->has('county_id')) {
+            return response()->json(['error' => 'county_id is required'], 422);
         }
 
-        return response()->json(
-            DB::table('nec_payams')
-                ->where('county_id', $countyId)
-                ->where('status', 'active')
-                ->orderBy('name')
-                ->pluck('name', 'id')
-                ->toArray()
-        );
+        $results = Payam::where('county_id', $request->county_id)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->pluck('name', 'id');
+
+        return response()->json($results);
     }
 
     public function bomas(Request $request): JsonResponse
     {
-        $payamId = $request->input('payam_id');
-        if (!$payamId) {
-            return response()->json([]);
+        if (!$request->has('payam_id')) {
+            return response()->json(['error' => 'payam_id is required'], 422);
         }
 
-        return response()->json(
-            DB::table('nec_bomas')
-                ->where('payam_id', $payamId)
-                ->where('status', 'active')
-                ->orderBy('name')
-                ->pluck('name', 'id')
-                ->toArray()
-        );
+        $results = Boma::where('payam_id', $request->payam_id)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->pluck('name', 'id');
+
+        return response()->json($results);
     }
 
     public function pollingStations(Request $request): JsonResponse
     {
-        $state = $request->input('state');
-        $county = $request->input('county');
+        $query = DB::table('nec_polling_stations')->where('status', 'active');
 
-        $query = DB::table('nec_polling_stations')
-            ->where('status', 'active');
-
-        if ($state) {
-            $stateRow = DB::table('nec_states')->where('name', $state)->orWhere('code', $state)->first();
-            $stateNames = [$state];
-            if ($stateRow) {
-                $stateNames[] = $stateRow->code;
-                $stateNames[] = $stateRow->name;
+        if ($request->has('state_id')) {
+            $stateId = $request->input('state_id');
+            $state = State::where('id', $stateId)->first();
+            if ($state) {
+                $query->where('state', $state->name);
             }
-            $query->where(function ($q) use ($stateNames) {
-                $q->whereIn('state', $stateNames);
+        } elseif ($request->has('state')) {
+            $state = $request->input('state');
+            $query->where(function ($q) use ($state) {
+                $q->where('state', $state)
+                    ->orWhere('state', DB::raw("(SELECT name FROM nec_states WHERE code = '$state' OR name = '$state' LIMIT 1)"));
             });
         }
-        if ($county) {
+
+        if ($request->has('county')) {
+            $county = $request->input('county');
             $query->where(function ($q) use ($county) {
                 $q->where('county', $county)
-                    ->orWhere('county', str_replace(' County', '', $county))
-                    ->orWhere('county', $county . ' County');
+                    ->orWhere('county', str_ireplace(' county', '', $county));
             });
         }
 
-        return response()->json(
-            $query->orderBy('name')->pluck('name', 'id')->toArray()
-        );
+        $results = $query->get();
+
+        return response()->json(['stations' => $results]);
+    }
+
+    public function stateDetail($id): JsonResponse
+    {
+        $state = State::where('id', $id)->where('status', 'active')->first();
+
+        if (!$state) {
+            return response()->json(['error' => 'State not found'], 404);
+        }
+
+        $countyCount = County::where('state_id', $id)->where('status', 'active')->count();
+        $constituencyCount = DB::table('nec_constituencies')
+            ->where('state', $state->name)
+            ->where('status', 'active')
+            ->count();
+        $pollingStationCount = DB::table('nec_polling_stations')
+            ->where('state', $state->name)
+            ->where('status', 'active')
+            ->count();
+        $registeredVoters = DB::table('nec_polling_stations')
+            ->where('state', $state->name)
+            ->where('status', 'active')
+            ->sum('registered_voters');
+        $payamCount = DB::table('nec_payams')
+            ->whereIn('county_id', fn($q) => $q->select('id')->from('nec_counties')->where('state_id', $id))
+            ->where('status', 'active')
+            ->count();
+        $bomaCount = DB::table('nec_bomas')
+            ->whereIn('payam_id', fn($q) => $q->select('id')->from('nec_payams')->whereIn('county_id', fn($q2) => $q2->select('id')->from('nec_counties')->where('state_id', $id)))
+            ->where('status', 'active')
+            ->count();
+
+        $counties = County::where('state_id', $id)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get()
+            ->map(function ($county) use ($state) {
+                $county->constituency_count = DB::table('nec_constituencies')
+                    ->where('county_id', $county->id)
+                    ->where('status', 'active')
+                    ->count();
+                $county->polling_station_count = DB::table('nec_polling_stations')
+                    ->where('county', $county->name)
+                    ->where('status', 'active')
+                    ->count();
+                $county->registered_voters = DB::table('nec_polling_stations')
+                    ->where('county', $county->name)
+                    ->where('status', 'active')
+                    ->sum('registered_voters');
+                return $county;
+            });
+
+        $constituencies = DB::table('nec_constituencies')
+            ->where('state', $state->name)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get();
+
+        $pollingStations = DB::table('nec_polling_stations')
+            ->where('state', $state->name)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name', 'code', 'county', 'constituency', 'payam', 'registered_voters', 'latitude', 'longitude']);
+
+        return response()->json([
+            'state' => $state,
+            'stats' => [
+                'counties' => $countyCount,
+                'constituencies' => $constituencyCount,
+                'polling_stations' => $pollingStationCount,
+                'registered_voters' => $registeredVoters,
+                'payams' => $payamCount,
+                'bomas' => $bomaCount,
+            ],
+            'counties' => $counties,
+            'constituencies' => $constituencies,
+            'polling_stations' => $pollingStations,
+        ]);
+    }
+
+    public function countyDetail($id): JsonResponse
+    {
+        $county = County::where('id', $id)->where('status', 'active')->first();
+
+        if (!$county) {
+            return response()->json(['error' => 'County not found'], 404);
+        }
+
+        $constituencies = DB::table('nec_constituencies')
+            ->where('county_id', $county->id)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get();
+
+        $payams = Payam::where('county_id', $county->id)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get()
+            ->map(function ($payam) {
+                $payam->boma_count = Boma::where('payam_id', $payam->id)->where('status', 'active')->count();
+                return $payam;
+            });
+
+        $pollingStations = DB::table('nec_polling_stations')
+            ->where('county', $county->name)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'county' => $county,
+            'constituencies' => $constituencies,
+            'payams' => $payams,
+            'polling_stations' => $pollingStations,
+        ]);
+    }
+
+    public function dashboard(): JsonResponse
+    {
+        $regionStats = DB::table('nec_regions')
+            ->where('status', 'active')
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($region) {
+                $stateIds = DB::table('nec_states')->where('region_id', $region->id)->where('status', 'active')->pluck('id');
+                $stateNames = DB::table('nec_states')->where('region_id', $region->id)->where('status', 'active')->pluck('name');
+                $region->state_count = $stateIds->count();
+                $region->county_count = DB::table('nec_counties')->whereIn('state_id', $stateIds)->where('status', 'active')->count();
+                $region->constituency_count = DB::table('nec_constituencies')->whereIn('state', $stateNames)->where('status', 'active')->count();
+                $region->polling_station_count = DB::table('nec_polling_stations')->whereIn('state', $stateNames)->where('status', 'active')->count();
+                $region->registered_voters = DB::table('nec_polling_stations')->whereIn('state', $stateNames)->where('status', 'active')->sum('registered_voters');
+                return $region;
+            });
+
+        $stateStats = DB::table('nec_states')
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get()
+            ->map(function ($state) {
+                $state->county_count = DB::table('nec_counties')->where('state_id', $state->id)->where('status', 'active')->count();
+                $state->constituency_count = DB::table('nec_constituencies')->where('state', $state->name)->where('status', 'active')->count();
+                $state->polling_station_count = DB::table('nec_polling_stations')->where('state', $state->name)->where('status', 'active')->count();
+                $state->registered_voters = DB::table('nec_polling_stations')->where('state', $state->name)->where('status', 'active')->sum('registered_voters');
+                return $state;
+            });
+
+        $totals = [
+            'regions' => DB::table('nec_regions')->where('status', 'active')->count(),
+            'states' => DB::table('nec_states')->where('status', 'active')->count(),
+            'counties' => DB::table('nec_counties')->where('status', 'active')->count(),
+            'constituencies' => DB::table('nec_constituencies')->where('status', 'active')->count(),
+            'payams' => DB::table('nec_payams')->where('status', 'active')->count(),
+            'bomas' => DB::table('nec_bomas')->where('status', 'active')->count(),
+            'polling_stations' => DB::table('nec_polling_stations')->where('status', 'active')->count(),
+            'registered_voters' => DB::table('nec_polling_stations')->where('status', 'active')->sum('registered_voters'),
+        ];
+
+        return response()->json([
+            'totals' => $totals,
+            'regions' => $regionStats,
+            'states' => $stateStats,
+        ]);
     }
 }

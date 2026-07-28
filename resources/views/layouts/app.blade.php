@@ -141,6 +141,7 @@
                             <li><a class="dropdown-item" href="{{ route('about.leadership') }}">Leadership</a></li>
                             <li><a class="dropdown-item" href="{{ route('about.commissioners') }}">Commissioners</a></li>
                             <li><a class="dropdown-item" href="{{ route('about.state-committees') }}">State Committees</a></li>
+                            <li><a class="dropdown-item" href="{{ route('gis.map') }}">GIS Map</a></li>
                             <li><a class="dropdown-item" href="{{ route('about.departments') }}">Departments</a></li>
                             <li><a class="dropdown-item" href="{{ route('about.history') }}">History</a></li>
                             <li><a class="dropdown-item" href="{{ route('about.legal-framework') }}">Legal Framework</a></li>
