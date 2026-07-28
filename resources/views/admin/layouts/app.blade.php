@@ -129,6 +129,13 @@
                     </a>
                 </li>
                 @endif
+                @if($has('events.view'))
+                <li>
+                    <a href="{{ route('admin.events.index') }}" class="{{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-alt"></i><span>Events</span>
+                    </a>
+                </li>
+                @endif
                 @if($has('gallery.view'))
                 <li>
                     <a href="{{ route('admin.gallery.index') }}" class="{{ request()->routeIs('admin.gallery.*') ? 'active' : '' }}">

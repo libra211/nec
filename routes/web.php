@@ -116,6 +116,8 @@ Route::prefix('media')->name('media.')->group(function () {
     Route::get('/publications', [MediaController::class, 'publications'])->name('publications');
 });
 Route::get('/news/{slug}', [MediaController::class, 'article'])->name('news.article');
+Route::get('/events', [\App\Http\Controllers\EventController::class, 'index'])->name('events.index');
+Route::get('/events/{slug}', [\App\Http\Controllers\EventController::class, 'show'])->name('events.show');
 
 // Other public
 Route::get('/constituencies', [ConstituencyController::class, 'index'])->name('constituencies.index');
@@ -204,6 +206,17 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // News CRUD
     Route::resource('news', AdminNewsController::class)->except(['show']);
+    Route::post('news/bulk-action', [AdminNewsController::class, 'bulkAction'])->name('news.bulk-action');
+    Route::get('news/{id}/toggle-status', [AdminNewsController::class, 'toggleStatus'])->name('news.toggle-status');
+    Route::get('news/{id}/restore', [AdminNewsController::class, 'restore'])->name('news.restore');
+    Route::delete('news/{id}/force-delete', [AdminNewsController::class, 'forceDelete'])->name('news.force-delete');
+
+    // Events
+    Route::resource('events', \App\Http\Controllers\Admin\AdminEventController::class)->except(['show']);
+    Route::post('events/bulk-action', [\App\Http\Controllers\Admin\AdminEventController::class, 'bulkAction'])->name('events.bulk-action');
+    Route::get('events/{id}/toggle-status', [\App\Http\Controllers\Admin\AdminEventController::class, 'toggleStatus'])->name('events.toggle-status');
+    Route::get('events/{id}/restore', [\App\Http\Controllers\Admin\AdminEventController::class, 'restore'])->name('events.restore');
+    Route::delete('events/{id}/force-delete', [\App\Http\Controllers\Admin\AdminEventController::class, 'forceDelete'])->name('events.force-delete');
 
     // Commissioners
     Route::resource('commissioners', AdminCommissionerController::class)->except(['show']);

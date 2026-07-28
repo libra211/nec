@@ -25,6 +25,8 @@ class MediaController extends Controller
             ->where('status', 'published')
             ->firstOrFail();
 
+        $article->increment('views');
+
         return view('media.article', compact('article'));
     }
 
