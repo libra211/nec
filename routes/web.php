@@ -258,6 +258,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Announcements
     Route::resource('announcements', AdminAnnouncementController::class)->except(['show']);
+    Route::post('announcements/bulk-action', [AdminAnnouncementController::class, 'bulkAction'])->name('announcements.bulk-action');
+    Route::get('announcements/{id}/toggle-status', [AdminAnnouncementController::class, 'toggleStatus'])->name('announcements.toggle-status');
+    Route::get('announcements/{id}/restore', [AdminAnnouncementController::class, 'restore'])->name('announcements.restore');
+    Route::delete('announcements/{id}/force-delete', [AdminAnnouncementController::class, 'forceDelete'])->name('announcements.force-delete');
 
     // Settings
     Route::get('settings', [AdminSettingController::class, 'index'])->name('settings.index');
@@ -352,9 +356,17 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Gallery
     Route::resource('gallery', AdminGalleryController::class)->except(['show']);
+    Route::post('gallery/bulk-action', [AdminGalleryController::class, 'bulkAction'])->name('gallery.bulk-action');
+    Route::get('gallery/{id}/toggle-status', [AdminGalleryController::class, 'toggleStatus'])->name('gallery.toggle-status');
+    Route::get('gallery/{id}/restore', [AdminGalleryController::class, 'restore'])->name('gallery.restore');
+    Route::delete('gallery/{id}/force-delete', [AdminGalleryController::class, 'forceDelete'])->name('gallery.force-delete');
 
     // Speeches
     Route::resource('speeches', AdminSpeechController::class)->except(['show']);
+    Route::post('speeches/bulk-action', [AdminSpeechController::class, 'bulkAction'])->name('speeches.bulk-action');
+    Route::get('speeches/{id}/toggle-status', [AdminSpeechController::class, 'toggleStatus'])->name('speeches.toggle-status');
+    Route::get('speeches/{id}/restore', [AdminSpeechController::class, 'restore'])->name('speeches.restore');
+    Route::delete('speeches/{id}/force-delete', [AdminSpeechController::class, 'forceDelete'])->name('speeches.force-delete');
 
     // Videos
     Route::resource('videos', AdminVideoController::class)->except(['show']);
@@ -393,6 +405,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Education Materials
     Route::resource('education', AdminEducationController::class)->except(['show']);
+    Route::post('education/bulk-action', [AdminEducationController::class, 'bulkAction'])->name('education.bulk-action');
+    Route::get('education/{id}/toggle-status', [AdminEducationController::class, 'toggleStatus'])->name('education.toggle-status');
+    Route::get('education/{id}/restore', [AdminEducationController::class, 'restore'])->name('education.restore');
+    Route::delete('education/{id}/force-delete', [AdminEducationController::class, 'forceDelete'])->name('education.force-delete');
 
     // Permissions
     Route::get('permissions', [\App\Http\Controllers\Admin\PermissionController::class, 'index'])->name('permissions.index');

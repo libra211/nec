@@ -12,14 +12,30 @@ class AdminAnnouncementController extends Controller
     public function index(Request $request)
     {
         $query = Announcement::query();
+        $status = $request->input('status');
+
+        if ($status === 'draft') $query->where('status', 'draft');
+        elseif ($status === 'trash') $query->where('status', 'trash');
+        elseif ($status === 'published') $query->where('status', 'published');
+        else $query->where('status', '!=', 'trash');
 
         if ($search = $request->input('search')) {
-            $query->where('title', 'LIKE', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('content', 'LIKE', "%{$search}%");
+            });
         }
 
-        $announcements = $query->orderByDesc('created_at')->paginate(15);
+        $announcements = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
 
-        return view('admin.announcements.index', compact('announcements'));
+        $counts = [
+            'all' => Announcement::where('status', '!=', 'trash')->count(),
+            'published' => Announcement::where('status', 'published')->count(),
+            'draft' => Announcement::where('status', 'draft')->count(),
+            'trash' => Announcement::where('status', 'trash')->count(),
+        ];
+
+        return view('admin.announcements.index', compact('announcements', 'counts', 'status'));
     }
 
     public function create()
@@ -35,6 +51,8 @@ class AdminAnnouncementController extends Controller
             'content' => 'required|string',
             'excerpt' => 'nullable|string|max:1000',
             'type' => 'nullable|string|max:50',
+            'featured_image' => 'nullable|string|max:500',
+            'meta_description' => 'nullable|string|max:500',
             'status' => 'required|in:published,draft,trash',
             'published_at' => 'nullable|date',
         ]);
@@ -49,7 +67,6 @@ class AdminAnnouncementController extends Controller
     public function edit($id)
     {
         $announcement = Announcement::findOrFail($id);
-
         return view('admin.announcements.edit', compact('announcement'));
     }
 
@@ -63,6 +80,8 @@ class AdminAnnouncementController extends Controller
             'content' => 'required|string',
             'excerpt' => 'nullable|string|max:1000',
             'type' => 'nullable|string|max:50',
+            'featured_image' => 'nullable|string|max:500',
+            'meta_description' => 'nullable|string|max:500',
             'status' => 'required|in:published,draft,trash',
             'published_at' => 'nullable|date',
         ]);
@@ -77,8 +96,54 @@ class AdminAnnouncementController extends Controller
     public function destroy($id)
     {
         $announcement = Announcement::findOrFail($id);
+        $announcement->status = 'trash';
+        $announcement->save();
         $announcement->delete();
 
-        return redirect()->route('admin.announcements.index')->with('success', 'Announcement deleted.');
+        return redirect()->route('admin.announcements.index')->with('success', 'Announcement moved to trash.');
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $action = $request->input('bulk_action');
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) return back()->with('error', 'No items selected.');
+
+        $count = match ($action) {
+            'publish' => Announcement::whereIn('id', $ids)->update(['status' => 'published']),
+            'draft' => Announcement::whereIn('id', $ids)->update(['status' => 'draft']),
+            'trash' => Announcement::whereIn('id', $ids)->update(['status' => 'trash']),
+            'restore' => Announcement::onlyTrashed()->whereIn('id', $ids)->restore(),
+            'delete' => Announcement::onlyTrashed()->whereIn('id', $ids)->forceDelete(),
+            default => throw new \InvalidArgumentException("Unknown action: {$action}"),
+        };
+
+        return back()->with('success', "{$count} announcement(s) updated.");
+    }
+
+    public function toggleStatus($id)
+    {
+        $announcement = Announcement::findOrFail($id);
+        $announcement->status = $announcement->status === 'published' ? 'draft' : 'published';
+        $announcement->save();
+
+        return back()->with('success', 'Announcement status toggled.');
+    }
+
+    public function restore($id)
+    {
+        $announcement = Announcement::onlyTrashed()->findOrFail($id);
+        $announcement->status = 'draft';
+        $announcement->save();
+        $announcement->restore();
+
+        return redirect()->route('admin.announcements.index')->with('success', 'Announcement restored.');
+    }
+
+    public function forceDelete($id)
+    {
+        Announcement::onlyTrashed()->findOrFail($id)->forceDelete();
+        return redirect()->route('admin.announcements.index')->with('success', 'Announcement permanently deleted.');
     }
 }
