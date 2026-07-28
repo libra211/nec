@@ -51,7 +51,13 @@
                     <div class="row g-0 align-items-center">
                         <div class="col-md-4 text-center p-4">
                             <div style="width: 220px; height: 220px; border-radius: 50%; margin: 0 auto; overflow: hidden; border: 4px solid var(--nec-gold); box-shadow: 0 0 30px rgba(212,175,55,0.3);">
-                                <img src="{{ asset('images/chairperson.webp') }}" alt="Chairperson" style="width:100%;height:100%;object-fit:cover;transform:scale(1.3);">
+                                @if($chairperson->photo ?? null)
+                                    <img src="{{ asset($chairperson->photo) }}" alt="{{ $chairperson->name }}" style="width:100%;height:100%;object-fit:cover;transform:scale(1.3);">
+                                @else
+                                    <div style="width:100%;height:100%;background:linear-gradient(135deg, #1a3c8f, #2E8B57);display:flex;align-items:center;justify-content:center;">
+                                        <i class="fas fa-user-tie" style="font-size: 5rem; color: rgba(255,255,255,0.8);"></i>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-8 p-4">
@@ -73,9 +79,15 @@
                 @endif
                 <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0">
                     <div class="card border-0 shadow-sm h-100 text-center p-4">
-                        <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #1a3c8f, #2E8B57); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-user-circle" style="font-size: 3.5rem; color: rgba(255,255,255,0.8);"></i>
-                        </div>
+                        @if($c->photo ?? null)
+                            <div style="width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 1rem; overflow: hidden; border: 3px solid var(--nec-green);">
+                                <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                        @else
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #1a3c8f, #2E8B57); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user-circle" style="font-size: 3.5rem; color: rgba(255,255,255,0.8);"></i>
+                            </div>
+                        @endif
                         <span class="badge bg-success mx-auto mb-2" style="background: var(--nec-green) !important; width: fit-content;">{{ $c->position }}</span>
                         <h5 class="fw-bold mb-1" style="color: var(--nec-black);">{{ $c->name }}</h5>
                         <p class="text-muted small mb-0">{{ $c->bio ?? '' }}</p>

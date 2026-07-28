@@ -19,7 +19,11 @@ class AboutController extends Controller
 
     public function leadership()
     {
-        return view('about.leadership');
+        $commissioners = Commissioner::where('status', 'active')
+            ->orderBy('order_num')
+            ->get();
+
+        return view('about.leadership', compact('commissioners'));
     }
 
     public function commissioners()

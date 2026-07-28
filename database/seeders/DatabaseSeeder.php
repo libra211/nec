@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             ContactSeeder::class,
             PermissionSeeder::class,
             AgentSeeder::class,
+            CommissionerSeeder::class,
         ]);
 
         $this->command->info('All seeders completed successfully!');
