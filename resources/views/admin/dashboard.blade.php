@@ -519,8 +519,6 @@
 @section('extra_scripts')
 <script>
 Chart.defaults.animation = false;
-Chart.defaults.responsive = true;
-Chart.defaults.maintainAspectRatio = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     const necGreen = '#2E8B57', necBlue = '#1a3c8f', necGold = '#D4AF37', necRed = '#8B0000', necLightGreen = 'rgba(46,139,87,0.15)';
@@ -584,7 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     pointBackgroundColor: necGreen, pointRadius: 3, pointHoverRadius: 5
                 }]
             },
-            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: { size: 11 } } } } }
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: { size: 11 } } } } }
         });
     }
 
@@ -603,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     { label: 'Female', data: gaLabels.map(k => (gaData[k]||{}).F||0), backgroundColor: necGreen, borderRadius: 4 }
                 ]
             },
-            options: { plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 12 } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } } }
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 12 } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } } }
         });
     }
 
@@ -617,7 +615,7 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(stateCtx.getContext('2d'), {
             type: 'bar',
             data: { labels: stateLabels.map(s => s.length > 12 ? s.substring(0,11)+'...' : s), datasets: [{ label: 'Voters', data: stateValues, backgroundColor: barColors, borderWidth: 0, borderRadius: 6, maxBarThickness: 50 }] },
-            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, font: { size: 10 } }, grid: { display: false } } } }
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, font: { size: 10 } }, grid: { display: false } } } }
         });
     }
 
@@ -629,7 +627,7 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(ageCtx.getContext('2d'), {
             type: 'bar',
             data: { labels: ageLabels, datasets: [{ label: 'Voters', data: ageLabels.map(k => ageData[k]||0), backgroundColor: [necRed, necGreen, necBlue, necGold, '#0dcaf0', '#6f42c1'], borderRadius: 6 }] },
-            options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, y: { grid: { display: false } } } }
+            options: { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, y: { grid: { display: false } } } }
         });
     }
 
@@ -643,7 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: mtData.map(d => d.month),
                 datasets: [{ label: 'Registrations', data: mtData.map(d => d.total), borderColor: necBlue, backgroundColor: 'rgba(26,60,143,0.1)', fill: true, tension: 0.4, borderWidth: 2.5, pointBackgroundColor: necBlue, pointRadius: 4 }]
             },
-            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } } }
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } } }
         });
     }
 
@@ -654,7 +652,7 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(countyCtx.getContext('2d'), {
             type: 'bar',
             data: { labels: Object.keys(countyData).map(c => c.length > 15 ? c.substring(0,14)+'...' : c), datasets: [{ label: 'Voters', data: Object.values(countyData), backgroundColor: necGreen, borderRadius: 6 }] },
-            options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, y: { grid: { display: false } } } }
+            options: { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, y: { grid: { display: false } } } }
         });
     }
 
@@ -668,7 +666,7 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(stCtx.getContext('2d'), {
             type: 'line',
             data: { labels: stData.map(d => { var dt = new Date(d.date); return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}); }), datasets: [{ label: 'Registrations', data: stData.map(d => d.total), borderColor: necGreen, backgroundColor: necLightGreen, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3 }] },
-            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } } } }
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } } } }
         });
     }
     var scCtx = document.getElementById('stateCountyChart');
@@ -677,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(scCtx.getContext('2d'), {
             type: 'bar',
             data: { labels: Object.keys(scData), datasets: [{ label: 'Voters', data: Object.values(scData), backgroundColor: necBlue, borderRadius: 6 }] },
-            options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true }, y: { grid: { display: false } } } }
+            options: { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true }, y: { grid: { display: false } } } }
         });
     }
     @endif

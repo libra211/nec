@@ -1673,7 +1673,8 @@ body.sidebar-collapsed #wpcontent { margin-left: 64px; }
 .bg-danger-light { background: rgba(239,68,68,0.08); }
 
 /* ─── DASHBOARD COMPONENTS ─── */
-.chart-card canvas { max-height: 320px; }
+.chart-card .card-body { height: 300px; }
+.chart-card canvas { max-height: 300px; }
 
 .activity-item {
     border-left: 3px solid transparent;
