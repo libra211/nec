@@ -4,7 +4,7 @@
     </IfModule>
 
     RewriteEngine On
-    RewriteBase /nec-laravel/
+    RewriteBase /
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -20,7 +20,7 @@
     RewriteRule ^ %1 [L,R=301]
 
     # Force /downloads through Laravel (avoid directory listing)
-    RewriteCond %{REQUEST_URI} ^/nec-laravel/downloads [NC]
+    RewriteCond %{REQUEST_URI} ^/downloads [NC]
     RewriteRule ^ index.php [L]
 
     # Send Requests To Front Controller...
