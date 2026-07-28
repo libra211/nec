@@ -85,7 +85,7 @@
                     <div class="tab-content">
                         <!-- Email Login -->
                         <div class="tab-pane fade show active" id="emailPanel" role="tabpanel">
-                            <form id="loginEmailForm" method="POST" action="{{ route('voter.portal.login.post') }}">
+                            <form id="loginEmailForm" method="POST" action="{{ route('voter.portal.login.submit') }}">
                                 @csrf
                                 <input type="hidden" name="login_type" value="email">
                                 <div class="mb-3">
@@ -114,7 +114,7 @@
 
                         <!-- Voter ID Login -->
                         <div class="tab-pane fade" id="voteridPanel" role="tabpanel">
-                            <form id="loginVoterIdForm" method="POST" action="{{ route('voter.portal.login.post') }}">
+                            <form id="loginVoterIdForm" method="POST" action="{{ route('voter.portal.login.submit') }}">
                                 @csrf
                                 <input type="hidden" name="login_type" value="voter_id">
                                 <div class="mb-3">
