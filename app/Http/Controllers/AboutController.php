@@ -23,7 +23,11 @@ class AboutController extends Controller
             ->orderBy('order_num')
             ->get();
 
-        return view('about.leadership', compact('commissioners'));
+        $chairperson = $commissioners->firstWhere('position', 'Chairperson') ?? $commissioners->first();
+
+        $others = $commissioners->filter(fn($c) => $c->id !== ($chairperson->id ?? null));
+
+        return view('about.leadership', compact('commissioners', 'chairperson', 'others'));
     }
 
     public function commissioners()
