@@ -4,20 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>NEC South Sudan - Admin Login</title>
-    <meta name="description" content="National Elections Commission of South Sudan - Admin Portal">
+    <title>{{ \App\Helpers\NecHelper::setting_get('site_name', 'NEC South Sudan') }} - Login</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="shortcut icon" href="{{ \App\Helpers\NecHelper::setting_get('favicon', asset('assets/images/logos/neclogo.jpeg')) }}">
-    <link rel="icon" type="image/jpeg" sizes="32x32" href="{{ \App\Helpers\NecHelper::setting_get('favicon', asset('assets/images/logos/neclogo.jpeg')) }}">
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --nec-primary: #FC6011;
-            --nec-primary-dark: #D94E0A;
-            --nec-primary-light: #FFE4D6;
-        }
+        :root { --nec-primary: #FC6011; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Urbanist', sans-serif;
@@ -40,9 +34,9 @@
             position: relative;
         }
         .login-brand {
-            width: 38%;
+            width: 42%;
             background: #2C2220;
-            padding: 40px 28px;
+            padding: 40px 32px 40px 28px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -76,7 +70,6 @@
         }
         .brand-icon-circle img {
             height: 52px;
-            border-radius: 50%;
             position: relative;
             z-index: 1;
         }
@@ -94,15 +87,8 @@
             0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(1.4); opacity: 0; }
         }
-        .brand-title {
-            font-family: 'Urbanist', sans-serif;
-            font-weight: 800;
-            color: #fff;
-            font-size: 1.5rem;
-            margin-bottom: 4px;
-        }
+        .brand-title { font-weight: 800; color: #fff; font-size: 1.5rem; margin-bottom: 4px; }
         .brand-sub {
-            font-family: 'Urbanist', sans-serif;
             color: rgba(255,255,255,.5);
             font-weight: 400;
             font-size: .85rem;
@@ -129,15 +115,10 @@
             font-weight: 500;
             font-size: .78rem;
             color: rgba(255,255,255,.6);
-            transition: all .2s;
-        }
-        .brand-feat:hover {
-            background: rgba(255,255,255,.08);
-            color: rgba(255,255,255,.8);
         }
         .login-form-wrap {
-            width: 62%;
-            padding: 40px 48px;
+            width: 58%;
+            padding: 40px 48px 40px 56px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -145,16 +126,8 @@
         }
         .login-form-inner { max-width: 380px; width: 100%; margin: 0 auto; }
         .login-header { margin-bottom: 24px; }
-        .login-header h4 {
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 4px;
-        }
-        .login-header p {
-            color: #6b7280;
-            font-size: .88rem;
-            margin: 0;
-        }
+        .login-header h4 { font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+        .login-header p { color: #6b7280; font-size: .88rem; margin: 0; }
         .login-mode-toggle {
             display: flex;
             background: #f1f5f9;
@@ -202,6 +175,7 @@
         .field-icon.email { background: #dbeafe; color: #3b82f6; }
         .field-icon.phone { background: #fef3c7; color: #d97706; }
         .field-icon.key { background: #fce7f3; color: #ec4899; }
+        .field-icon.lock { background: #f3e8ff; color: #9333ea; }
         .input-wrap { position: relative; }
         .input-icon {
             position: absolute;
@@ -229,12 +203,18 @@
             box-shadow: 0 0 0 3px rgba(252,96,17,.08);
             background: #fff;
         }
-        .input-wrap .form-control.is-invalid {
-            border-color: #ef4444;
-        }
-        .input-wrap .form-control:disabled {
-            opacity: .6;
-            background: #f1f5f9;
+        .input-wrap .form-control.is-invalid { border-color: #ef4444; }
+        .input-wrap .form-control:disabled { opacity: .6; background: #f1f5f9; }
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            z-index: 3;
         }
         .btn-jibu {
             position: relative;
@@ -256,28 +236,7 @@
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(252,96,17,.35);
         }
-        .btn-jibu:disabled {
-            opacity: .6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .btn-jibu-outline {
-            background: transparent;
-            border: 2px solid var(--nec-primary);
-            color: var(--nec-primary);
-        }
-        .btn-jibu-outline:hover {
-            background: var(--nec-primary);
-            color: #fff;
-        }
-        .forgot-link {
-            color: var(--nec-primary);
-            font-weight: 600;
-            font-size: .83rem;
-            text-decoration: none;
-            transition: opacity .2s;
-        }
-        .forgot-link:hover { opacity: .75; text-decoration: underline; }
+        .btn-jibu:disabled { opacity: .6; cursor: not-allowed; transform: none; }
         .btn-shimmer {
             position: absolute;
             top: 0;
@@ -291,6 +250,14 @@
             0% { left: -100%; }
             100% { left: 200%; }
         }
+        .forgot-link {
+            color: var(--nec-primary);
+            font-weight: 600;
+            font-size: .83rem;
+            text-decoration: none;
+            transition: opacity .2s;
+        }
+        .forgot-link:hover { opacity: .75; text-decoration: underline; }
         .otp-inputs {
             display: flex;
             gap: 8px;
@@ -318,18 +285,8 @@
             border-color: var(--nec-primary);
             background: #fff5f0;
         }
-        .otp-timer {
-            color: #94a3b8;
-            font-size: .85rem;
-            font-weight: 500;
-        }
-        .otp-resend {
-            color: var(--nec-primary);
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: .85rem;
-        }
+        .otp-timer { color: #94a3b8; font-size: .85rem; font-weight: 500; }
+        .otp-resend { color: var(--nec-primary); font-weight: 600; cursor: pointer; text-decoration: none; font-size: .85rem; }
         .otp-resend:hover { opacity: .75; }
         .otp-resend.disabled { color: #94a3b8; cursor: not-allowed; pointer-events: none; }
         .demo-badge {
@@ -344,12 +301,7 @@
             gap: 8px;
             margin-bottom: 18px;
         }
-        .demo-badge code {
-            background: #fef3c7;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: 700;
-        }
+        .demo-badge code { background: #fef3c7; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
         .alert-custom {
             border-radius: 10px;
             padding: 10px 14px;
@@ -367,8 +319,7 @@
             font-weight: 500;
             margin: 20px 0;
         }
-        .divider::before,
-        .divider::after {
+        .divider::before, .divider::after {
             content: '';
             flex: 1;
             height: 1px;
@@ -393,15 +344,52 @@
             background: #f1f5f9;
             border: 1px solid #e2e8f0;
             white-space: nowrap;
-            transition: all .2s;
         }
         .trust-badge i { font-size: .7rem; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+            background: rgba(252,96,17,.1);
+            color: var(--nec-primary);
+            border: 1px solid rgba(252,96,17,.2);
         }
+        .form-check-input:checked {
+            background-color: var(--nec-primary);
+            border-color: var(--nec-primary);
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn .35s ease; }
-        .text-nec { color: var(--nec-primary); }
+        .back-to-site {
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            z-index: 1000;
+        }
+        .back-to-site a {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 18px;
+            background: rgba(255,255,255,.9);
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            color: #2C2220;
+            font-size: .85rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 2px 12px rgba(0,0,0,.08);
+            transition: all .2s;
+        }
+        .back-to-site a:hover {
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(0,0,0,.12);
+            transform: translateY(-1px);
+        }
+        .back-to-site i { color: var(--nec-primary); }
         @media (max-width: 767.98px) {
             .login-wrapper { flex-direction: column; max-width: 420px; }
             .login-brand { width: 100%; padding: 30px 25px; min-height: auto; }
@@ -414,45 +402,39 @@
     </style>
 </head>
 <body>
+    <div class="back-to-site">
+        <a href="{{ url('/') }}"><i class="fas fa-arrow-left me-1"></i> Back to Website</a>
+    </div>
     <div class="login-wrapper">
-        <!-- Brand Panel -->
         <div class="login-brand">
             <div class="brand-icon-circle">
-                <img src="{{ \App\Helpers\NecHelper::setting_get('logo', asset('assets/images/nec-logo-white.svg')) }}" alt="NEC South Sudan" style="height:52px;position:relative;z-index:1;">
+                <img src="{{ \App\Helpers\NecHelper::setting_get('logo', asset('assets/images/nec-logo-white.svg')) }}" alt="NEC South Sudan">
             </div>
             <div class="brand-title">South Sudan<br>National Elections Commission</div>
-            <p class="brand-sub">Ensuring free, fair, and credible elections for the people of South Sudan</p>
+            <p class="brand-sub">{{ \App\Helpers\NecHelper::setting_get('site_tagline', 'Ensuring free, fair, and credible elections for the people of South Sudan') }}</p>
             <div class="brand-features">
-                <div class="brand-feat">
-                    <i class="fas fa-check-circle" style="color:var(--nec-primary);"></i>
-                    Free &amp; Fair Elections
-                </div>
-                <div class="brand-feat">
-                    <i class="fas fa-shield-alt" style="color:var(--nec-primary);"></i>
-                    Transparency &amp; Integrity
-                </div>
-                <div class="brand-feat">
-                    <i class="fas fa-gavel" style="color:var(--nec-primary);"></i>
-                    Electoral Justice
-                </div>
-                <div class="brand-feat">
-                    <i class="fas fa-users" style="color:var(--nec-primary);"></i>
-                    Citizen Empowerment
-                </div>
+                <div class="brand-feat"><i class="fas fa-check-circle" style="color:var(--nec-primary);"></i> Free &amp; Fair Elections</div>
+                <div class="brand-feat"><i class="fas fa-shield-alt" style="color:var(--nec-primary);"></i> Transparency &amp; Integrity</div>
+                <div class="brand-feat"><i class="fas fa-gavel" style="color:var(--nec-primary);"></i> Electoral Justice</div>
+                <div class="brand-feat"><i class="fas fa-users" style="color:var(--nec-primary);"></i> Citizen Empowerment</div>
             </div>
         </div>
-
-        <!-- Form Panel -->
         <div class="login-form-wrap">
             <div class="login-form-inner">
                 <div class="login-header">
-                    <h4 class="fw-bold mb-1">Admin Login</h4>
-                    <p class="text-muted">Sign in to access the admin dashboard</p>
+                    <h4>{{ $needsOtp ?? false ? 'Verify Identity' : 'Sign In' }}</h4>
+                    <p>{{ $needsOtp ?? false ? 'Enter the verification code sent to your email' : 'Access your account to continue' }}</p>
                 </div>
 
                 @if(session('error') || isset($error))
                 <div class="alert alert-danger alert-custom" style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;">
                     <i class="fas fa-exclamation-circle" style="flex-shrink:0;"></i> {{ session('error') ?? $error ?? '' }}
+                </div>
+                @endif
+
+                @if(session('success'))
+                <div class="alert alert-success alert-custom" style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;">
+                    <i class="fas fa-check-circle" style="flex-shrink:0;"></i> {{ session('success') }}
                 </div>
                 @endif
 
@@ -462,59 +444,91 @@
                 </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.login.submit') }}" id="loginForm">
+                <form method="POST" action="{{ route('login') }}" novalidate>
                     @csrf
                     <input type="hidden" name="mode" id="modeField" value="{{ $mode ?? 'email' }}">
 
-                    <!-- Mode Toggle -->
-                    <div class="login-mode-toggle">
-                        <button type="button" class="mode-btn {{ ($mode ?? 'email') === 'email' ? 'active' : '' }}" data-mode="email" onclick="switchMode('email')">
-                            <i class="fas fa-envelope me-1"></i> Email
-                        </button>
-                        <button type="button" class="mode-btn {{ ($mode ?? 'email') === 'phone' ? 'active' : '' }}" data-mode="phone" onclick="switchMode('phone')">
-                            <i class="fas fa-phone me-1"></i> Phone
-                        </button>
-                    </div>
-
-                    <!-- Email Field -->
-                    <div class="field-group" id="emailField" style="{{ ($mode ?? 'email') === 'phone' ? 'display:none;' : '' }}">
-                        <label class="form-label">
-                            <span class="field-icon email"><i class="fas fa-envelope"></i></span>
-                            <span class="field-label-text">Email Address</span>
-                        </label>
-                        <div class="input-wrap">
-                            <i class="fas fa-envelope input-icon"></i>
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter your email" value="{{ old('email', $email ?? '') }}" {{ ($mode ?? 'email') === 'phone' ? 'disabled' : '' }} {{ isset($otpSent) ? 'disabled' : '' }} autofocus>
+                    <!-- ============ STEP 1: CREDENTIALS ============ -->
+                    <div id="credentialsSection" style="{{ ($needsOtp ?? false) ? 'display:none;' : '' }}">
+                        <!-- Mode Toggle -->
+                        <div class="login-mode-toggle">
+                            <button type="button" class="mode-btn {{ ($mode ?? 'email') === 'email' ? 'active' : '' }}" data-mode="email" onclick="switchMode('email')">
+                                <i class="fas fa-envelope me-1"></i> Email
+                            </button>
+                            <button type="button" class="mode-btn {{ ($mode ?? 'email') === 'phone' ? 'active' : '' }}" data-mode="phone" onclick="switchMode('phone')">
+                                <i class="fas fa-phone me-1"></i> Phone
+                            </button>
                         </div>
-                        @error('email')<div style="color:#ef4444;font-size:.8rem;margin-top:4px;">{{ $message }}</div>@enderror
-                    </div>
 
-                    <!-- Phone Field -->
-                    <div class="field-group" id="phoneField" style="{{ ($mode ?? 'email') !== 'phone' ? 'display:none;' : '' }}">
-                        <label class="form-label">
-                            <span class="field-icon phone"><i class="fas fa-phone"></i></span>
-                            <span class="field-label-text">Phone Number</span>
-                        </label>
-                        <div class="input-wrap">
-                            <i class="fas fa-phone input-icon"></i>
-                            <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="+211 XX XXX XXXX" value="{{ old('phone') }}" {{ ($mode ?? 'email') !== 'phone' ? 'disabled' : '' }} {{ isset($otpSent) ? 'disabled' : '' }}>
+                        <!-- Email Field -->
+                        <div class="field-group" id="emailField" style="{{ ($mode ?? 'email') === 'phone' ? 'display:none;' : '' }}">
+                            <label class="form-label">
+                                <span class="field-icon email"><i class="fas fa-envelope"></i></span>
+                                <span class="field-label-text">Email or Voter ID</span>
+                            </label>
+                            <div class="input-wrap">
+                                <i class="fas fa-envelope input-icon"></i>
+                                <input type="text" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Email or Voter ID" value="{{ old('email', $email ?? '') }}" {{ ($mode ?? 'email') === 'phone' ? 'disabled' : '' }} autofocus>
+                            </div>
+                            @error('email')<div style="color:#ef4444;font-size:.8rem;margin-top:4px;">{{ $message }}</div>@enderror
                         </div>
-                        @error('phone')<div style="color:#ef4444;font-size:.8rem;margin-top:4px;">{{ $message }}</div>@enderror
+
+                        <!-- Phone Field -->
+                        <div class="field-group" id="phoneField" style="{{ ($mode ?? 'email') !== 'phone' ? 'display:none;' : '' }}">
+                            <label class="form-label">
+                                <span class="field-icon phone"><i class="fas fa-phone"></i></span>
+                                <span class="field-label-text">Phone Number</span>
+                            </label>
+                            <div class="input-wrap">
+                                <i class="fas fa-phone input-icon"></i>
+                                <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="+211 XX XXX XXXX" value="{{ old('phone') }}" {{ ($mode ?? 'email') !== 'phone' ? 'disabled' : '' }}>
+                            </div>
+                            @error('phone')<div style="color:#ef4444;font-size:.8rem;margin-top:4px;">{{ $message }}</div>@enderror
+                        </div>
+
+                        <!-- Password -->
+                        <div class="field-group">
+                            <label class="form-label">
+                                <span class="field-icon lock"><i class="fas fa-lock"></i></span>
+                                <span class="field-label-text">Password</span>
+                            </label>
+                            <div class="input-wrap">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter your password" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            @error('password')<div style="color:#ef4444;font-size:.8rem;margin-top:4px;">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1" style="cursor:pointer;">
+                                <label class="form-check-label small" for="remember" style="color:#4A4B4D;font-weight:500;cursor:pointer;">Remember me</label>
+                            </div>
+                            <a href="{{ route('forgot-password') }}" class="forgot-link">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="btn-jibu submit-btn" id="loginBtn">
+                            <span class="btn-shimmer"></span>
+                            <span class="btn-text"><i class="fas fa-sign-in-alt me-2"></i>Sign In</span>
+                            <span class="btn-loader d-none"><i class="fas fa-spinner fa-spin me-2"></i>Signing in...</span>
+                        </button>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div></div>
-                        <a href="{{ route('admin.forgot-password') }}" class="forgot-link">
-                            Forgot password?
-                        </a>
-                    </div>
+                    <!-- ============ STEP 2: OTP (admin only) ============ -->
+                    <div id="otpSection" style="{{ ($needsOtp ?? false) ? '' : 'display:none;' }}">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="admin-badge"><i class="fas fa-shield-halved"></i> Admin Verification</span>
+                        </div>
 
-                    <!-- OTP Section (shown after code is sent) -->
-                    <div id="otpSection" style="{{ isset($otpSent) ? '' : 'display:none;' }}">
+                        @if(($otpSent ?? false) || ($needsOtp ?? false))
                         <div class="demo-badge">
                             <i class="fas fa-info-circle" style="flex-shrink:0;"></i>
                             Demo: Use code <code>000000</code>
                         </div>
+                        @endif
 
                         <div class="field-group">
                             <label class="form-label">
@@ -541,19 +555,10 @@
 
                         <div class="text-center mt-3">
                             <span class="otp-timer" id="resendTimer">Resend code in <strong id="countdown">60</strong>s</span>
-                            <a href="{{ route('admin.login') }}?mode={{ $mode ?? 'email' }}" class="otp-resend disabled" id="resendBtn" style="display:none;">
+                            <a href="javascript:void(0)" class="otp-resend disabled" id="resendBtn" style="display:none;" onclick="resendOtp()">
                                 <i class="fas fa-redo me-1"></i> Resend Code
                             </a>
                         </div>
-                    </div>
-
-                    <!-- Send Code Button (shown before OTP is sent) -->
-                    <div id="sendSection" style="{{ isset($otpSent) ? 'display:none;' : '' }}">
-                        <button type="submit" class="btn-jibu submit-btn" id="sendBtn">
-                            <span class="btn-shimmer"></span>
-                            <span class="btn-text"><i class="fas fa-paper-plane me-2"></i>Send Verification Code</span>
-                            <span class="btn-loader d-none"><i class="fas fa-spinner fa-spin me-2"></i>Sending...</span>
-                        </button>
                     </div>
                 </form>
 
@@ -562,7 +567,6 @@
                 <div class="trust-badges">
                     <div class="trust-badge"><i class="fas fa-shield-halved" style="color:#059669;"></i> SSL Secure</div>
                     <div class="trust-badge"><i class="fas fa-bolt" style="color:#7c3aed;"></i> Encrypted</div>
-                    <div class="trust-badge"><i class="fas fa-check-circle" style="color:#ea580c;"></i> OTP Protected</div>
                 </div>
             </div>
         </div>
@@ -578,29 +582,58 @@
         document.getElementById('phoneField').style.display = mode === 'phone' ? '' : 'none';
         document.getElementById('emailField').querySelector('input').disabled = mode !== 'email';
         document.getElementById('phoneField').querySelector('input').disabled = mode !== 'phone';
-        if (mode === 'email') {
-            document.getElementById('emailField').querySelector('input').focus();
+        var target = mode === 'email' ? document.getElementById('emailField').querySelector('input') : document.getElementById('phoneField').querySelector('input');
+        if (target) target.focus();
+    }
+
+    function togglePassword(btn) {
+        var input = btn.closest('.input-wrap').querySelector('input');
+        var icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fas fa-eye-slash';
         } else {
-            document.getElementById('phoneField').querySelector('input').focus();
+            input.type = 'password';
+            icon.className = 'fas fa-eye';
         }
     }
 
+    function resendOtp() {
+        var btn = document.getElementById('resendBtn');
+        btn.classList.add('disabled');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Sending...';
+        var form = document.querySelector('form');
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'resend';
+        input.value = '1';
+        form.appendChild(input);
+        // Clear otp so controller knows this isn't a verification attempt
+        var otpHidden = document.getElementById('otpHidden');
+        if (otpHidden) otpHidden.value = '';
+        form.submit();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Submit button loading state
+        // Submit button loading state and OTP hidden field sync
         document.querySelectorAll('.submit-btn').forEach(function(btn) {
             btn.closest('form').addEventListener('submit', function() {
+                updateHiddenOtp();
                 btn.disabled = true;
-                btn.querySelector('.btn-text').classList.add('d-none');
-                btn.querySelector('.btn-loader').classList.remove('d-none');
+                var text = btn.querySelector('.btn-text');
+                var loader = btn.querySelector('.btn-loader');
+                if (text) text.classList.add('d-none');
+                if (loader) loader.classList.remove('d-none');
             });
         });
 
         // OTP input handling
         var otpInputs = document.querySelectorAll('.otp-input');
         var otpHidden = document.getElementById('otpHidden');
-        var otpForm = document.getElementById('loginForm');
+        var loginForm = document.querySelector('form');
 
         if (otpInputs.length > 0) {
+
             otpInputs.forEach(function(input, index) {
                 input.addEventListener('input', function(e) {
                     var val = this.value.replace(/[^0-9]/g, '');
@@ -623,7 +656,8 @@
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         updateHiddenOtp();
-                        if (otpForm) otpForm.submit();
+                        var verifyBtn = document.getElementById('verifyBtn');
+                        if (verifyBtn) { verifyBtn.click(); } else if (loginForm) { loginForm.submit(); }
                     }
                 });
                 input.addEventListener('paste', function(e) {
@@ -637,12 +671,14 @@
                 });
                 input.addEventListener('focus', function() { this.select(); });
             });
+        }
 
-            function updateHiddenOtp() {
-                var code = '';
-                otpInputs.forEach(function(inp) { code += inp.value; });
-                if (otpHidden) otpHidden.value = code;
-            }
+        function updateHiddenOtp() {
+            var code = '';
+            var inputs = document.querySelectorAll('.otp-input');
+            inputs.forEach(function(inp) { code += inp.value; });
+            var hidden = document.getElementById('otpHidden');
+            if (hidden) hidden.value = code;
         }
 
         // Countdown timer

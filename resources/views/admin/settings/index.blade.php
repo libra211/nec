@@ -36,7 +36,7 @@
                 </ul>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.settings.update') }}" method="POST">
+                <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="tab-content">
@@ -68,6 +68,28 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Office Hours</label>
                                     <input type="text" name="office_hours" class="form-control" value="{{ $settings['office_hours']->value ?? 'Mon – Fri: 8:00 AM – 5:00 PM' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Site Logo</label>
+                                    <input type="file" name="logo" class="form-control" accept="image/*">
+                                    <div class="form-text">Recommended: PNG or SVG, max 2MB</div>
+                                    @if($settings['logo']->value ?? false)
+                                    <div class="mt-2">
+                                        <img src="{{ $settings['logo']->value }}" alt="Logo" height="40" class="border rounded p-1">
+                                        <small class="text-muted ms-2">Current logo</small>
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Favicon</label>
+                                    <input type="file" name="favicon" class="form-control" accept=".ico,.png,.jpg,.jpeg,.svg,.webp">
+                                    <div class="form-text">ICO or PNG, max 1MB</div>
+                                    @if($settings['favicon']->value ?? false)
+                                    <div class="mt-2">
+                                        <img src="{{ $settings['favicon']->value }}" alt="Favicon" height="24" class="border rounded p-1">
+                                        <small class="text-muted ms-2">Current favicon</small>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

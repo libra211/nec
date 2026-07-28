@@ -145,19 +145,17 @@ Route::get('/help', [HelpController::class, 'index'])->name('help.index');
 Route::get('/careers', [CareerController::class, 'index'])->name('careers.index');
 Route::get('/gis/map', [GisController::class, 'map'])->name('gis.map');
 
-// Auth
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login.post');
+// Unified Auth
+Route::match(['get', 'post'], '/login', [AuthController::class, 'unifiedLogin'])->middleware('throttle:login')->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::match(['get', 'post'], '/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
 
-// Voter Portal Auth (public)
+// Voter Portal (redirect login to unified)
 Route::prefix('voter/portal')->name('voter.portal.')->group(function () {
-    Route::get('/login', [VoterAuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [VoterAuthController::class, 'login'])->middleware('throttle:login')->name('login.submit');
+    Route::redirect('/login', '/login')->name('login');
+    Route::redirect('/forgot-password', '/forgot-password')->name('forgot-password');
     Route::get('/register', [VoterAuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [VoterAuthController::class, 'register'])->name('register.submit');
-    Route::get('/forgot-password', [VoterAuthController::class, 'forgotPassword'])->name('forgot-password');
-    Route::post('/forgot-password', [VoterAuthController::class, 'forgotPasswordSubmit'])->name('forgot-password.submit');
     Route::post('/logout', [VoterAuthController::class, 'logout'])->name('logout');
     Route::get('/verify', [VoterAuthController::class, 'verifyVoter'])->name('verify');
     Route::post('/verify', [VoterAuthController::class, 'verifyVoter'])->name('verify.submit');
@@ -194,9 +192,9 @@ Route::prefix('api/geo')->name('api.geo.')->group(function () {
 Route::post('/api/voter/check-duplicate', [VoterController::class, 'checkDuplicate'])->name('api.voter.check-duplicate');
 Route::post('/api/voter/auto-save', [VoterController::class, 'autoSave'])->name('api.voter.auto-save');
 
-// Admin login (no middleware)
-Route::get('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'adminLogin'])->middleware('throttle:login')->name('admin.login.submit');
+// Admin login (redirect to unified)
+Route::redirect('/admin/login', '/login')->name('admin.login');
+Route::redirect('/admin/forgot-password', '/forgot-password')->name('admin.forgot-password');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
 // Admin (with middleware)

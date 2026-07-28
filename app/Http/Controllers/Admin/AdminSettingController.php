@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Support\InputSanitizer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminSettingController extends Controller
 {
@@ -29,6 +30,8 @@ class AdminSettingController extends Controller
                 'contact_phone' => 'nullable|string|max:50',
                 'contact_address' => 'nullable|string|max:1000',
                 'office_hours' => 'nullable|string|max:255',
+                'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                'favicon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,ico,webp|max:1024',
             ],
             'sms' => [
                 'sms_provider' => 'nullable|string|max:50',
@@ -80,6 +83,16 @@ class AdminSettingController extends Controller
         };
 
         $validated = $request->validate($rules);
+
+        // Handle file uploads
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('settings', 'public');
+            $validated['logo'] = Storage::url($path);
+        }
+        if ($request->hasFile('favicon')) {
+            $path = $request->file('favicon')->store('settings', 'public');
+            $validated['favicon'] = Storage::url($path);
+        }
 
         // Handle toggle/checkbox fields explicitly
         if ($tab === 'sms') {
