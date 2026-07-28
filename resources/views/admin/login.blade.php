@@ -5,11 +5,11 @@
     <div class="hero-bg-animation"></div>
     <div class="container position-relative" style="z-index:2;">
         <div class="text-center">
-            <div class="hero-badge mb-3">
-                <i class="fas fa-shield-halved"></i> Secure Access Portal
+            <div class="hero-badge mb-3" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);padding:8px 20px;border-radius:50px;color:#fff;font-size:0.85rem;font-weight:500;backdrop-filter:blur(4px);">
+                <i class="fas fa-shield-halved" style="color:var(--nec-gold);"></i> Secure Access Portal
             </div>
-            <h1 class="hero-title" style="font-size:2rem;">Login to NEC</h1>
-            <p class="hero-subtitle" style="max-width:500px;margin:0 auto;">Access the National Elections Commission administrative dashboard</p>
+            <h1 class="hero-title" style="font-size:2.4rem;font-weight:800;color:#fff;margin-bottom:14px;">Login to NEC</h1>
+            <p class="hero-subtitle" style="max-width:500px;margin:0 auto;color:rgba(255,255,255,.7);font-size:1.05rem;">Access the National Elections Commission administrative dashboard</p>
         </div>
     </div>
 </section>
