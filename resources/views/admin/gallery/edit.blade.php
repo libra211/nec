@@ -22,7 +22,11 @@
                     <label class="form-label">Title *</label>
                     <input type="text" name="title" class="form-control" value="{{ old('title', $gallery->title) }}" required>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
+                    <label class="form-label">Slug</label>
+                    <input type="text" name="slug" class="form-control" value="{{ old('slug', $gallery->slug) }}" placeholder="Auto-generated if empty">
+                </div>
+                <div class="col-md-6">
                     <label class="form-label">Album</label>
                     <input type="text" name="album" class="form-control" value="{{ old('album', $gallery->album) }}">
                 </div>
@@ -30,14 +34,22 @@
                     <label class="form-label">Description</label>
                     <textarea name="description" class="form-control" rows="3">{{ old('description', $gallery->description) }}</textarea>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <label class="form-label">Image Path *</label>
                     <input type="text" name="image_path" class="form-control" value="{{ old('image_path', $gallery->image_path) }}" required>
                     @if($gallery->image_path)
                         <div class="mt-2"><img src="{{ asset('storage/' . $gallery->image_path) }}" alt="" width="80" class="rounded"></div>
                     @endif
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
+                    <label class="form-label">Featured Image URL</label>
+                    <input type="url" name="featured_image" class="form-control" value="{{ old('featured_image', $gallery->featured_image) }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Meta Description (SEO)</label>
+                    <input type="text" name="meta_description" class="form-control" value="{{ old('meta_description', $gallery->meta_description) }}" maxlength="500">
+                </div>
+                <div class="col-md-6">
                     <label class="form-label">Status *</label>
                     <select name="status" class="form-select" required>
                         @foreach(['published','draft','trash'] as $s)

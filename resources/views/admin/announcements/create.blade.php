@@ -42,19 +42,23 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Author</label>
-                    <input type="text" name="author" class="form-control" value="{{ old('author', Auth::user()->name ?? 'Admin') }}">
-                </div>
-                <div class="col-md-4">
                     <label class="form-label">Status *</label>
                     <select name="status" class="form-select" required>
                         <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Published</option>
                         <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>Draft</option>
                     </select>
                 </div>
+                <div class="col-md-4">
+                    <label class="form-label">Published At</label>
+                    <input type="datetime-local" name="published_at" class="form-control" value="{{ old('published_at') }}">
+                </div>
                 <div class="col-md-6">
-                    <label class="form-label">Image</label>
-                    <input type="file" name="image" class="form-control" accept=".jpg,.jpeg,.png">
+                    <label class="form-label">Featured Image URL</label>
+                    <input type="url" name="featured_image" class="form-control" value="{{ old('featured_image') }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Meta Description (SEO)</label>
+                    <input type="text" name="meta_description" class="form-control" value="{{ old('meta_description') }}" maxlength="500">
                 </div>
             </div>
             <div class="mt-4">

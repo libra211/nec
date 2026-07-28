@@ -38,9 +38,17 @@
                     <label class="form-label">Content</label>
                     <textarea name="content" class="form-control" rows="10">{{ old('content', $speech->content) }}</textarea>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <label class="form-label">Document URL</label>
                     <input type="text" name="document_url" class="form-control" value="{{ old('document_url', $speech->document_url) }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Featured Image URL</label>
+                    <input type="url" name="featured_image" class="form-control" value="{{ old('featured_image', $speech->featured_image) }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Meta Description (SEO)</label>
+                    <input type="text" name="meta_description" class="form-control" value="{{ old('meta_description', $speech->meta_description) }}" maxlength="500">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Status *</label>

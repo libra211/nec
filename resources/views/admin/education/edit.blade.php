@@ -22,7 +22,11 @@
                     <label class="form-label">Title *</label>
                     <input type="text" name="title" class="form-control" value="{{ old('title', $material->title) }}" required>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
+                    <label class="form-label">Slug</label>
+                    <input type="text" name="slug" class="form-control" value="{{ old('slug', $material->slug) }}" placeholder="Auto-generated if empty">
+                </div>
+                <div class="col-md-6">
                     <label class="form-label">Content Type</label>
                     <select name="content_type" class="form-select">
                         @foreach(['document','video','infographic','poster','presentation','other'] as $type)
@@ -45,6 +49,14 @@
                 <div class="col-md-3">
                     <label class="form-label">Target Audience</label>
                     <input type="text" name="target_audience" class="form-control" value="{{ old('target_audience', $material->target_audience) }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Featured Image URL</label>
+                    <input type="url" name="featured_image" class="form-control" value="{{ old('featured_image', $material->featured_image) }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Meta Description (SEO)</label>
+                    <input type="text" name="meta_description" class="form-control" value="{{ old('meta_description', $material->meta_description) }}" maxlength="500">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Status *</label>

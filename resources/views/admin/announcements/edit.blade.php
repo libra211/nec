@@ -43,22 +43,23 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Author</label>
-                    <input type="text" name="author" class="form-control" value="{{ old('author', $announcement->author) }}">
-                </div>
-                <div class="col-md-4">
                     <label class="form-label">Status *</label>
                     <select name="status" class="form-select" required>
                         <option value="published" {{ old('status', $announcement->status) === 'published' ? 'selected' : '' }}>Published</option>
                         <option value="draft" {{ old('status', $announcement->status) === 'draft' ? 'selected' : '' }}>Draft</option>
                     </select>
                 </div>
+                <div class="col-md-4">
+                    <label class="form-label">Published At</label>
+                    <input type="datetime-local" name="published_at" class="form-control" value="{{ old('published_at', $announcement->published_at ? \Carbon\Carbon::parse($announcement->published_at)->format('Y-m-d\TH:i') : '') }}">
+                </div>
                 <div class="col-md-6">
-                    <label class="form-label">Image</label>
-                    <input type="file" name="image" class="form-control" accept=".jpg,.jpeg,.png">
-                    @if($announcement->image)
-                        <div class="mt-2"><img src="{{ asset('storage/' . $announcement->image) }}" alt="" width="80" class="rounded"></div>
-                    @endif
+                    <label class="form-label">Featured Image URL</label>
+                    <input type="url" name="featured_image" class="form-control" value="{{ old('featured_image', $announcement->featured_image) }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Meta Description (SEO)</label>
+                    <input type="text" name="meta_description" class="form-control" value="{{ old('meta_description', $announcement->meta_description) }}" maxlength="500">
                 </div>
             </div>
             <div class="mt-4">
