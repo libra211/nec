@@ -16,6 +16,20 @@ use App\Models\ObserverApplication;
 use App\Models\Contact;
 use App\Models\Announcement;
 use App\Models\PollingStation;
+use App\Models\Gallery;
+use App\Models\Speech;
+use App\Models\EducationMaterial;
+use App\Models\Subscriber;
+use App\Models\Download;
+use App\Models\Ballot;
+use App\Models\ElectionPetition;
+use App\Models\PollingStaff;
+use App\Models\Commissioner;
+use App\Models\PoliticalParty;
+use App\Models\Media;
+use App\Models\Faq;
+use App\Models\Complaint;
+use App\Models\Report;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -39,7 +53,9 @@ class DashboardController extends Controller
             $stats['total_constituencies'] = $totalConstituencies;
             $stats['total_candidates'] = Candidate::count();
             $stats['total_news'] = News::count();
-            $stats['total_events'] = ElectionEvent::count();
+            $stats['total_events'] = \App\Models\Event::count();
+            $stats['total_announcements'] = Announcement::count();
+            $stats['total_contacts'] = Contact::count();
             $stats['pending_transfers'] = VoterTransfer::where('status', 'pending')->count();
             $stats['pending_contacts'] = Contact::where('status', 'new')->count();
             $stats['total_observers'] = ObserverApplication::count();
@@ -251,6 +267,28 @@ class DashboardController extends Controller
             $stats['total_complaints'] = \App\Models\Complaint::count();
             $stats['new_complaints'] = \App\Models\Complaint::where('status', 'new')->count();
             $stats['total_reports'] = \App\Models\Report::count();
+            $stats['total_parties'] = PoliticalParty::count();
+            $stats['total_gallery'] = Gallery::count();
+            $stats['total_speeches'] = Speech::count();
+            $stats['total_education'] = EducationMaterial::count();
+            $stats['total_subscribers'] = Subscriber::count();
+            $stats['total_downloads'] = Download::count();
+            $stats['total_ballots'] = Ballot::count();
+            $stats['total_petitions'] = ElectionPetition::count();
+            $stats['total_polling_staff'] = PollingStaff::count();
+            $stats['total_commissioners'] = Commissioner::count();
+            $stats['total_videos'] = Media::where('type', 'video')->count();
+            $stats['total_election_events'] = ElectionEvent::count();
+            $stats['published_news'] = News::where('status', 'published')->count();
+            $stats['upcoming_events'] = ElectionEvent::where('start_date', '>=', $now)->count();
+            $stats['active_ballots'] = Ballot::where('status', 'active')->count();
+            $stats['trained_staff'] = PollingStaff::where('trained', true)->count();
+            $stats['pending_petitions'] = ElectionPetition::where('status', 'pending')->count();
+            $stats['total_ballots_printed'] = Ballot::sum('total_printed');
+            $stats['total_regions'] = \App\Models\Region::count();
+            $stats['states_with_data'] = Voter::whereNotNull('state')->distinct()->count('state');
+            $stats['security_logs_24h'] = \App\Models\SecurityLog::where('created_at', '>=', $now->copy()->subHours(24))->count();
+            $stats['recent_activity_count'] = ActivityLog::where('created_at', '>=', $now->copy()->subHours(24))->count();
         }
 
         if ($role === 'state_coordinator') {

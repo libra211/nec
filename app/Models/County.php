@@ -23,4 +23,9 @@ class County extends Model
     {
         return $this->hasMany(Constituency::class);
     }
+
+    public function pollingStations()
+    {
+        return $this->hasMany(PollingStation::class, 'county', 'name');
+    }
 }

@@ -32,81 +32,165 @@
     </div>
 </div>
 
-{{-- KPI Cards --}}
 @if(in_array($role, ['super_admin', 'admin']))
+
+{{-- Section: Voter Registration Overview --}}
+<div class="section-title">
+    <i class="fas fa-users me-2"></i>Voter Registration Overview
+    <span class="section-title-badge">{{ number_format($stats['total_voters'] ?? 0) }} total</span>
+</div>
 <div class="stat-grid">
     <div class="stat-slim green">
         <div class="stat-row">
             <div class="stat-icon"><i class="fas fa-users"></i></div>
             <div class="stat-body">
                 <div class="stat-value">{{ number_format($stats['total_voters'] ?? 0) }}</div>
-                <div class="stat-label">Total Voters &middot; <small class="text-success"><i class="fas fa-arrow-up"></i> {{ number_format($stats['new_today'] ?? 0) }} today</small></div>
+                <div class="stat-label">Total Voters</div>
+                <div class="stat-detail">
+                    <span class="text-success">{{ number_format($stats['active_voters'] ?? 0) }} active</span>
+                    &middot; <span class="text-muted">{{ number_format($stats['inactive_voters'] ?? 0) }} inactive</span>
+                    &middot; <span class="text-danger">{{ number_format($stats['suspended_voters'] ?? 0) }} suspended</span>
+                </div>
             </div>
         </div>
     </div>
     <div class="stat-slim blue">
         <div class="stat-row">
-            <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
             <div class="stat-body">
-                <div class="stat-value">{{ number_format($stats['total_users'] ?? 0) }}</div>
-                <div class="stat-label">Users</div>
+                <div class="stat-value">{{ number_format($stats['active_voters'] ?? 0) }}</div>
+                <div class="stat-label">Active Voters</div>
+                <div class="stat-detail">
+                    {{ ($stats['total_voters'] ?? 0) > 0 ? round(($stats['active_voters'] ?? 0) / ($stats['total_voters'] ?? 1) * 100, 1) : 0 }}% of total voter population
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim cyan">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-mars"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['male_count'] ?? 0) }}</div>
+                <div class="stat-label">Male Voters</div>
+                <div class="stat-detail">
+                    {{ ($stats['total_voters'] ?? 0) > 0 ? round(($stats['male_count'] ?? 0) / ($stats['total_voters'] ?? 1) * 100, 1) : 0 }}% of voters &middot; Ratio {{ $stats['gender_ratio'] ?? 'N/A' }}:1
+                </div>
             </div>
         </div>
     </div>
     <div class="stat-slim gold">
         <div class="stat-row">
-            <div class="stat-icon"><i class="fas fa-landmark"></i></div>
+            <div class="stat-icon"><i class="fas fa-venus"></i></div>
             <div class="stat-body">
-                <div class="stat-value">{{ number_format($stats['total_constituencies'] ?? 0) }}</div>
-                <div class="stat-label">Constituencies</div>
-            </div>
-        </div>
-    </div>
-    <div class="stat-slim cyan">
-        <div class="stat-row">
-            <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
-            <div class="stat-body">
-                <div class="stat-value">{{ number_format($stats['total_candidates'] ?? 0) }}</div>
-                <div class="stat-label">Candidates</div>
-            </div>
-        </div>
-    </div>
-    <div class="stat-slim cyan">
-        <div class="stat-row">
-            <div class="stat-icon"><i class="fas fa-vote-yea"></i></div>
-            <div class="stat-body">
-                <div class="stat-value">{{ number_format($stats['total_polling_stations'] ?? 0) }}</div>
-                <div class="stat-label">Polling Stations</div>
-                <div class="progress" style="height:3px;margin-top:4px;">
-                    <div class="progress-bar bg-info" style="width: {{ min($stats['registration_capacity_pct'] ?? 0, 100) }}%"></div>
+                <div class="stat-value">{{ number_format($stats['female_count'] ?? 0) }}</div>
+                <div class="stat-label">Female Voters</div>
+                <div class="stat-detail">
+                    {{ ($stats['total_voters'] ?? 0) > 0 ? round(($stats['female_count'] ?? 0) / ($stats['total_voters'] ?? 1) * 100, 1) : 0 }}% of voters &middot; Ratio 1:{{ ($stats['female_count'] ?? 0) > 0 ? round(($stats['male_count'] ?? 0) / ($stats['female_count'] ?? 1), 2) : 'N/A' }}
                 </div>
             </div>
         </div>
     </div>
-    <div class="stat-slim green">
+    <div class="stat-slim info">
         <div class="stat-row">
-            <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+            <div class="stat-icon"><i class="fas fa-user-edit"></i></div>
             <div class="stat-body">
-                <div class="stat-value">{{ number_format($stats['total_agents'] ?? 0) }}</div>
-                <div class="stat-label">Agents</div>
+                <div class="stat-value">{{ number_format($stats['self_registered'] ?? 0) }}</div>
+                <div class="stat-label">Self-Registered</div>
+                <div class="stat-detail">
+                    {{ ($stats['total_voters'] ?? 0) > 0 ? round(($stats['self_registered'] ?? 0) / ($stats['total_voters'] ?? 1) * 100, 1) : 0 }}% of all registrations
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim purple">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['agent_registered'] ?? 0) }}</div>
+                <div class="stat-label">Agent-Assisted</div>
+                <div class="stat-detail">
+                    {{ ($stats['total_voters'] ?? 0) > 0 ? round(($stats['agent_registered'] ?? 0) / ($stats['total_voters'] ?? 1) * 100, 1) : 0 }}% of all registrations
+                </div>
             </div>
         </div>
     </div>
     <div class="stat-slim orange">
         <div class="stat-row">
-            <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+            <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
             <div class="stat-body">
-                <div class="stat-value">{{ number_format($stats['pending_transfers'] ?? 0) }}</div>
-                <div class="stat-label">Pending Transfers</div>
+                <div class="stat-value">{{ number_format($stats['voters_by_status']['pending'] ?? 0) }}</div>
+                <div class="stat-label">Pending Voters</div>
+                <div class="stat-detail">
+                    Awaiting verification &middot; {{ ($stats['total_voters'] ?? 0) > 0 ? round(($stats['voters_by_status']['pending'] ?? 0) / ($stats['total_voters'] ?? 1) * 100, 1) : 0 }}% of total
+                </div>
             </div>
         </div>
     </div>
     <div class="stat-slim red">
         <div class="stat-row">
-            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-icon"><i class="fas fa-ban"></i></div>
             <div class="stat-body">
-                <div class="stat-value">{{ number_format($stats['new_complaints'] ?? 0) }}</div>
-                <div class="stat-label">Complaints <small class="text-muted">({{ $stats['total_complaints'] ?? 0 }} total)</small></div>
+                <div class="stat-value">{{ number_format($stats['suspended_voters'] ?? 0) }}</div>
+                <div class="stat-label">Suspended Voters</div>
+                <div class="stat-detail">
+                    {{ ($stats['total_voters'] ?? 0) > 0 ? round(($stats['suspended_voters'] ?? 0) / ($stats['total_voters'] ?? 1) * 100, 1) : 0 }}% of total population
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Section: Registration Activity --}}
+<div class="section-title">
+    <i class="fas fa-chart-line me-2"></i>Registration Activity
+    <span class="section-title-badge">{{ number_format($stats['new_this_month'] ?? 0) }} this month</span>
+</div>
+<div class="stat-grid">
+    <div class="stat-slim green">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['new_today'] ?? 0) }}</div>
+                <div class="stat-label">New Today</div>
+                <div class="stat-detail">
+                    <i class="fas fa-arrow-up text-success"></i> {{ number_format($stats['new_this_week'] ?? 0) }} this week
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim blue">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['new_this_week'] ?? 0) }}</div>
+                <div class="stat-label">This Week</div>
+                <div class="stat-detail">
+                    Weekly registration volume
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim gold">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['new_this_month'] ?? 0) }}</div>
+                <div class="stat-label">This Month</div>
+                <div class="stat-detail">
+                    Monthly registration total
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim cyan">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-tachometer-alt"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['avg_daily_registrations'] ?? 0) }}</div>
+                <div class="stat-label">Avg Daily Registrations</div>
+                <div class="stat-detail">
+                    Registration pace since campaign start
+                </div>
             </div>
         </div>
     </div>
@@ -156,9 +240,496 @@
     </div>
 </div>
 
+{{-- Section: Voter Insights --}}
+<div class="section-title">
+    <i class="fas fa-chart-bar me-2"></i>Voter Insights
+    <span class="section-title-badge">Age analytics</span>
+</div>
+<div class="stat-grid">
+    <div class="stat-slim cyan">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-baby"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ $stats['youngest_voter_age'] ?? 'N/A' }}</div>
+                <div class="stat-label">Youngest Voter Age</div>
+                <div class="stat-detail">
+                    Minimum voter age in the system
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim gold">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-user-clock"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ $stats['oldest_voter_age'] ?? 'N/A' }}</div>
+                <div class="stat-label">Oldest Voter Age</div>
+                <div class="stat-detail">
+                    Maximum voter age in the system
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim green">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ $stats['age_highest_group'] ?? 'N/A' }}</div>
+                <div class="stat-label">Most Populous Age Group</div>
+                <div class="stat-detail">
+                    Largest voter age demographic
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim blue">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-user-minus"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ $stats['age_lowest_group'] ?? 'N/A' }}</div>
+                <div class="stat-label">Least Populous Age Group</div>
+                <div class="stat-detail">
+                    Smallest voter age demographic
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Section: Ballot & Petitions --}}
+<div class="section-title">
+    <i class="fas fa-box-open me-2"></i>Ballot & Petitions
+    <span class="section-title-badge">{{ number_format(($stats['total_ballots'] ?? 0) + ($stats['total_petitions'] ?? 0)) }} items</span>
+</div>
+<div class="stat-grid">
+    <div class="stat-slim gold">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-box-open"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_ballots'] ?? 0) }}</div>
+                <div class="stat-label">Ballot Designs</div>
+                <div class="stat-detail">
+                    {{ number_format($stats['active_ballots'] ?? 0) }} active ballot designs
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim cyan">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-print"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_ballots_printed'] ?? 0) }}</div>
+                <div class="stat-label">Ballots Printed</div>
+                <div class="stat-detail">
+                    Total printed ballot count
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim red">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-gavel"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_petitions'] ?? 0) }}</div>
+                <div class="stat-label">Election Petitions</div>
+                <div class="stat-detail">
+                    Total petitions filed
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim orange">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['pending_petitions'] ?? 0) }}</div>
+                <div class="stat-label">Pending Petitions</div>
+                <div class="stat-detail">
+                    Awaiting court resolution
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Section: System Health --}}
+<div class="section-title">
+    <i class="fas fa-server me-2"></i>System Health
+    <span class="section-title-badge">{{ number_format($stats['total_users'] ?? 0) }} users</span>
+</div>
+<div class="stat-grid">
+    <div class="stat-slim blue">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_users'] ?? 0) }}</div>
+                <div class="stat-label">System Users</div>
+                <div class="stat-detail">
+                    Registered admin & staff accounts
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim purple">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-history"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['recent_activity_count'] ?? 0) }}</div>
+                <div class="stat-label">Recent Activity (24h)</div>
+                <div class="stat-detail">
+                    System actions in last 24 hours
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim red">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['security_logs_24h'] ?? 0) }}</div>
+                <div class="stat-label">Security Events (24h)</div>
+                <div class="stat-detail">
+                    Security-related events logged
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim green">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-database"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_voters'] ?? 0) }}</div>
+                <div class="stat-label">Database Records</div>
+                <div class="stat-detail">
+                    Total voter records maintained
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Section: Election Infrastructure --}}
+<div class="section-title">
+    <i class="fas fa-landmark me-2"></i>Election Infrastructure
+    <span class="section-title-badge">{{ number_format($stats['total_polling_stations'] ?? 0 + $stats['total_constituencies'] ?? 0) }} facilities</span>
+</div>
+<div class="stat-grid">
+    <div class="stat-slim gold">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_constituencies'] ?? 0) }}</div>
+                <div class="stat-label">Constituencies</div>
+                <div class="stat-detail">
+                    {{ number_format($stats['coverage_counties'] ?? 0) }} counties covered
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim cyan">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-vote-yea"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_polling_stations'] ?? 0) }}</div>
+                <div class="stat-label">Polling Stations</div>
+                <div class="stat-detail">
+                    Capacity: {{ $stats['registration_capacity_pct'] ?? 0 }}% utilized
+                </div>
+                <div class="progress" style="height:3px;margin-top:4px;">
+                    <div class="progress-bar bg-info" style="width: {{ min($stats['registration_capacity_pct'] ?? 0, 100) }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim purple">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-flag"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_parties'] ?? 0) }}</div>
+                <div class="stat-label">Political Parties</div>
+                <div class="stat-detail">
+                    Registered political organizations
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim orange">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_candidates'] ?? 0) }}</div>
+                <div class="stat-label">Candidates</div>
+                <div class="stat-detail">
+                    Contesting in current election cycle
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim blue">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_commissioners'] ?? 0) }}</div>
+                <div class="stat-label">Commissioners</div>
+                <div class="stat-detail">
+                    NEC governing commissioners
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim info">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_observers'] ?? 0) }}</div>
+                <div class="stat-label">Observers</div>
+                <div class="stat-detail">
+                    Observer applications received
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim teal">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-building"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ ($stats['total_polling_stations'] ?? 0) > 0 ? number_format(($stats['total_voters'] ?? 0) / ($stats['total_polling_stations'] ?? 1)) : 0 }}</div>
+                <div class="stat-label">Avg Voters/Station</div>
+                <div class="stat-detail">
+                    Average voters per polling station
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim pink">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-balance-scale"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ ($stats['total_constituencies'] ?? 0) > 0 ? number_format(($stats['total_candidates'] ?? 0) / ($stats['total_constituencies'] ?? 1)) : 0 }}</div>
+                <div class="stat-label">Avg Candidates/Constituency</div>
+                <div class="stat-detail">
+                    Average candidates per constituency
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Section: Content Management --}}
+<div class="section-title">
+    <i class="fas fa-newspaper me-2"></i>Content Management
+    <span class="section-title-badge">{{ number_format(
+        ($stats['published_news'] ?? 0) + ($stats['active_announcements'] ?? 0) + ($stats['total_events'] ?? 0) + ($stats['total_election_events'] ?? 0) + ($stats['total_gallery'] ?? 0) + ($stats['total_videos'] ?? 0) + ($stats['total_speeches'] ?? 0) + ($stats['total_education'] ?? 0) + ($stats['total_subscribers'] ?? 0)
+    ) }} items</span>
+</div>
+<div class="stat-grid">
+    <div class="stat-slim green">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_news'] ?? 0) }}</div>
+                <div class="stat-label">News Articles</div>
+                <div class="stat-detail">
+                    {{ number_format($stats['published_news'] ?? 0) }} published &middot; {{ max(0, ($stats['total_news'] ?? 0) - ($stats['published_news'] ?? 0)) }} drafts
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim orange">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['active_announcements'] ?? 0) }}</div>
+                <div class="stat-label">Active Announcements</div>
+                <div class="stat-detail">
+                    {{ number_format($stats['total_announcements'] ?? 0) }} total announcements
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim blue">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format(($stats['total_events'] ?? 0) + ($stats['total_election_events'] ?? 0)) }}</div>
+                <div class="stat-label">Events</div>
+                <div class="stat-detail">
+                    {{ number_format($stats['upcoming_events'] ?? 0) }} upcoming &middot; {{ number_format($stats['total_election_events'] ?? 0) }} election events
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim purple">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-images"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_gallery'] ?? 0) }}</div>
+                <div class="stat-label">Gallery Items</div>
+                <div class="stat-detail">
+                    Photo gallery and albums
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim red">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-video"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_videos'] ?? 0) }}</div>
+                <div class="stat-label">Videos</div>
+                <div class="stat-detail">
+                    Video library content
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim cyan">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-comment-dots"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_speeches'] ?? 0) }}</div>
+                <div class="stat-label">Speeches</div>
+                <div class="stat-detail">
+                    Official NEC speeches and addresses
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim gold">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_education'] ?? 0) }}</div>
+                <div class="stat-label">Education Materials</div>
+                <div class="stat-detail">
+                    Voter education resources
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim info">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-envelope-open-text"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_subscribers'] ?? 0) }}</div>
+                <div class="stat-label">Newsletter Subscribers</div>
+                <div class="stat-detail">
+                    Email subscribers for communications
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Section: Operations & Support --}}
+<div class="section-title">
+    <i class="fas fa-tasks me-2"></i>Operations & Support
+    <span class="section-title-badge">{{ number_format(
+        ($stats['total_agents'] ?? 0) + ($stats['pending_transfers'] ?? 0) + ($stats['new_complaints'] ?? 0) + ($stats['pending_contacts'] ?? 0)
+    ) }} pending items</span>
+</div>
+<div class="stat-grid">
+    <div class="stat-slim green">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_agents'] ?? 0) }}</div>
+                <div class="stat-label">Registration Agents</div>
+                <div class="stat-detail">
+                    Active field registration agents
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim orange">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['pending_transfers'] ?? 0) }}</div>
+                <div class="stat-label">Pending Transfers</div>
+                <div class="stat-detail">
+                    {{ $stats['pending_transfer_rate'] ?? 0 }}% of total voters
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim red">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['new_complaints'] ?? 0) }}</div>
+                <div class="stat-label">New Complaints</div>
+                <div class="stat-detail">
+                    {{ number_format($stats['total_complaints'] ?? 0) }} total complaints received
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim blue">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['pending_contacts'] ?? 0) }}</div>
+                <div class="stat-label">Unread Messages</div>
+                <div class="stat-detail">
+                    {{ number_format($stats['total_contacts'] ?? 0) }} total contact messages
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim purple">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_reports'] ?? 0) }}</div>
+                <div class="stat-label">Reports</div>
+                <div class="stat-detail">
+                    Published NEC reports
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim gold">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-users-cog"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_polling_staff'] ?? 0) }}</div>
+                <div class="stat-label">Polling Staff</div>
+                <div class="stat-detail">
+                    {{ number_format($stats['trained_staff'] ?? 0) }} trained &middot; {{ max(0, ($stats['total_polling_staff'] ?? 0) - ($stats['trained_staff'] ?? 0)) }} pending training
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim cyan">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-download"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['total_downloads'] ?? 0) }}</div>
+                <div class="stat-label">Downloads</div>
+                <div class="stat-detail">
+                    Downloadable resources & forms
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat-slim teal">
+        <div class="stat-row">
+            <div class="stat-icon"><i class="fas fa-check-double"></i></div>
+            <div class="stat-body">
+                <div class="stat-value">{{ number_format($stats['transfers_by_status']['approved'] ?? 0) }}</div>
+                <div class="stat-label">Completed Transfers</div>
+                <div class="stat-detail">
+                    Approved voter transfer requests
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Gender + Registration Type + Status row --}}
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header border-bottom"><h6 class="mb-0 fw-bold"><i class="fas fa-venus-mars me-2" style="color: var(--nec-gold)"></i>Gender Split</h6></div>
             <div class="card-body text-center">
@@ -171,7 +742,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header border-bottom"><h6 class="mb-0 fw-bold"><i class="fas fa-clipboard-list me-2 text-info"></i>Registration Type</h6></div>
             <div class="card-body text-center">
@@ -179,7 +750,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header border-bottom"><h6 class="mb-0 fw-bold"><i class="fas fa-chart-pie me-2 text-info"></i>Voter Status</h6></div>
             <div class="card-body d-flex align-items-center justify-content-center">
@@ -188,10 +759,8 @@
         </div>
     </div>
 </div>
-@endif
 
 {{-- Charts: Registration Trend + Gender by Age --}}
-@if(in_array($role, ['super_admin', 'admin']))
 <div class="row g-4 mb-4">
     <div class="col-lg-8">
         <div class="card chart-card">
@@ -263,7 +832,6 @@
         </div>
     </div>
 </div>
-@endif
 
 {{-- Activity + Quick Actions --}}
 <div class="row g-4 mb-4">
@@ -386,7 +954,6 @@
 </div>
 
 {{-- Top Agents + Top Constituencies --}}
-@if(in_array($role, ['super_admin', 'admin']))
 <div class="row g-4 mb-4">
     <div class="col-lg-6">
         <div class="card border-0 shadow-sm">

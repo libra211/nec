@@ -20,7 +20,7 @@ class Constituency extends Model
 
     public function pollingStations()
     {
-        return $this->hasMany(PollingStation::class);
+        return $this->hasMany(PollingStation::class, 'constituency', 'name');
     }
 
     public function candidates()

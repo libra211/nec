@@ -23,6 +23,6 @@ class Payam extends Model
 
     public function state()
     {
-        return $this->hasOneThrough(State::class, County::class, 'id', 'id', null, 'state_id');
+        return $this->hasOneThrough(State::class, County::class, 'id', 'id', 'county_id', 'state_id');
     }
 }

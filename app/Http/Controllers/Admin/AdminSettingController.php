@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\LoginLog;
 use App\Models\Setting;
+use App\Models\User;
 use App\Support\InputSanitizer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class AdminSettingController extends Controller
@@ -13,13 +16,23 @@ class AdminSettingController extends Controller
     public function index()
     {
         $settings = Setting::all()->keyBy('key');
+        $user = User::find(session('admin_user_id'));
+        $allLoginLogs = LoginLog::latest('logged_at')->paginate(20);
 
-        return view('admin.settings.index', compact('settings'));
+        return view('admin.settings.index', compact('settings', 'user', 'allLoginLogs'));
     }
 
     public function update(Request $request)
     {
         $tab = $request->input('_tab', 'general');
+
+        if ($tab === 'profile') {
+            return $this->updateProfile($request);
+        }
+
+        if ($tab === 'public-display') {
+            return $this->updatePublicDisplay($request);
+        }
 
         // Build validation rules by tab
         $rules = match ($tab) {
@@ -107,5 +120,76 @@ class AdminSettingController extends Controller
         }
 
         return back()->with('success', 'Settings updated successfully.')->with('active_tab', $tab);
+    }
+
+    private function updateProfile(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:nec_users,email,' . session('admin_user_id'),
+            'phone' => 'nullable|string|max:50',
+            'current_password' => 'nullable|required_with:new_password|string',
+            'new_password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        $user = User::find(session('admin_user_id'));
+
+        if (!$user) {
+            return back()->with('error', 'User not found.')->with('active_tab', 'profile');
+        }
+
+        // Verify current password if trying to change
+        if ($request->filled('new_password')) {
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                return back()->with('error', 'Current password is incorrect.')->with('active_tab', 'profile');
+            }
+        }
+
+        $updateData = [
+            'name' => InputSanitizer::clean($validated['name']),
+            'email' => InputSanitizer::clean($validated['email']),
+        ];
+
+        if ($request->filled('phone')) {
+            $updateData['phone'] = InputSanitizer::clean($validated['phone']);
+        }
+
+        if ($request->filled('new_password')) {
+            $updateData['password'] = Hash::make($validated['new_password']);
+        }
+
+        $user->update($updateData);
+
+        // Refresh session
+        session(['admin_user_name' => $updateData['name'], 'admin_email' => $updateData['email']]);
+
+        return back()->with('success', 'Profile updated successfully.')->with('active_tab', 'profile');
+    }
+
+    private function updatePublicDisplay(Request $request)
+    {
+        $toggles = [
+            'public_show_registration_stats', 'public_show_voter_count',
+            'public_show_party_count', 'public_show_candidate_count',
+            'public_show_constituency_count', 'public_show_polling_station_count',
+            'public_show_news_count', 'public_show_event_count',
+            'public_show_gallery_count', 'public_show_download_count',
+            'public_show_observer_count', 'public_show_agent_count',
+            'public_show_commissioner_count', 'public_show_staff_count',
+            'public_show_election_date', 'public_show_registration_deadline',
+        ];
+
+        foreach ($toggles as $key) {
+            \App\Helpers\NecHelper::setting_set($key, $request->boolean($key) ? '1' : '0');
+        }
+
+        return back()->with('success', 'Public display settings updated.')->with('active_tab', 'public-display');
+    }
+
+    public function loginLogs()
+    {
+        $logs = LoginLog::latest('logged_at')->paginate(50);
+
+        return view('admin.settings.partials.login-logs', compact('logs'));
     }
 }

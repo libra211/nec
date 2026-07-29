@@ -308,15 +308,6 @@
             </div>
         </div>
 
-        <div class="sidebar-footer">
-            <form action="{{ route('admin.logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </button>
-            </form>
-        </div>
     </nav>
 
     {{-- Main Content --}}
@@ -359,21 +350,34 @@
                     </div>
                 </div>
                 <div class="topbar-divider"></div>
-                <div class="topbar-user">
-                    <div class="user-avatar">
-                        <img src="{{ asset('assets/images/default-avatar.png') }}" alt="Admin">
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name">{{ session('admin_user_name', 'Admin') }}</div>
-                        <div class="user-role">{{ ucfirst(str_replace('_', ' ', session('admin_role', 'Administrator'))) }}</div>
-                    </div>
-                    <div class="user-dropdown">
-                        <span class="dropdown-item-text text-muted small"><i class="fas fa-id-badge me-1"></i>{{ ucfirst(str_replace('_', ' ', session('admin_role', 'Administrator'))) }}</span>
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ route('admin.settings.index') }}"><i class="fas fa-cog"></i> Settings</a>
+                <div class="dropdown topbar-user-dropdown">
+                    <a href="#" class="topbar-user" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar">
+                            <img src="{{ asset('assets/images/default-avatar.png') }}" alt="Admin">
+                            <span class="online-dot"></span>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">{{ session('admin_user_name', 'Admin') }}</div>
+                            <div class="user-role">{{ ucfirst(str_replace('_', ' ', session('admin_role', 'Administrator'))) }}</div>
+                        </div>
+                        <i class="fas fa-chevron-down ms-2" style="font-size:10px;color:var(--text-dim)"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+                        <div class="dropdown-header d-flex align-items-center gap-2 px-3 py-2">
+                            <img src="{{ asset('assets/images/default-avatar.png') }}" alt="Avatar" class="rounded-circle" width="36" height="36">
+                            <div>
+                                <div class="fw-bold small">{{ session('admin_user_name', 'Admin') }}</div>
+                                <div class="text-muted" style="font-size:11px">{{ session('admin_email', '') }}</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider my-1"></div>
+                        <a class="dropdown-item" href="{{ route('admin.settings.index', ['tab' => 'profile']) }}"><i class="fas fa-user-circle fa-fw me-2"></i>My Profile</a>
+                        <a class="dropdown-item" href="{{ route('admin.settings.index', ['tab' => 'login-logs']) }}"><i class="fas fa-history fa-fw me-2"></i>Login History</a>
+                        <a class="dropdown-item" href="{{ route('admin.settings.index') }}"><i class="fas fa-cog fa-fw me-2"></i>Settings</a>
+                        <div class="dropdown-divider my-1"></div>
                         <form action="{{ route('admin.logout') }}" method="POST">
                             @csrf
-                            <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                            <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout</button>
                         </form>
                     </div>
                 </div>

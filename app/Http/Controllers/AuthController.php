@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LoginLog;
 use App\Models\OtpCode;
 use App\Models\User;
 use App\Models\Voter;
 use App\Models\VoterAccount;
 use App\Support\SecurityAudit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -40,8 +42,11 @@ class AuthController extends Controller
             $validated = $request->validate(['otp' => 'required|string|size:6']);
             $otpCode = $validated['otp'];
 
+            $pendingUser = User::find($pendingId);
+
             if (!OtpCode::verify($identifier, $otpCode, 'login')) {
                 SecurityAudit::auditLogin($identifier, false);
+                $this->logLoginAttempt($identifier, false, $pendingUser->name ?? $identifier, $pendingUser->role ?? 'admin');
                 return response()
                     ->view('auth.login', [
                         'mode' => $mode,
@@ -56,13 +61,15 @@ class AuthController extends Controller
                     ->header('Expires', '0');
             }
 
-            $user = User::find($pendingId);
+            $user = $pendingUser;
 
             if (!$user || $user->status !== 'active') {
+                $this->logLoginAttempt($identifier, false, $user->name ?? $identifier, $user->role ?? 'admin');
                 return redirect()->route('login')->with('error', 'Account not found or deactivated.');
             }
 
             SecurityAudit::auditLogin($identifier, true);
+            $this->logLoginAttempt($identifier, true, $user->name, $user->role ?? 'admin');
 
             session([
                 'admin_logged_in' => true,
@@ -138,10 +145,12 @@ class AuthController extends Controller
         if ($adminUser) {
             if (!Hash::check($password, $adminUser->password)) {
                 SecurityAudit::auditLogin($identifier, false);
+                $this->logLoginAttempt($identifier, false, $adminUser->name, $adminUser->role ?? 'admin');
                 return back()->withInput()->with('error', 'Invalid credentials.');
             }
 
             if ($adminUser->status !== 'active') {
+                $this->logLoginAttempt($identifier, false, $adminUser->name, $adminUser->role ?? 'admin');
                 return back()->withInput()->with('error', 'Your account has been deactivated.');
             }
 
@@ -187,6 +196,8 @@ class AuthController extends Controller
                     $updates['login_attempts'] = 0;
                 }
                 $voterAccount->update($updates);
+                $voterName = optional(Voter::where('voter_id', $voterAccount->voter_id)->first())->full_name ?? $identifier;
+                $this->logLoginAttempt($identifier, false, $voterName, 'voter');
                 if ($attempts >= 5) {
                     return back()->withInput()->with('error', 'Too many failed attempts. Account locked for 30 minutes.');
                 }
@@ -213,8 +224,12 @@ class AuthController extends Controller
                 $this->setRememberMeCookie($voterAccount, 'voter');
             }
 
+            $this->logLoginAttempt($identifier, true, $voter->full_name ?? 'Voter', 'voter');
+
             return redirect()->route('voter.portal.dashboard');
         }
+
+        $this->logLoginAttempt($identifier, false, '', 'unknown');
 
         return back()->withInput()->with('error', 'No account found with those credentials.');
     }
@@ -227,6 +242,37 @@ class AuthController extends Controller
     public function adminLogin(Request $request)
     {
         return redirect()->route('login');
+    }
+
+    private function logLoginAttempt(string $identifier, bool $success, ?string $name = null, ?string $role = null): void
+    {
+        try {
+            $ip = request()->ip();
+            $ua = request()->userAgent();
+            $location = '';
+            if ($ip && $ip !== '127.0.0.1' && $ip !== '::1') {
+                try {
+                    $resp = Http::timeout(2)->get("http://ip-api.com/json/{$ip}?fields=city,regionName,country");
+                    if ($resp->successful()) {
+                        $data = $resp->json();
+                        $parts = array_filter([$data['city'] ?? '', $data['regionName'] ?? '', $data['country'] ?? '']);
+                        $location = implode(', ', $parts);
+                    }
+                } catch (\Throwable) {}
+            }
+            LoginLog::create([
+                'identifier' => $identifier,
+                'name' => $name,
+                'ip_address' => $ip,
+                'user_agent' => $ua,
+                'location' => $location,
+                'success' => $success,
+                'role' => $role,
+                'logged_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to log login attempt: ' . $e->getMessage());
+        }
     }
 
     private function setRememberMeCookie($user, string $type = 'admin'): void

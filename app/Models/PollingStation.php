@@ -24,7 +24,7 @@ class PollingStation extends Model
 
     public function constituency()
     {
-        return $this->belongsTo(Constituency::class);
+        return $this->belongsTo(Constituency::class, 'constituency', 'name');
     }
 
     public function pollingStaff()

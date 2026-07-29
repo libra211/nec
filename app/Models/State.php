@@ -31,7 +31,7 @@ class State extends Model
 
     public function pollingStations()
     {
-        return $this->hasManyThrough(PollingStation::class, County::class, 'state_id', 'county_id');
+        return $this->hasMany(PollingStation::class, 'state', 'name');
     }
 
     public function payams()

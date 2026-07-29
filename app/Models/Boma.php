@@ -9,7 +9,7 @@ class Boma extends Model
     public $timestamps = false;
 
     protected $table = 'nec_bomas';
-    protected $fillable = ['name', 'county_id', 'payam_id', 'latitude', 'longitude', 'status'];
+    protected $fillable = ['name', 'payam_id', 'status'];
 
     public function payam()
     {
@@ -19,10 +19,5 @@ class Boma extends Model
     public function payams()
     {
         return $this->hasMany(Payam::class, 'boma_id');
-    }
-
-    public function county()
-    {
-        return $this->belongsTo(County::class);
     }
 }

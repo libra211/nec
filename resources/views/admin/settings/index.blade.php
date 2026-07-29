@@ -8,6 +8,9 @@
         'email' => ['icon' => 'fa-envelope', 'label' => 'Email'],
         'social' => ['icon' => 'fa-share-alt', 'label' => 'Social Media'],
         'elections' => ['icon' => 'fa-vote-yea', 'label' => 'Elections'],
+        'profile' => ['icon' => 'fa-user-circle', 'label' => 'My Profile'],
+        'login-logs' => ['icon' => 'fa-history', 'label' => 'Login Logs'],
+        'public-display' => ['icon' => 'fa-globe', 'label' => 'Public Display'],
         'security' => ['icon' => 'fa-shield-alt', 'label' => 'Security'],
     ];
 @endphp
@@ -258,6 +261,129 @@
                             </div>
                         </div>
 
+                        {{-- TAB: MY PROFILE --}}
+                        <div class="tab-pane fade {{ $activeTab === 'profile' ? 'show active' : '' }}" id="tab-profile" role="tabpanel">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-user-circle me-2"></i>My Profile</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Full Name</label>
+                                    <input type="text" name="name" class="form-control" value="{{ old('name', $user->name ?? session('admin_user_name')) }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Email Address</label>
+                                    <input type="email" name="email" class="form-control" value="{{ old('email', $user->email ?? session('admin_email')) }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Phone Number</label>
+                                    <input type="text" name="phone" class="form-control" value="{{ old('phone', $user->phone ?? '') }}">
+                                </div>
+                                <div class="col-12"><hr><h6 class="fw-bold text-muted">Change Password</h6></div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Current Password</label>
+                                    <input type="password" name="current_password" class="form-control" placeholder="Leave blank to keep current">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">New Password</label>
+                                    <input type="password" name="new_password" class="form-control" placeholder="Min 8 characters">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Confirm New Password</label>
+                                    <input type="password" name="new_password_confirmation" class="form-control" placeholder="Repeat new password">
+                                </div>
+                                <div class="col-12">
+                                    <div class="alert alert-info small mb-0">
+                                        <i class="fas fa-info-circle me-1"></i> Leave password fields blank to keep your current password.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- TAB: LOGIN LOGS --}}
+                        <div class="tab-pane fade {{ $activeTab === 'login-logs' ? 'show active' : '' }}" id="tab-login-logs" role="tabpanel">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-history me-2"></i>Login Activity</h5>
+                            <p class="text-muted small mb-3">Recent login attempts across the system.</p>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-sm align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Date/Time</th>
+                                            <th>Identifier</th>
+                                            <th>Name</th>
+                                            <th>IP Address</th>
+                                            <th>Location</th>
+                                            <th>Status</th>
+                                            <th>User Agent</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($allLoginLogs as $log)
+                                        <tr>
+                                            <td class="text-nowrap">{{ $log->logged_at->format('M d, Y H:i') }}</td>
+                                            <td><code>{{ $log->identifier }}</code></td>
+                                            <td>{{ $log->name ?? '—' }}</td>
+                                            <td><code>{{ $log->ip_address ?? '—' }}</code></td>
+                                            <td class="small">{{ $log->location ?? '—' }}</td>
+                                            <td>
+                                                @if($log->success)
+                                                    <span class="badge bg-success-subtle text-success">Success</span>
+                                                @else
+                                                    <span class="badge bg-danger-subtle text-danger">Failed</span>
+                                                @endif
+                                            </td>
+                                            <td class="small text-muted" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $log->user_agent }}">{{ Str::limit($log->user_agent, 50) ?? '—' }}</td>
+                                        </tr>
+                                        @empty
+                                        <tr><td colspan="7" class="text-center text-muted py-4">No login logs recorded yet.</td></tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            @if($allLoginLogs->hasPages())
+                            <div class="mt-3">{{ $allLoginLogs->links() }}</div>
+                            @endif
+                        </div>
+
+                        {{-- TAB: PUBLIC DISPLAY --}}
+                        <div class="tab-pane fade {{ $activeTab === 'public-display' ? 'show active' : '' }}" id="tab-public-display" role="tabpanel">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-globe me-2"></i>Public Page Stats Visibility</h5>
+                            <p class="text-muted small mb-3">Control which statistics and information are visible on the public-facing pages.</p>
+                            @php
+                                $publicToggles = [
+                                    'public_show_election_date' => ['label' => 'Election Date', 'desc' => 'Show the next election date on homepage'],
+                                    'public_show_registration_deadline' => ['label' => 'Registration Deadline', 'desc' => 'Show voter registration deadline'],
+                                    'public_show_registration_stats' => ['label' => 'Registration Stats', 'desc' => 'Show total registered voters count'],
+                                    'public_show_voter_count' => ['label' => 'Voter Count', 'desc' => 'Show voter demographic breakdown'],
+                                    'public_show_party_count' => ['label' => 'Political Parties', 'desc' => 'Show number of registered political parties'],
+                                    'public_show_candidate_count' => ['label' => 'Candidates', 'desc' => 'Show number of candidates'],
+                                    'public_show_constituency_count' => ['label' => 'Constituencies', 'desc' => 'Show number of constituencies'],
+                                    'public_show_polling_station_count' => ['label' => 'Polling Stations', 'desc' => 'Show number of polling stations'],
+                                    'public_show_observer_count' => ['label' => 'Observers', 'desc' => 'Show number of election observers'],
+                                    'public_show_agent_count' => ['label' => 'Agents', 'desc' => 'Show number of registration agents'],
+                                    'public_show_commissioner_count' => ['label' => 'Commissioners', 'desc' => 'Show number of commissioners'],
+                                    'public_show_staff_count' => ['label' => 'Staff', 'desc' => 'Show number of election staff'],
+                                    'public_show_news_count' => ['label' => 'News Articles', 'desc' => 'Show total published news count'],
+                                    'public_show_event_count' => ['label' => 'Events', 'desc' => 'Show number of upcoming events'],
+                                    'public_show_gallery_count' => ['label' => 'Gallery', 'desc' => 'Show number of gallery items'],
+                                    'public_show_download_count' => ['label' => 'Downloads', 'desc' => 'Show number of downloadable resources'],
+                                ];
+                            @endphp
+                            <div class="row g-3">
+                                @foreach($publicToggles as $key => $info)
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 border rounded">
+                                        <div class="form-check form-switch me-3">
+                                            <input class="form-check-input" type="checkbox" name="{{ $key }}" role="switch" id="toggle-{{ $key }}" value="1" {{ ($settings[$key]->value ?? '1') === '1' ? 'checked' : '' }}>
+                                        </div>
+                                        <div>
+                                            <label class="fw-semibold mb-0" for="toggle-{{ $key }}">{{ $info['label'] }}</label>
+                                            <div class="small text-muted">{{ $info['desc'] }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+
                         {{-- TAB: SECURITY --}}
                         <div class="tab-pane fade {{ $activeTab === 'security' ? 'show active' : '' }}" id="tab-security" role="tabpanel">
                             <h5 class="fw-bold mb-3">Security Settings</h5>
@@ -314,7 +440,7 @@
                 @php
                     $stats = [
                         'Total Voters' => number_format($settings['stat_total_voters']->value ?? \App\Models\User::count()),
-                        'Political Parties' => $stats['parties'] ?? \App\Models\Party::count(),
+                        'Political Parties' => $stats['parties'] ?? \App\Models\PoliticalParty::count(),
                         'Candidates' => $stats['candidates'] ?? \App\Models\Candidate::count(),
                         'Observers' => $stats['observers'] ?? \App\Models\Observer::count(),
                         'News Articles' => \App\Models\News::count(),

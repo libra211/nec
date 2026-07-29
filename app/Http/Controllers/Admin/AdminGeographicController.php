@@ -35,10 +35,24 @@ class AdminGeographicController extends Controller
 
     public function overview()
     {
-        $states = State::withCount(['counties', 'constituencies', 'pollingStations', 'payams', 'bomas'])
+        $states = State::withCount(['counties', 'constituencies', 'pollingStations', 'payams'])
             ->with('region')
             ->orderBy('name')
             ->get();
+
+        $stateIds = $states->pluck('id');
+        $countyIds = County::whereIn('state_id', $stateIds)->pluck('id', 'state_id');
+        $payamIds = Payam::whereIn('county_id', $countyIds->values())->pluck('id');
+        $bomaCountsPerState = Boma::whereIn('payam_id', $payamIds)
+            ->join('nec_payams', 'nec_payams.id', '=', 'nec_bomas.payam_id')
+            ->join('nec_counties', 'nec_counties.id', '=', 'nec_payams.county_id')
+            ->selectRaw('nec_counties.state_id, COUNT(*) as total')
+            ->groupBy('nec_counties.state_id')
+            ->pluck('total', 'state_id');
+
+        $states->each(function ($state) use ($bomaCountsPerState) {
+            $state->bomas_count = $bomaCountsPerState[$state->id] ?? 0;
+        });
 
         $totals = [
             'states' => $states->count(),
@@ -55,9 +69,11 @@ class AdminGeographicController extends Controller
 
     public function state($id)
     {
-        $state = State::withCount(['counties', 'constituencies', 'pollingStations', 'payams', 'bomas'])
+        $state = State::withCount(['counties', 'constituencies', 'pollingStations', 'payams'])
             ->with('region')
             ->findOrFail($id);
+
+        $state->bomas_count = Boma::whereIn('payam_id', Payam::whereIn('county_id', County::where('state_id', $id)->pluck('id'))->pluck('id'))->count();
 
         $counties = County::where('state_id', $id)
             ->withCount(['constituencies', 'pollingStations'])
@@ -82,12 +98,8 @@ class AdminGeographicController extends Controller
             'counties' => $counties->count(),
             'constituencies' => $constituencies->count(),
             'polling_stations' => $pollingStations->total(),
-            'payams' => Payam::whereHas('boma.county', function ($q) use ($id) {
-                $q->where('state_id', $id);
-            })->count(),
-            'bomas' => Boma::whereHas('county', function ($q) use ($id) {
-                $q->where('state_id', $id);
-            })->count(),
+            'payams' => Payam::whereIn('county_id', County::where('state_id', $id)->pluck('id'))->count(),
+            'bomas' => Boma::whereIn('payam_id', Payam::whereIn('county_id', County::where('state_id', $id)->pluck('id'))->pluck('id'))->count(),
             'registered_voters' => PollingStation::whereHas('constituency.county', function ($q) use ($id) {
                 $q->where('state_id', $id);
             })->sum('registered_voters'),
