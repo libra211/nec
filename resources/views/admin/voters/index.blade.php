@@ -143,7 +143,7 @@
                         <th>Constituency</th>
                         <th>Status</th>
                         <th>Registered</th>
-                        <th width="150">Actions</th>
+                        <th style="width:auto;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -171,13 +171,11 @@
                                 <span class="badge bg-{{ $statusColors[$voter->status] ?? 'secondary' }}">{{ ucfirst($voter->status ?? 'Active') }}</span>
                             </td>
                             <td>{{ $voter->created_at->format('d M Y') }}</td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('admin.voters.show', $voter->id) }}" class="btn btn-outline-info" title="View"><i class="fas fa-eye"></i></a>
-                                    <a href="{{ route('admin.voters.edit', $voter->id) }}" class="btn btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
-                                    <button type="button" class="btn btn-outline-{{ ($voter->status ?? 'active') === 'active' ? 'warning' : 'success' }}" title="{{ ($voter->status ?? 'active') === 'active' ? 'Suspend' : 'Activate' }}" onclick="toggleVoterStatus('{{ route('admin.voters.status', $voter->id) }}', '{{ ($voter->status ?? 'active') === 'active' ? 'suspended' : 'active' }}')"><i class="fas fa-{{ ($voter->status ?? 'active') === 'active' ? 'ban' : 'check' }}"></i></button>
-                                    <button type="button" class="btn btn-outline-danger" title="Delete" onclick="confirmDelete('{{ route('admin.voters.destroy', $voter->id) }}')"><i class="fas fa-trash"></i></button>
-                                </div>
+                            <td style="white-space:nowrap;width:auto;">
+                                    <a href="{{ route('admin.voters.show', $voter->id) }}" class="btn btn-sm btn-outline-info" title="View"><i class="fas fa-eye"></i></a>
+                                    <a href="{{ route('admin.voters.edit', $voter->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <button type="button" class="btn btn-sm btn-outline-{{ ($voter->status ?? 'active') === 'active' ? 'warning' : 'success' }}" title="{{ ($voter->status ?? 'active') === 'active' ? 'Suspend' : 'Activate' }}" onclick="toggleVoterStatus('{{ route('admin.voters.status', $voter->id) }}', '{{ ($voter->status ?? 'active') === 'active' ? 'suspended' : 'active' }}')"><i class="fas fa-{{ ($voter->status ?? 'active') === 'active' ? 'ban' : 'check' }}"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" onclick="confirmDelete('{{ route('admin.voters.destroy', $voter->id) }}')"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
                         @endforeach

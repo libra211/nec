@@ -31,12 +31,12 @@
                         <td>
                             <form action="{{ route('admin.users.restore', $user->id) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-success" title="Restore"><i class="fas fa-undo"></i> Restore</button>
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="Restore"><i class="fas fa-undo"></i></button>
                             </form>
                             <form action="{{ route('admin.users.force-delete', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('This will permanently delete the user. Are you sure?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Force Delete"><i class="fas fa-times"></i> Delete</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Force Delete"><i class="fas fa-times"></i></button>
                             </form>
                         </td>
                     </tr>

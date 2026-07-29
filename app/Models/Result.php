@@ -18,6 +18,8 @@ class Result extends Model
     {
         return [
             'declared_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 

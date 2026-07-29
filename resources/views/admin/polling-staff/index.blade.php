@@ -47,16 +47,14 @@
                             <td>{{ $s->phone ?? '-' }}</td>
                             <td>{!! $s->trained ? '<i class="fas fa-check-circle text-success"></i>' : '<i class="fas fa-times-circle text-muted"></i>' !!}</td>
                             <td><span class="badge bg-{{ $s->status==='active'?'success':'secondary' }}">{{ ucfirst($s->status) }}</span></td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <form method="POST" action="{{ route('admin.polling-staff.status', $s) }}" class="d-inline">@csrf @method('PATCH')
-                                        <button class="btn btn-outline-{{ $s->status==='active'?'warning':'success' }}" title="Toggle"><i class="fas fa-toggle-{{ $s->status==='active'?'on':'off' }}"></i></button>
-                                    </form>
-                                    <a href="{{ route('admin.polling-staff.edit', $s) }}" class="btn btn-outline-primary"><i class="fas fa-edit"></i></a>
-                                    <form method="POST" action="{{ route('admin.polling-staff.destroy', $s) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
-                                        <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
-                                    </form>
-                                </div>
+                            <td style="white-space:nowrap;">
+                                <form method="POST" action="{{ route('admin.polling-staff.status', $s) }}" class="d-inline">@csrf @method('PATCH')
+                                    <button class="btn btn-sm btn-outline-{{ $s->status==='active'?'warning':'success' }}" title="{{ $s->status==='active'?'Deactivate':'Activate' }}"><i class="fas fa-toggle-{{ $s->status==='active'?'on':'off' }}"></i></button>
+                                </form>
+                                <a href="{{ route('admin.polling-staff.edit', $s) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                                <form method="POST" action="{{ route('admin.polling-staff.destroy', $s) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                     @empty

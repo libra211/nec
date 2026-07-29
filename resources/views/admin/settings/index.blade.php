@@ -682,45 +682,35 @@
                         $manualVal = $settings[$manualKey]->value ?? '';
                         $autoVal = $autoV($stat);
                     @endphp
-                    <div class="stat-row">
-                        <div class="row g-2 align-items-center">
-                            <div class="col-md-4 d-flex align-items-center gap-2">
-                                <div class="form-check form-switch mb-0">
-                                    <input class="form-check-input form-check-input-sm setting-input" type="checkbox" name="{{ $showKey }}" role="switch" id="{{ $showKey }}" value="1" {{ $isVisible ? 'checked' : '' }}>
-                                </div>
-                                <label class="small fw-semibold mb-0" for="{{ $showKey }}">{{ $info['label'] }}</label>
+                    <div class="stat-row d-flex align-items-start gap-3 py-2">
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0" style="min-width:180px;">
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input form-check-input-sm setting-input" type="checkbox" name="{{ $showKey }}" role="switch" id="{{ $showKey }}" value="1" {{ $isVisible ? 'checked' : '' }}>
                             </div>
-                            @if(in_array($info['type'], ['number', 'text', 'date']))
-                            <div class="col-md-8">
-                                <div class="row g-1 align-items-center">
-                                    <div class="col-auto">
-                                        <span class="badge bg-light text-muted fw-normal px-2 py-1 small">Auto: <strong class="live-stat-value" data-stat="{{ $stat }}">{{ $autoVal }}</strong></span>
-                                    </div>
-                                    <div class="col-auto">
-                                        <div class="btn-group btn-group-sm">
-                                            <input type="radio" class="btn-check setting-input" name="{{ $sourceKey }}" id="{{ $sourceKey }}_auto" value="auto" autocomplete="off" {{ $source === 'auto' ? 'checked' : '' }}>
-                                            <label class="btn btn-outline-primary btn-sm" for="{{ $sourceKey }}_auto">Auto</label>
-                                            <input type="radio" class="btn-check setting-input" name="{{ $sourceKey }}" id="{{ $sourceKey }}_manual" value="manual" autocomplete="off" {{ $source === 'manual' ? 'checked' : '' }}>
-                                            <label class="btn btn-outline-primary btn-sm" for="{{ $sourceKey }}_manual">Manual</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto manual-input-{{ $stat }}" style="{{ $source === 'manual' ? '' : 'display:none' }}">
-                                        @if($info['type'] === 'number')
-                                        <input type="number" name="{{ $manualKey }}" class="form-control form-control-sm setting-input" style="width:110px" value="{{ $manualVal }}">
-                                        @elseif($info['type'] === 'date')
-                                        <input type="date" name="{{ $manualKey }}" class="form-control form-control-sm setting-input" style="width:140px" value="{{ $manualVal }}">
-                                        @else
-                                        <input type="text" name="{{ $manualKey }}" class="form-control form-control-sm setting-input" style="width:140px" value="{{ $manualVal }}">
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                            @else
-                            <div class="col-md-8">
-                                <span class="badge bg-light text-muted fw-normal px-2 py-1 small">{{ $autoVal }}</span>
-                            </div>
-                            @endif
+                            <label class="small fw-semibold mb-0 text-nowrap" for="{{ $showKey }}">{{ $info['label'] }}</label>
                         </div>
+                        @if(in_array($info['type'], ['number', 'text', 'date']))
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <span class="badge bg-light text-muted fw-normal px-2 py-1 small">Auto: <strong class="live-stat-value" data-stat="{{ $stat }}">{{ $autoVal }}</strong></span>
+                            <div class="btn-group btn-group-sm">
+                                <input type="radio" class="btn-check setting-input" name="{{ $sourceKey }}" id="{{ $sourceKey }}_auto" value="auto" autocomplete="off" {{ $source === 'auto' ? 'checked' : '' }}>
+                                <label class="btn btn-outline-primary btn-sm" for="{{ $sourceKey }}_auto">Auto</label>
+                                <input type="radio" class="btn-check setting-input" name="{{ $sourceKey }}" id="{{ $sourceKey }}_manual" value="manual" autocomplete="off" {{ $source === 'manual' ? 'checked' : '' }}>
+                                <label class="btn btn-outline-primary btn-sm" for="{{ $sourceKey }}_manual">Manual</label>
+                            </div>
+                            <div class="manual-input-{{ $stat }}" style="{{ $source === 'manual' ? '' : 'display:none' }}">
+                                @if($info['type'] === 'number')
+                                <input type="number" name="{{ $manualKey }}" class="form-control form-control-sm setting-input" style="width:110px" value="{{ $manualVal }}">
+                                @elseif($info['type'] === 'date')
+                                <input type="date" name="{{ $manualKey }}" class="form-control form-control-sm setting-input" style="width:140px" value="{{ $manualVal }}">
+                                @else
+                                <input type="text" name="{{ $manualKey }}" class="form-control form-control-sm setting-input" style="width:140px" value="{{ $manualVal }}">
+                                @endif
+                            </div>
+                        </div>
+                        @else
+                        <span class="badge bg-light text-muted fw-normal px-2 py-1 small">{{ $autoVal }}</span>
+                        @endif
                     </div>
                     @endforeach
                 </div>
@@ -775,6 +765,30 @@
 
                 {{-- ===== PROFILE ===== --}}
                 @if($key === 'profile')
+                <div class="settings-block">
+                    <div class="settings-block-title">Profile Picture</div>
+                    <div class="settings-block-desc">Upload a photo to personalise your admin account.</div>
+                    <div class="d-flex align-items-start gap-4 flex-wrap">
+                        <div id="avatarPreviewContainer" style="position:relative;width:100px;height:100px;border-radius:20px;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;background:#f1f5f9;">
+                            <img id="avatarPreviewImg" src="{{ $user->avatar ? asset('storage/' . $user->avatar) : asset('assets/images/default-avatar.png') }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                            <div id="avatarRemoveOverlay" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);padding:2px;text-align:center;{{ $user->avatar ? '' : 'display:none;' }}">
+                                <button type="button" id="removeAvatarBtn" style="background:none;border:none;color:#fff;font-size:0.6rem;cursor:pointer;"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div style="flex-grow:1;min-width:200px;">
+                            <div class="drop-zone" id="avatarDropZone" onclick="document.getElementById('avatarInput').click()" style="border:2px dashed #d1d5db;border-radius:12px;padding:1.25rem;text-align:center;cursor:pointer;transition:all 0.25s;background:#fafbfc;">
+                                <input type="file" name="avatar" id="avatarInput" class="d-none" accept=".jpg,.jpeg,.png,.webp" onchange="handleAvatar(this)">
+                                <input type="hidden" name="remove_avatar" id="removeAvatarField" value="0">
+                                <div id="avatarPlaceholder">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size:1.4rem;color:#94a3b8;"></i>
+                                    <div class="small text-muted mt-1">Drag &amp; drop or click to change photo</div>
+                                    <div class="small text-muted" style="font-size:0.65rem;">JPG, PNG, WebP (max 2MB)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="settings-block">
                     <div class="settings-block-title">Account Information</div>
                     <div class="row g-3">
@@ -1234,6 +1248,41 @@ $(document).ready(function () {
         $(this).css('transform', 'scale(1)');
     });
 });
+
+// Avatar upload
+function handleAvatar(input) {
+    var file = input.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('avatarPreviewImg').src = e.target.result;
+        document.getElementById('avatarRemoveOverlay').style.display = '';
+        document.getElementById('removeAvatarField').value = '0';
+    };
+    reader.readAsDataURL(file);
+}
+
+document.getElementById('removeAvatarBtn')?.addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('avatarInput').value = '';
+    document.getElementById('avatarPreviewImg').src = '{{ asset("assets/images/default-avatar.png") }}';
+    document.getElementById('avatarRemoveOverlay').style.display = 'none';
+    document.getElementById('removeAvatarField').value = '1';
+});
+
+(function() {
+    var dz = document.getElementById('avatarDropZone');
+    if (!dz) return;
+    dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor = 'var(--nec-green)'; dz.style.background = 'rgba(46,139,87,0.04)'; });
+    dz.addEventListener('dragleave', function() { dz.style.borderColor = '#d1d5db'; dz.style.background = '#fafbfc'; });
+    dz.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dz.style.borderColor = '#d1d5db';
+        dz.style.background = '#fafbfc';
+        var files = e.dataTransfer.files;
+        if (files.length) { document.getElementById('avatarInput').files = files; handleAvatar(document.getElementById('avatarInput')); }
+    });
+})();
 
 // System tool runner (AJAX)
 function runTool(key) {

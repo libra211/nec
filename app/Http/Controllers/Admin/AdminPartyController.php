@@ -64,6 +64,14 @@ class AdminPartyController extends Controller
         return redirect()->route('admin.parties.index')->with('success', 'Party created.');
     }
 
+    public function show($id)
+    {
+        $party = PoliticalParty::withCount('candidates')->findOrFail($id);
+        $candidates = $party->candidates()->limit(10)->get();
+
+        return view('admin.parties.show', compact('party', 'candidates'));
+    }
+
     public function edit($id)
     {
         $party = PoliticalParty::findOrFail($id);

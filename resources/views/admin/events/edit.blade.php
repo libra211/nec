@@ -65,7 +65,7 @@
                     <textarea name="description" class="form-control" rows="12">{{ old('description', $event->description) }}</textarea>
                 </div>
                 <div class="col-12">
-                    <button type="submit" class="btn btn-nec-green btn-lg"><i class="fas fa-save me-1"></i> Update Event</button>
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save me-1"></i> Update Event</button>
                 </div>
             </div>
         </form>

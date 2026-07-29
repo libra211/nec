@@ -27,7 +27,22 @@ class AdminResultController extends Controller
 
         $results = $query->orderByDesc('created_at')->paginate(15);
 
-        return view('admin.results.index', compact('results'));
+        $stats = [
+            'total' => Result::count(),
+            'active' => Result::where('status', 'active')->count(),
+            'total_votes' => Result::sum('total_votes'),
+            'total_registered' => Result::sum('registered_voters'),
+            'avg_turnout' => Result::where('status', 'active')->avg('turnout'),
+        ];
+
+        return view('admin.results.index', compact('results', 'stats'));
+    }
+
+    public function show($id)
+    {
+        $result = Result::with(['constituency', 'electionEvent', 'candidateResults'])->findOrFail($id);
+
+        return view('admin.results.show', compact('result'));
     }
 
     public function create()
@@ -49,6 +64,10 @@ class AdminResultController extends Controller
             'turnout' => 'nullable|numeric|min:0|max:100',
             'status' => 'required|in:active,inactive,trash',
         ]);
+
+        if ($request->filled('total_votes') && $request->filled('registered_voters') && $request->registered_voters > 0 && !$request->filled('turnout')) {
+            $validated['turnout'] = round(($request->total_votes / $request->registered_voters) * 100, 2);
+        }
 
         Result::create($validated);
 
@@ -78,9 +97,25 @@ class AdminResultController extends Controller
             'status' => 'required|in:active,inactive,trash',
         ]);
 
+        if ($request->filled('total_votes') && $request->filled('registered_voters') && $request->registered_voters > 0 && !$request->filled('turnout')) {
+            $validated['turnout'] = round(($request->total_votes / $request->registered_voters) * 100, 2);
+        }
+
         $result->update($validated);
 
         return redirect()->route('admin.results.index')->with('success', 'Result updated.');
+    }
+
+    public function toggleStatus($id)
+    {
+        $result = Result::findOrFail($id);
+        $result->status = $result->status === 'active' ? 'inactive' : 'active';
+        $result->save();
+
+        return response()->json([
+            'status' => $result->status,
+            'label' => ucfirst($result->status),
+        ]);
     }
 
     public function destroy($id)

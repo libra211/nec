@@ -8,7 +8,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0"><i class="fas fa-newspaper me-2"></i>News Management</h2>
     <div>
-        <a href="{{ route('admin.news.create') }}" class="btn btn-nec-green"><i class="fas fa-plus me-1"></i> Add Article</a>
+        <a href="{{ route('admin.news.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Article</a>
     </div>
 </div>
 
@@ -107,20 +107,14 @@
                                 <br><span class="text-muted">Pub: {{ \Carbon\Carbon::parse($item->published_at)->format('d M Y') }}</span>
                             @endif
                         </td>
-                        <td class="text-center">
+                        <td class="text-center" style="white-space:nowrap;">
                             @if($item->status !== 'trash')
-                            <div class="btn-group btn-group-sm">
-                                <a href="{{ route('admin.news.edit', $item->id) }}" class="btn btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
-                                <a href="{{ route('admin.news.toggle-status', $item->id) }}" class="btn btn-outline-{{ $item->status === 'published' ? 'warning' : 'success' }}" title="{{ $item->status === 'published' ? 'Move to Draft' : 'Publish' }}">
-                                    <i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i>
-                                </a>
-                                <button class="btn btn-outline-danger" onclick="confirmTrash('{{ route('admin.news.destroy', $item->id) }}')" title="Trash"><i class="fas fa-trash"></i></button>
-                            </div>
+                            <a href="{{ route('admin.news.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="{{ route('admin.news.toggle-status', $item->id) }}" class="btn btn-sm btn-outline-{{ $item->status === 'published' ? 'warning' : 'success' }}" title="{{ $item->status === 'published' ? 'Move to Draft' : 'Publish' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
+                            <button class="btn btn-sm btn-outline-danger" onclick="confirmTrash('{{ route('admin.news.destroy', $item->id) }}')" title="Trash"><i class="fas fa-trash"></i></button>
                             @else
-                            <div class="btn-group btn-group-sm">
-                                <a href="{{ route('admin.news.restore', $item->id) }}" class="btn btn-outline-success" title="Restore"><i class="fas fa-undo"></i></a>
-                                <button class="btn btn-outline-danger" onclick="confirmForceDelete('{{ route('admin.news.force-delete', $item->id) }}')" title="Delete Permanently"><i class="fas fa-times"></i></button>
-                            </div>
+                            <a href="{{ route('admin.news.restore', $item->id) }}" class="btn btn-sm btn-outline-success" title="Restore"><i class="fas fa-undo"></i></a>
+                            <button class="btn btn-sm btn-outline-danger" onclick="confirmForceDelete('{{ route('admin.news.force-delete', $item->id) }}')" title="Delete Permanently"><i class="fas fa-times"></i></button>
                             @endif
                         </td>
                     </tr>

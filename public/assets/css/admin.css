@@ -1851,6 +1851,15 @@ body.sidebar-collapsed #wpcontent { margin-left: 64px; }
 .settings-group-card .stat-row:last-child { border-bottom: none; }
 [data-theme="dark"] .settings-group-card .stat-row { border-bottom-color: rgba(255,255,255,0.04); }
 
+/* Public display stat rows */
+.stat-row {
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.12s;
+}
+.stat-row:hover { background: var(--primary-light); border-radius: 6px; }
+.stat-row:last-child { border-bottom: none; }
+[data-theme="dark"] .stat-row { border-bottom-color: rgba(255,255,255,0.04); }
+
 /* Toggle switch sizing */
 .form-check-input.form-check-input-sm { width: 2.2em; height: 1.1em; margin-top: 0; }
 

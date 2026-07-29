@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div class="mt-4">
-                <button type="submit" class="btn btn-nec-green btn-lg"><i class="fas fa-save me-1"></i> Save Speech</button>
+                <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save me-1"></i> Save Speech</button>
             </div>
         </form>
     </div>

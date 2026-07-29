@@ -42,13 +42,11 @@
                                 @php $colors=['planned'=>'secondary','printing'=>'warning','delivered'=>'info','deployed'=>'success','archived'=>'dark']; @endphp
                                 <span class="badge bg-{{ $colors[$b->status] ?? 'secondary' }}">{{ ucfirst($b->status) }}</span>
                             </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('admin.ballots.edit', $b) }}" class="btn btn-outline-primary"><i class="fas fa-edit"></i></a>
-                                    <form method="POST" action="{{ route('admin.ballots.destroy', $b) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
-                                        <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
-                                    </form>
-                                </div>
+                            <td style="white-space:nowrap;">
+                                <a href="{{ route('admin.ballots.edit', $b) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                                <form method="POST" action="{{ route('admin.ballots.destroy', $b) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                     @empty

@@ -126,7 +126,7 @@
                         <th>Assigned Area</th>
                         <th>Status</th>
                         <th>Voters Registered</th>
-                        <th width="180">Actions</th>
+                        <th style="width:auto;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -154,13 +154,11 @@
                             <span class="badge bg-{{ $statusClasses[$agent->status] ?? 'secondary' }}">{{ ucfirst($agent->status) }}</span>
                         </td>
                         <td>{{ $agent->voters_count ?? 0 }}</td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <a href="{{ route('admin.agents.voters', $agent) }}" class="btn btn-outline-info" title="View Voters"><i class="fas fa-users"></i></a>
-                                <a href="{{ route('admin.agents.edit', $agent) }}" class="btn btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
-                                <button type="button" class="btn btn-outline-{{ $agent->status === 'active' ? 'warning' : 'success' }}" title="{{ $agent->status === 'active' ? 'Suspend' : 'Activate' }}" onclick="toggleStatus('{{ route('admin.agents.status', $agent) }}', {{ $agent->status === 'active' ? 'false' : 'true' }})"><i class="fas fa-{{ $agent->status === 'active' ? 'ban' : 'check' }}"></i></button>
-                                <button type="button" class="btn btn-outline-danger" title="Delete" onclick="confirmDelete('{{ route('admin.agents.destroy', $agent) }}')"><i class="fas fa-trash"></i></button>
-                            </div>
+                        <td style="white-space:nowrap;">
+                                    <a href="{{ route('admin.agents.voters', $agent) }}" class="btn btn-sm btn-outline-info" title="View Voters"><i class="fas fa-users"></i></a>
+                                    <a href="{{ route('admin.agents.edit', $agent) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <button type="button" class="btn btn-sm btn-outline-{{ $agent->status === 'active' ? 'warning' : 'success' }}" title="{{ $agent->status === 'active' ? 'Suspend' : 'Activate' }}" onclick="toggleStatus('{{ route('admin.agents.status', $agent) }}', {{ $agent->status === 'active' ? 'false' : 'true' }})"><i class="fas fa-{{ $agent->status === 'active' ? 'ban' : 'check' }}"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" onclick="confirmDelete('{{ route('admin.agents.destroy', $agent) }}')"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                     @empty

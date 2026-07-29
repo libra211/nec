@@ -81,7 +81,7 @@
                         <th>State</th>
                         <th>Status</th>
                         <th>Last Login</th>
-                        <th width="150">Actions</th>
+                        <th style="width:auto;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -124,13 +124,11 @@
                                 @endif
                             </td>
                             <td>{{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}</td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
-                                    <button type="button" class="btn btn-outline-{{ ($user->is_active ?? true) ? 'warning' : 'success' }}" title="{{ ($user->is_active ?? true) ? 'Deactivate' : 'Activate' }}" onclick="toggleStatus('{{ route('admin.users.status', $user->id) }}', {{ ($user->is_active ?? true) ? 'false' : 'true' }})"><i class="fas fa-{{ ($user->is_active ?? true) ? 'ban' : 'check' }}"></i></button>
-                                    <button type="button" class="btn btn-outline-info" title="Reset Password" onclick="resetPassword('{{ route('admin.users.reset-password', $user->id) }}')"><i class="fas fa-key"></i></button>
-                                    <button type="button" class="btn btn-outline-danger" title="Delete" onclick="confirmDelete('{{ route('admin.users.destroy', $user->id) }}')"><i class="fas fa-trash"></i></button>
-                                </div>
+                            <td style="white-space:nowrap;">
+                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <button type="button" class="btn btn-sm btn-outline-{{ ($user->is_active ?? true) ? 'warning' : 'success' }}" title="{{ ($user->is_active ?? true) ? 'Deactivate' : 'Activate' }}" onclick="toggleStatus('{{ route('admin.users.status', $user->id) }}', {{ ($user->is_active ?? true) ? 'false' : 'true' }})"><i class="fas fa-{{ ($user->is_active ?? true) ? 'ban' : 'check' }}"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" title="Reset Password" onclick="resetPassword('{{ route('admin.users.reset-password', $user->id) }}')"><i class="fas fa-key"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" onclick="confirmDelete('{{ route('admin.users.destroy', $user->id) }}')"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
                         @endforeach

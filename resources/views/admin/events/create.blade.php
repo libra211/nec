@@ -68,7 +68,7 @@
                     @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-12">
-                    <button type="submit" class="btn btn-nec-green btn-lg"><i class="fas fa-save me-1"></i> Create Event</button>
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save me-1"></i> Create Event</button>
                 </div>
             </div>
         </form>

@@ -70,7 +70,7 @@
         <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
         <h4 class="fw-bold">No Events Yet</h4>
         <p class="text-muted">Check back soon for upcoming events from the NEC.</p>
-        <a href="/" class="btn btn-nec-green"><i class="fas fa-home me-1"></i> Back to Home</a>
+        <a href="/" class="btn btn-primary"><i class="fas fa-home me-1"></i> Back to Home</a>
     </div>
     @endif
 </div>

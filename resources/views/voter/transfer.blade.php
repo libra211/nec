@@ -84,7 +84,7 @@
                                 <label class="form-check-label" for="confirmTransfer">I confirm that I have relocated to the new address and request transfer of my voter registration.</label>
                             </div>
 
-                            <button type="submit" class="btn btn-nec-green mt-3"><i class="fas fa-paper-plane me-2"></i>Submit Transfer Request</button>
+                            <button type="submit" class="btn btn-primary mt-3"><i class="fas fa-paper-plane me-2"></i>Submit Transfer Request</button>
                         </form>
                     </div>
                 </div>

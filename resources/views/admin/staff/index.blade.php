@@ -105,7 +105,7 @@
                         <th>State</th>
                         <th>Status</th>
                         <th>Last Active</th>
-                        <th width="130">Actions</th>
+                        <th style="width:auto;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -139,12 +139,10 @@
                                 @endif
                             </td>
                             <td>{{ $member->last_login_at ? $member->last_login_at->diffForHumans() : 'Never' }}</td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('admin.staff.show', $member->id) }}" class="btn btn-outline-info" title="View"><i class="fas fa-eye"></i></a>
-                                    <a href="{{ route('admin.staff.edit', $member->id) }}" class="btn btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
-                                    <button type="button" class="btn btn-outline-{{ ($member->is_active ?? true) ? 'warning' : 'success' }}" title="Toggle Status" onclick="toggleStaffStatus('{{ route('admin.staff.status', $member->id) }}', {{ ($member->is_active ?? true) ? 'false' : 'true' }})"><i class="fas fa-{{ ($member->is_active ?? true) ? 'ban' : 'check' }}"></i></button>
-                                </div>
+                            <td style="white-space:nowrap;">
+                                    <a href="{{ route('admin.staff.show', $member->id) }}" class="btn btn-sm btn-outline-info" title="View"><i class="fas fa-eye"></i></a>
+                                    <a href="{{ route('admin.staff.edit', $member->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <button type="button" class="btn btn-sm btn-outline-{{ ($member->is_active ?? true) ? 'warning' : 'success' }}" title="Toggle Status" onclick="toggleStaffStatus('{{ route('admin.staff.status', $member->id) }}', {{ ($member->is_active ?? true) ? 'false' : 'true' }})"><i class="fas fa-{{ ($member->is_active ?? true) ? 'ban' : 'check' }}"></i></button>
                             </td>
                         </tr>
                         @endforeach

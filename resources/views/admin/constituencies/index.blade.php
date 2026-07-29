@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Constituencies</h2>
-    <a href="{{ route('admin.constituencies.create') }}" class="btn btn-nec-green"><i class="fas fa-plus me-1"></i> Add Constituency</a>
+    <a href="{{ route('admin.constituencies.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Constituency</a>
 </div>
 
 <div class="card mb-3">
@@ -66,9 +66,9 @@
                             <span class="badge bg-danger">Trash</span>
                         @endif
                     </td>
-                    <td>
-                        <a href="{{ route('admin.constituencies.edit', $item->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
-                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.constituencies.destroy', $item->id) }}')"><i class="fas fa-trash"></i></button>
+                    <td style="white-space:nowrap;">
+                        <a href="{{ route('admin.constituencies.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.constituencies.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
                 @empty

@@ -34,11 +34,11 @@
                             <span class="badge bg-light text-dark">{{ ucfirst($msg->status) }}</span>
                         @endif
                     </td>
-                    <td>
-                        <a href="{{ route('admin.contacts.show', $msg->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
+                    <td style="white-space:nowrap;">
+                        <a href="{{ route('admin.contacts.show', $msg->id) }}" class="btn btn-sm btn-outline-primary" title="View"><i class="fas fa-eye"></i></a>
                         <form action="{{ route('admin.contacts.destroy', $msg->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this message?')">
                             @csrf @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
                         </form>
                     </td>
                 </tr>

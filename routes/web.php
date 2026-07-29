@@ -242,7 +242,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Parties
     Route::put('parties/{id}/toggle-status', [AdminPartyController::class, 'toggleStatus'])->name('parties.toggle-status');
-    Route::resource('parties', AdminPartyController::class)->except(['show']);
+    Route::resource('parties', AdminPartyController::class);
 
     // Observers
     Route::get('observers', [AdminObserverController::class, 'index'])->name('observers.index');
@@ -349,10 +349,12 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::resource('constituencies', AdminConstituencyController::class)->except(['show']);
 
     // Candidates
-    Route::resource('candidates', AdminCandidateController::class)->except(['show']);
+    Route::put('candidates/{id}/toggle-status', [AdminCandidateController::class, 'toggleStatus'])->name('candidates.toggle-status');
+    Route::resource('candidates', AdminCandidateController::class);
 
     // Results
-    Route::resource('results', AdminResultController::class)->except(['show']);
+    Route::put('results/{id}/toggle-status', [AdminResultController::class, 'toggleStatus'])->name('results.toggle-status');
+    Route::resource('results', AdminResultController::class);
 
     // Gallery
     Route::resource('gallery', AdminGalleryController::class)->except(['show']);

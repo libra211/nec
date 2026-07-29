@@ -226,6 +226,7 @@ class AdminSettingController extends Controller
             'phone' => 'nullable|string|max:50',
             'current_password' => 'nullable|required_with:new_password|string',
             'new_password' => 'nullable|string|min:8|confirmed',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $user = User::find(session('admin_user_id'));
@@ -247,6 +248,18 @@ class AdminSettingController extends Controller
 
         if ($request->filled('phone')) {
             $updateData['phone'] = InputSanitizer::clean($validated['phone']);
+        }
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $updateData['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        } elseif ($request->input('remove_avatar') === '1') {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $updateData['avatar'] = null;
         }
 
         if ($request->filled('new_password')) {

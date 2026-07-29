@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Subscribers</h2>
-    <a href="{{ route('admin.subscribers.export') }}" class="btn btn-nec-green"><i class="fas fa-download me-1"></i> Export CSV</a>
+    <a href="{{ route('admin.subscribers.export') }}" class="btn btn-primary"><i class="fas fa-download me-1"></i> Export CSV</a>
 </div>
 
 <div class="card mb-3">
@@ -58,8 +58,8 @@
                         @endif
                     </td>
                     <td>{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('d M Y') : '-' }}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.subscribers.destroy', $item->id) }}')"><i class="fas fa-trash"></i></button>
+                    <td style="white-space:nowrap;">
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.subscribers.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
                 @empty

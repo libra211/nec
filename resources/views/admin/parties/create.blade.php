@@ -216,7 +216,7 @@
         <div class="small text-muted" id="unsavedIndicator"><i class="fas fa-info-circle text-muted me-1"></i> Fill in the party details</div>
         <div class="d-flex gap-2">
             <a href="{{ route('admin.parties.index') }}" class="btn btn-outline-secondary" style="border-radius:10px;padding:0.55rem 1.5rem;">Cancel</a>
-            <button type="submit" class="btn btn-nec-green" style="border-radius:10px;padding:0.55rem 1.5rem;font-weight:600;" id="saveBtn"><i class="fas fa-save me-1"></i> Create Party</button>
+            <button type="submit" class="btn btn-primary" style="border-radius:10px;padding:0.55rem 1.5rem;font-weight:600;" id="saveBtn"><i class="fas fa-save me-1"></i> Create Party</button>
         </div>
     </div>
 </div>

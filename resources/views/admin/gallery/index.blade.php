@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0"><i class="fas fa-images me-2"></i>Gallery</h2>
-    <a href="{{ route('admin.gallery.create') }}" class="btn btn-nec-green"><i class="fas fa-plus me-1"></i> Add Image</a>
+    <a href="{{ route('admin.gallery.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Image</a>
 </div>
 
 <div class="card mb-3">
@@ -68,18 +68,14 @@
                 @else <span class="badge bg-danger">Trash</span> @endif
             </td>
             <td class="small">{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}</td>
-            <td class="text-center">
+            <td class="text-center" style="white-space:nowrap;">
                 @if($item->status !== 'trash')
-                <div class="btn-group btn-group-sm">
-                    <a href="{{ route('admin.gallery.edit', $item->id) }}" class="btn btn-outline-primary"><i class="fas fa-edit"></i></a>
-                    <a href="{{ route('admin.gallery.toggle-status', $item->id) }}" class="btn btn-outline-{{ $item->status === 'published' ? 'warning' : 'success' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
-                    <button class="btn btn-outline-danger" onclick="confirmDelete('{{ route('admin.gallery.destroy', $item->id) }}')"><i class="fas fa-trash"></i></button>
-                </div>
+                <a href="{{ route('admin.gallery.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                <a href="{{ route('admin.gallery.toggle-status', $item->id) }}" class="btn btn-sm btn-outline-{{ $item->status === 'published' ? 'warning' : 'success' }}" title="{{ $item->status === 'published' ? 'Unpublish' : 'Publish' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.gallery.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
                 @else
-                <div class="btn-group btn-group-sm">
-                    <a href="{{ route('admin.gallery.restore', $item->id) }}" class="btn btn-outline-success"><i class="fas fa-undo"></i></a>
-                    <button class="btn btn-outline-danger" onclick="confirmDelete('{{ route('admin.gallery.force-delete', $item->id) }}')"><i class="fas fa-times"></i></button>
-                </div>
+                <a href="{{ route('admin.gallery.restore', $item->id) }}" class="btn btn-sm btn-outline-success" title="Restore"><i class="fas fa-undo"></i></a>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.gallery.force-delete', $item->id) }}')" title="Delete"><i class="fas fa-times"></i></button>
                 @endif
             </td>
         </tr>

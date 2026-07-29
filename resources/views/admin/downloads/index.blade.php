@@ -28,13 +28,11 @@
                             <td><small class="text-muted">{{ $d->file_type ?? '-' }}</small></td>
                             <td><small>{{ $d->file_size ? round(intval($d->file_size) / 1024, 1) . ' KB' : '-' }}</small></td>
                             <td><span class="badge bg-info">{{ $d->download_count ?? 0 }}</span></td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('admin.downloads.edit', $d) }}" class="btn btn-outline-primary"><i class="fas fa-edit"></i></a>
-                                    <form method="POST" action="{{ route('admin.downloads.destroy', $d) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
-                                        <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
-                                    </form>
-                                </div>
+                            <td style="white-space:nowrap;">
+                                <a href="{{ route('admin.downloads.edit', $d) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                                <form method="POST" action="{{ route('admin.downloads.destroy', $d) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                     @empty

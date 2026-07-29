@@ -37,13 +37,11 @@
                                 @php $colors=['filed'=>'info','hearing'=>'warning','decided'=>'success','dismissed'=>'secondary','withdrawn'=>'dark']; @endphp
                                 <span class="badge bg-{{ $colors[$p->status] ?? 'secondary' }}">{{ ucfirst($p->status) }}</span>
                             </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('admin.petitions.edit', $p) }}" class="btn btn-outline-primary"><i class="fas fa-edit"></i></a>
-                                    <form method="POST" action="{{ route('admin.petitions.destroy', $p) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
-                                        <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
-                                    </form>
-                                </div>
+                            <td style="white-space:nowrap;">
+                                <a href="{{ route('admin.petitions.edit', $p) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                                <form method="POST" action="{{ route('admin.petitions.destroy', $p) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                     @empty

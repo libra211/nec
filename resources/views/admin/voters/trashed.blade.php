@@ -31,7 +31,7 @@
                         <td>
                             <form action="{{ route('admin.voters.restore', $voter->id) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-success" title="Restore"><i class="fas fa-undo"></i> Restore</button>
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="Restore"><i class="fas fa-undo"></i></button>
                             </form>
                         </td>
                     </tr>

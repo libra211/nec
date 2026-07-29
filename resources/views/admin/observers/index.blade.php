@@ -67,10 +67,10 @@
                                 <span class="badge bg-danger">{{ ucfirst($obs->status) }}</span>
                             @endif
                         </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></button>
+                        <td style="white-space:nowrap;">
+                            <button class="btn btn-sm btn-outline-info" title="View"><i class="fas fa-eye"></i></button>
                             @if(isset($obs->status) && $obs->status === 'pending')
-                            <button class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                            <button class="btn btn-sm btn-outline-success" title="Approve"><i class="fas fa-check"></i></button>
                             @endif
                         </td>
                     </tr>

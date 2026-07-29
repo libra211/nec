@@ -43,13 +43,11 @@
                             <td><small class="text-muted">{{ $log->ip_address ?? '-' }}</small></td>
                             <td><small class="text-muted text-truncate d-inline-block" style="max-width:200px;">{{ $log->request_uri ?? '-' }}</small></td>
                             <td><small class="text-truncate d-inline-block" style="max-width:200px;">{{ $log->details ?? '-' }}</small></td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('admin.security-logs.show', $log) }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-eye"></i></a>
-                                    <form method="POST" action="{{ route('admin.security-logs.destroy', $log) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
-                                        <button class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
-                                    </form>
-                                </div>
+                            <td style="white-space:nowrap;">
+                                <a href="{{ route('admin.security-logs.show', $log) }}" class="btn btn-sm btn-outline-primary" title="View"><i class="fas fa-eye"></i></a>
+                                <form method="POST" action="{{ route('admin.security-logs.destroy', $log) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                     @empty

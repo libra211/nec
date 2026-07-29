@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Videos</h2>
-    <a href="{{ route('admin.videos.create') }}" class="btn btn-nec-green"><i class="fas fa-plus me-1"></i> Add Video</a>
+    <a href="{{ route('admin.videos.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Video</a>
 </div>
 
 <div class="card mb-3">
@@ -58,9 +58,9 @@
                         @endif
                     </td>
                     <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}</td>
-                    <td>
-                        <a href="{{ route('admin.videos.edit', $item->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
-                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.videos.destroy', $item->id) }}')"><i class="fas fa-trash"></i></button>
+                    <td style="white-space:nowrap;">
+                        <a href="{{ route('admin.videos.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.videos.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
                 @empty

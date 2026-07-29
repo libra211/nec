@@ -47,19 +47,19 @@
                                     <span class="badge bg-warning text-dark">{{ ucfirst($r->status) }}</span>
                                 @endif
                             </td>
-                            <td>
+                            <td style="white-space:nowrap;">
                                 @if($r->trashed())
                                     <form method="POST" action="{{ route('admin.reports.restore', $r->id) }}" class="d-inline">
                                         @csrf
-                                        <button class="btn btn-sm btn-outline-success"><i class="fas fa-undo"></i></button>
+                                        <button class="btn btn-sm btn-outline-success" title="Restore"><i class="fas fa-undo"></i></button>
                                     </form>
                                 @else
                                     @if($r->file_path)
-                                        <a href="{{ asset('storage/' . $r->file_path) }}" class="btn btn-sm btn-outline-primary" target="_blank"><i class="fas fa-download"></i></a>
+                                        <a href="{{ asset('storage/' . $r->file_path) }}" class="btn btn-sm btn-outline-primary" target="_blank" title="Download"><i class="fas fa-download"></i></a>
                                     @endif
                                     <form method="POST" action="{{ route('admin.reports.destroy', $r) }}" class="d-inline" onsubmit="return confirm('Delete this report?')">
                                         @csrf @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
                                     </form>
                                 @endif
                             </td>

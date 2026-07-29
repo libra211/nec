@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Commissioners Management</h2>
-    <a href="{{ route('admin.commissioners.create') }}" class="btn btn-nec-green"><i class="fas fa-plus me-1"></i> Add Commissioner</a>
+    <a href="{{ route('admin.commissioners.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Commissioner</a>
 </div>
 
 <div class="card">
@@ -21,9 +21,9 @@
                         <td>{{ e($c->name) }}</td>
                         <td>{{ e($c->position) }}</td>
                         <td>{{ e($c->state ?? 'N/A') }}</td>
-                        <td>
-                            <a href="{{ route('admin.commissioners.edit', $c->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
-                            <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.commissioners.destroy', $c->id) }}')"><i class="fas fa-trash"></i></button>
+                        <td style="white-space:nowrap;">
+                            <a href="{{ route('admin.commissioners.edit', $c->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.commissioners.destroy', $c->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                     @endforeach

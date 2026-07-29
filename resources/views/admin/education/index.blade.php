@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Education Materials</h2>
-    <a href="{{ route('admin.education.create') }}" class="btn btn-nec-green"><i class="fas fa-plus me-1"></i> Add Material</a>
+    <a href="{{ route('admin.education.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Material</a>
 </div>
 
 <div class="card mb-3">
@@ -56,18 +56,14 @@
                 @elseif($item->status === 'draft') <span class="badge bg-warning text-dark">Draft</span>
                 @else <span class="badge bg-danger">Trash</span> @endif
             </td>
-            <td class="text-center">
+            <td class="text-center" style="white-space:nowrap;">
                 @if($item->status !== 'trash')
-                <div class="btn-group btn-group-sm">
-                    <a href="{{ route('admin.education.edit', $item->id) }}" class="btn btn-outline-primary"><i class="fas fa-edit"></i></a>
-                    <a href="{{ route('admin.education.toggle-status', $item->id) }}" class="btn btn-outline-{{ $item->status === 'published' ? 'warning' : 'success' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
-                    <button class="btn btn-outline-danger" onclick="confirmDelete('{{ route('admin.education.destroy', $item->id) }}')"><i class="fas fa-trash"></i></button>
-                </div>
+                <a href="{{ route('admin.education.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                <a href="{{ route('admin.education.toggle-status', $item->id) }}" class="btn btn-sm btn-outline-{{ $item->status === 'published' ? 'warning' : 'success' }}" title="{{ $item->status === 'published' ? 'Unpublish' : 'Publish' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.education.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
                 @else
-                <div class="btn-group btn-group-sm">
-                    <a href="{{ route('admin.education.restore', $item->id) }}" class="btn btn-outline-success"><i class="fas fa-undo"></i></a>
-                    <button class="btn btn-outline-danger" onclick="confirmDelete('{{ route('admin.education.force-delete', $item->id) }}')"><i class="fas fa-times"></i></button>
-                </div>
+                <a href="{{ route('admin.education.restore', $item->id) }}" class="btn btn-sm btn-outline-success" title="Restore"><i class="fas fa-undo"></i></a>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.education.force-delete', $item->id) }}')" title="Delete"><i class="fas fa-times"></i></button>
                 @endif
             </td>
         </tr>

@@ -67,7 +67,7 @@
                         <option value="replied" {{ $contact->status === 'replied' ? 'selected' : '' }}>Replied</option>
                         <option value="closed" {{ $contact->status === 'closed' ? 'selected' : '' }}>Closed</option>
                     </select>
-                    <button class="btn btn-sm btn-nec-green w-100"><i class="fas fa-save me-1"></i> Update Status</button>
+                    <button class="btn btn-sm btn-primary w-100"><i class="fas fa-save me-1"></i> Update Status</button>
                 </form>
                 <a href="mailto:{{ e($contact->email) }}?subject=Re: {{ urlencode($contact->subject ?? '') }}" class="btn btn-sm btn-outline-primary w-100 mb-2">
                     <i class="fas fa-reply me-1"></i> Reply via Email

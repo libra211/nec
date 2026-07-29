@@ -23,7 +23,7 @@
                     <form action="{{ route('search.results') }}" method="GET">
                         <div class="input-group input-group-lg">
                             <input type="text" name="q" class="form-control" placeholder="Search NEC website..." value="{{ request('q') }}">
-                            <button type="submit" class="btn btn-nec-green">Search</button>
+                            <button type="submit" class="btn btn-primary">Search</button>
                         </div>
                     </form>
                 </div>

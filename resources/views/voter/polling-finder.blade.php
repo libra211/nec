@@ -44,7 +44,7 @@
                                 <label class="form-label">County</label>
                                 <input type="text" name="county" class="form-control" placeholder="Enter County">
                             </div>
-                            <button type="submit" class="btn btn-nec-green w-100"><i class="fas fa-map-marker-alt me-2"></i>Find Station</button>
+                            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-map-marker-alt me-2"></i>Find Station</button>
                         </form>
                     </div>
                 </div>

@@ -6,7 +6,7 @@
         <h2 class="mb-1">Political Parties Management</h2>
         <p class="text-muted mb-0 small">Manage registered political parties and their details</p>
     </div>
-    <a href="{{ route('admin.parties.create') }}" class="btn btn-nec-green"><i class="fas fa-plus me-1"></i> Add Party</a>
+    <a href="{{ route('admin.parties.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Party</a>
 </div>
 
 <div class="row g-3 mb-4">
@@ -71,7 +71,7 @@
                         <th class="small fw-semibold">Leader</th>
                         <th class="small fw-semibold text-center">Candidates</th>
                         <th class="small fw-semibold text-center">Status</th>
-                        <th class="small fw-semibold text-end" style="width:100px;">Actions</th>
+                        <th class="small fw-semibold text-end" style="width:auto;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,13 +102,10 @@
                                 <input class="form-check-input status-toggle" type="checkbox" role="switch" data-id="{{ $party->id }}" {{ $party->status ? 'checked' : '' }}>
                             </div>
                         </td>
-                        <td class="text-end">
-                            <a href="{{ route('admin.parties.edit', $party->id) }}" class="btn btn-sm btn-outline-primary" title="Edit" style="width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;">
-                                <i class="fas fa-edit" style="font-size:12px;"></i>
-                            </a>
-                            <button class="btn btn-sm btn-outline-danger" title="Delete" onclick="confirmDelete('{{ route('admin.parties.destroy', $party->id) }}')" style="width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;">
-                                <i class="fas fa-trash" style="font-size:12px;"></i>
-                            </button>
+                        <td class="text-end" style="white-space:nowrap;">
+                            <a href="{{ route('admin.parties.show', $party->id) }}" class="btn btn-sm btn-outline-info" title="View"><i class="fas fa-eye"></i></a>
+                            <a href="{{ route('admin.parties.edit', $party->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button class="btn btn-sm btn-outline-danger" title="Delete" onclick="confirmDelete('{{ route('admin.parties.destroy', $party->id) }}')"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                     @empty
@@ -116,7 +113,7 @@
                         <td colspan="8" class="text-center py-5">
                             <i class="fas fa-flag text-muted" style="font-size:2rem;opacity:0.3;"></i>
                             <p class="text-muted mt-2 mb-0">No political parties found</p>
-                            <a href="{{ route('admin.parties.create') }}" class="btn btn-sm btn-nec-green mt-2">Add Your First Party</a>
+                            <a href="{{ route('admin.parties.create') }}" class="btn btn-sm btn-primary mt-2">Add Your First Party</a>
                         </td>
                     </tr>
                     @endforelse

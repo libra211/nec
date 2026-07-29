@@ -85,8 +85,8 @@
                                 <span class="badge bg-{{ $complaintStatusColors[$c->status] ?? 'secondary' }}">{{ ucwords(str_replace('_',' ',$c->status)) }}</span>
                             </td>
                             <td><small>{{ $c->created_at ? $c->created_at->format('d M Y') : '' }}</small></td>
-                            <td>
-                                <a href="{{ route('admin.complaints.show', $c) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
+                            <td style="white-space:nowrap;">
+                                <a href="{{ route('admin.complaints.show', $c) }}" class="btn btn-sm btn-outline-primary" title="View"><i class="fas fa-eye"></i></a>
                             </td>
                         </tr>
                     @empty
