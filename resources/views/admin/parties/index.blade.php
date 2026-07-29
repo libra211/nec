@@ -88,11 +88,11 @@
                                 @if($party->color)
                                 <span style="width:12px;height:12px;border-radius:50%;background:{{ $party->color }};border:1px solid #ddd;display:inline-block;"></span>
                                 @endif
-                                <span class="fw-semibold">{{ e($party->name) }}</span>
+                                <span class="fw-semibold">{{ $party->name }}</span>
                             </div>
                         </td>
-                        <td><span class="badge bg-light text-dark border">{{ e($party->acronym ?? 'N/A') }}</span></td>
-                        <td class="small">{{ e($party->leader ?? '—') }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ $party->acronym ?? 'N/A' }}</span></td>
+                        <td class="small">{{ $party->leader ?? '—' }}</td>
                         <td class="text-center">
                             @php $candCount = $party->candidates()->count(); @endphp
                             <span class="badge bg-{{ $candCount > 0 ? 'info' : 'secondary' }}">{{ $candCount }}</span>
