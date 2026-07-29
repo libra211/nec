@@ -839,6 +839,7 @@ class PopulateAllSeeder extends Seeder
         ];
 
         foreach ($parties as $p) {
+            $p['status'] = 1;
             DB::table('nec_political_parties')->updateOrInsert(
                 ['name' => $p['name']],
                 array_merge($p, [

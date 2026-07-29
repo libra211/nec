@@ -28,7 +28,7 @@
         $parties = [];
         try {
             $parties = \App\Models\PoliticalParty::select('id', 'name', 'acronym as abbreviation', 'leader', 'status', 'logo as logo_url', 'created_at as registered_date')
-                ->where('status', 'active')
+                ->where('status', 1)
                 ->orderBy('name')
                 ->get()
                 ->toArray();
@@ -102,7 +102,7 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                     <div>
-                        <div class="stat-value">{{ count(array_filter($parties, fn($p) => ($p['status'] ?? '') === 'active')) }}</div>
+                        <div class="stat-value">{{ count(array_filter($parties, fn($p) => ($p['status'] ?? '') == 1 || ($p['status'] ?? '') === 'active')) }}</div>
                         <div class="stat-label">Active</div>
                     </div>
                 </div>
@@ -175,7 +175,7 @@
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                             <small class="text-muted"><i class="fas fa-user-tie me-1" style="color:var(--nec-green);"></i>{{ $party['leader'] }}</small>
                             <span class="badge rounded-pill px-3" style="background:rgba(var(--nec-green-rgb),0.1);color:var(--nec-green-dark);font-weight:500;">
-                                <i class="fas fa-check-circle me-1" style="font-size:9px;"></i> {{ ucfirst($party['status'] ?? 'active') }}
+                                <i class="fas fa-check-circle me-1" style="font-size:9px;"></i> {{ ($party['status'] ?? 0) == 1 ? 'Active' : 'Inactive' }}
                             </span>
                         </div>
                     </div>

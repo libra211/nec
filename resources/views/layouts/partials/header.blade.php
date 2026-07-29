@@ -9,7 +9,7 @@
         $ticker_constituencies = \App\Helpers\NecHelper::setting_get('public_stat_constituencies_source', 'auto') === 'manual'
             ? (\App\Helpers\NecHelper::setting_get('public_stat_constituencies_value', '') ?: ($autoConst ?: $ticker_constituencies))
             : ($autoConst ?: $ticker_constituencies);
-        $autoParties = \App\Models\PoliticalParty::where('status', 'active')->count();
+        $autoParties = \App\Models\PoliticalParty::where('status', 1)->count();
         $ticker_parties = \App\Helpers\NecHelper::setting_get('public_stat_parties_source', 'auto') === 'manual'
             ? (\App\Helpers\NecHelper::setting_get('public_stat_parties_value', '') ?: ($autoParties ?: $ticker_parties))
             : ($autoParties ?: $ticker_parties);

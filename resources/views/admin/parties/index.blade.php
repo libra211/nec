@@ -98,13 +98,9 @@
                             <span class="badge bg-{{ $candCount > 0 ? 'info' : 'secondary' }}">{{ $candCount }}</span>
                         </td>
                         <td class="text-center">
-                            @if($party->status === 'active')
-                                <span class="badge bg-success" style="font-size:10px;">Active</span>
-                            @elseif($party->status === 'inactive')
-                                <span class="badge bg-warning text-dark" style="font-size:10px;">Inactive</span>
-                            @else
-                                <span class="badge bg-secondary" style="font-size:10px;">{{ ucfirst($party->status) }}</span>
-                            @endif
+                            <div class="form-check form-switch mb-0 d-inline-block">
+                                <input class="form-check-input status-toggle" type="checkbox" role="switch" data-id="{{ $party->id }}" {{ $party->status ? 'checked' : '' }}>
+                            </div>
                         </td>
                         <td class="text-end">
                             <a href="{{ route('admin.parties.edit', $party->id) }}" class="btn btn-sm btn-outline-primary" title="Edit" style="width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;">
@@ -148,6 +144,34 @@ $(document).ready(function () {
             searching: false
         });
     }
+
+    $('.status-toggle').on('change', function () {
+        var cb = $(this);
+        var id = cb.data('id');
+        var newStatus = cb.is(':checked') ? 1 : 0;
+        var label = newStatus ? 'ON' : 'OFF';
+
+        if (!confirm('Are you sure you want to turn this party ' + label + '?')) {
+            cb.prop('checked', !cb.is(':checked'));
+            return;
+        }
+
+        $.ajax({
+            url: '{{ url("admin/parties") }}/' + id + '/toggle-status',
+            method: 'PUT',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function (res) {
+                cb.closest('td').find('.status-badge')
+                    .removeClass('bg-success bg-warning')
+                    .addClass(res.status ? 'bg-success' : 'bg-warning')
+                    .text(res.label);
+            },
+            error: function () {
+                cb.prop('checked', !cb.is(':checked'));
+                alert('Failed to update status. Please try again.');
+            }
+        });
+    });
 });
 </script>
 @endsection

@@ -25,7 +25,7 @@ class AdminPartyController extends Controller
 
         $stats = [
             'total' => PoliticalParty::count(),
-            'active' => PoliticalParty::where('status', 'active')->count(),
+            'active' => PoliticalParty::where('status', 1)->count(),
             'with_candidates' => PoliticalParty::whereHas('candidates')->count(),
             'new_this_year' => PoliticalParty::whereYear('created_at', date('Y'))->count(),
         ];
@@ -46,7 +46,7 @@ class AdminPartyController extends Controller
             'leader' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
             'color' => 'nullable|string|max:7',
-            'status' => 'required|in:active,inactive,trash',
+            'status' => 'required|boolean',
             'founded' => 'nullable|integer|min:1900|max:' . date('Y'),
             'registration_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
         ]);
@@ -81,7 +81,7 @@ class AdminPartyController extends Controller
             'leader' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
             'color' => 'nullable|string|max:7',
-            'status' => 'required|in:active,inactive,trash',
+            'status' => 'required|boolean',
             'founded' => 'nullable|integer|min:1900|max:' . date('Y'),
             'registration_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
         ]);
@@ -103,6 +103,18 @@ class AdminPartyController extends Controller
         $party->update($validated);
 
         return redirect()->route('admin.parties.index')->with('success', 'Party updated.');
+    }
+
+    public function toggleStatus($id)
+    {
+        $party = PoliticalParty::findOrFail($id);
+        $party->status = $party->status ? 0 : 1;
+        $party->save();
+
+        return response()->json([
+            'status' => $party->status,
+            'label' => $party->status ? 'Active' : 'Inactive',
+        ]);
     }
 
     public function destroy($id)

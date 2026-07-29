@@ -73,10 +73,10 @@
                         <div class="text-muted small">Display this party publicly</div>
                     </div>
                     <div class="form-check form-switch mb-0">
-                        <input class="form-check-input" type="checkbox" role="switch" id="statusToggle" checked onchange="document.getElementById('statusField').value = this.checked ? 'active' : 'inactive'">
+                        <input class="form-check-input" type="checkbox" role="switch" id="statusToggle" checked onchange="document.getElementById('statusField').value = this.checked ? '1' : '0'">
                     </div>
                 </div>
-                <input type="hidden" name="status" id="statusField" value="active">
+                <input type="hidden" name="status" id="statusField" value="1">
             </div>
         </div>
         <div class="card border-0 shadow-sm">

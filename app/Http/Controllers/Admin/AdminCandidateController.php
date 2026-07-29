@@ -33,7 +33,7 @@ class AdminCandidateController extends Controller
 
     public function create()
     {
-        $parties = PoliticalParty::where('status', 'active')->orderBy('name')->get();
+        $parties = PoliticalParty::where('status', 1)->orderBy('name')->get();
         $constituencies = Constituency::where('status', 'active')->orderBy('name')->get();
 
         return view('admin.candidates.create', compact('parties', 'constituencies'));
@@ -60,7 +60,7 @@ class AdminCandidateController extends Controller
     public function edit($id)
     {
         $candidate = Candidate::findOrFail($id);
-        $parties = PoliticalParty::where('status', 'active')->orderBy('name')->get();
+        $parties = PoliticalParty::where('status', 1)->orderBy('name')->get();
         $constituencies = Constituency::where('status', 'active')->orderBy('name')->get();
 
         return view('admin.candidates.edit', compact('candidate', 'parties', 'constituencies'));

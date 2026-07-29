@@ -241,6 +241,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('voter-transfers/bulk-action', [AdminVoterTransferController::class, 'bulkAction'])->name('voter-transfers.bulk-action');
 
     // Parties
+    Route::put('parties/{id}/toggle-status', [AdminPartyController::class, 'toggleStatus'])->name('parties.toggle-status');
     Route::resource('parties', AdminPartyController::class)->except(['show']);
 
     // Observers
