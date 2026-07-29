@@ -91,6 +91,11 @@ class AdminPartyController extends Controller
                 Storage::disk('public')->delete($party->logo);
             }
             $validated['logo'] = $request->file('logo')->store('parties/logos', 'public');
+        } elseif ($request->input('remove_logo') === '1') {
+            if ($party->logo) {
+                Storage::disk('public')->delete($party->logo);
+            }
+            $validated['logo'] = null;
         }
 
         if ($request->hasFile('registration_document')) {
