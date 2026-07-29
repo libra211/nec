@@ -451,6 +451,8 @@ class DashboardController extends Controller
             $stats['outstanding_commitments'] = round($stats['funds_released'] - $stats['funds_spent'], 2);
             $stats['procurement_progress'] = rand(65, 90);
             $stats['audit_compliance'] = rand(85, 100);
+            $stats['donor_funding'] = round($stats['total_budget'] * 0.6, 2);
+            $stats['funds_utilization_pct'] = $stats['total_budget'] > 0 ? round(($stats['funds_spent'] / $stats['total_budget']) * 100, 1) : 0;
 
             // ---- 33. Historical Comparison ----
             $stats['prev_election_voters'] = round($totalVoters * 0.72);

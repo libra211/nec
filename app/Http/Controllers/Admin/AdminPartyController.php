@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PoliticalParty;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminPartyController extends Controller
 {
@@ -13,12 +14,23 @@ class AdminPartyController extends Controller
         $query = PoliticalParty::query();
 
         if ($search = $request->input('search')) {
-            $query->where('name', 'LIKE', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('acronym', 'LIKE', "%{$search}%")
+                  ->orWhere('leader', 'LIKE', "%{$search}%");
+            });
         }
 
         $parties = $query->orderBy('name')->paginate(15);
 
-        return view('admin.parties.index', compact('parties'));
+        $stats = [
+            'total' => PoliticalParty::count(),
+            'active' => PoliticalParty::where('status', 'active')->count(),
+            'with_candidates' => PoliticalParty::whereHas('candidates')->count(),
+            'new_this_year' => PoliticalParty::whereYear('created_at', date('Y'))->count(),
+        ];
+
+        return view('admin.parties.index', compact('parties', 'stats'));
     }
 
     public function create()
@@ -32,10 +44,20 @@ class AdminPartyController extends Controller
             'name' => 'required|string|max:255',
             'acronym' => 'nullable|string|max:20',
             'leader' => 'nullable|string|max:255',
-            'logo' => 'nullable|string|max:500',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
             'color' => 'nullable|string|max:7',
             'status' => 'required|in:active,inactive,trash',
+            'founded' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'registration_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
         ]);
+
+        if ($request->hasFile('logo')) {
+            $validated['logo'] = $request->file('logo')->store('parties/logos', 'public');
+        }
+
+        if ($request->hasFile('registration_document')) {
+            $validated['registration_document'] = $request->file('registration_document')->store('parties/documents', 'public');
+        }
 
         PoliticalParty::create($validated);
 
@@ -57,10 +79,26 @@ class AdminPartyController extends Controller
             'name' => 'required|string|max:255',
             'acronym' => 'nullable|string|max:20',
             'leader' => 'nullable|string|max:255',
-            'logo' => 'nullable|string|max:500',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
             'color' => 'nullable|string|max:7',
             'status' => 'required|in:active,inactive,trash',
+            'founded' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'registration_document' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
         ]);
+
+        if ($request->hasFile('logo')) {
+            if ($party->logo) {
+                Storage::disk('public')->delete($party->logo);
+            }
+            $validated['logo'] = $request->file('logo')->store('parties/logos', 'public');
+        }
+
+        if ($request->hasFile('registration_document')) {
+            if ($party->registration_document) {
+                Storage::disk('public')->delete($party->registration_document);
+            }
+            $validated['registration_document'] = $request->file('registration_document')->store('parties/documents', 'public');
+        }
 
         $party->update($validated);
 
@@ -70,6 +108,14 @@ class AdminPartyController extends Controller
     public function destroy($id)
     {
         $party = PoliticalParty::findOrFail($id);
+
+        if ($party->logo) {
+            Storage::disk('public')->delete($party->logo);
+        }
+        if ($party->registration_document) {
+            Storage::disk('public')->delete($party->registration_document);
+        }
+
         $party->delete();
 
         return redirect()->route('admin.parties.index')->with('success', 'Party deleted.');

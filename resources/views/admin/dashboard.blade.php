@@ -877,6 +877,8 @@
     <div class="col-md-3"><div class="stat-slim orange"><div class="stat-row"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-body"><div class="stat-value">${{ number_format($stats['outstanding_commitments'] ?? 0) }}</div><div class="stat-label">Outstanding</div></div></div></div></div>
     <div class="col-md-3"><div class="stat-slim info"><div class="stat-row"><div class="stat-icon"><i class="fas fa-tasks"></i></div><div class="stat-body"><div class="stat-value">{{ $stats['procurement_progress'] ?? 0 }}%</div><div class="stat-label">Procurement</div></div></div></div></div>
     <div class="col-md-3"><div class="stat-slim teal"><div class="stat-row"><div class="stat-icon"><i class="fas fa-check-double"></i></div><div class="stat-body"><div class="stat-value">{{ $stats['audit_compliance'] ?? 0 }}%</div><div class="stat-label">Audit Compliance</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim purple"><div class="stat-row"><div class="stat-icon"><i class="fas fa-handshake"></i></div><div class="stat-body"><div class="stat-value">${{ number_format($stats['donor_funding'] ?? 0) }}</div><div class="stat-label">Donor Funding</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim red"><div class="stat-row"><div class="stat-icon"><i class="fas fa-pie-chart"></i></div><div class="stat-body"><div class="stat-value">{{ $stats['funds_utilization_pct'] ?? 0 }}%</div><div class="stat-label">Funds Utilization</div></div></div></div></div>
 </div>
 
 {{-- ===== 33: HISTORICAL COMPARISON ===== --}}

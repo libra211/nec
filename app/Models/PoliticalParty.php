@@ -16,6 +16,6 @@ class PoliticalParty extends Model
 
     public function candidates()
     {
-        return $this->hasMany(Candidate::class);
+        return $this->hasMany(Candidate::class, 'party_id');
     }
 }

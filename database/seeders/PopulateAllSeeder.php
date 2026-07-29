@@ -40,6 +40,7 @@ class PopulateAllSeeder extends Seeder
         $this->seedIfEmpty('nec_sequences', fn() => $this->seedSequences($now));
         $this->seedIfEmpty('nec_events', fn() => $this->seedEvents($now));
         $this->seedIfEmpty('login_logs', fn() => $this->seedLoginLogs($now));
+        $this->seedIfEmpty('nec_political_parties', fn() => $this->seedPoliticalParties($now));
 
         $this->command->info('=== PopulateAllSeeder Complete ===');
         $tables = [
@@ -49,6 +50,7 @@ class PopulateAllSeeder extends Seeder
             'nec_nominations', 'nec_election_petitions', 'nec_polling_staff', 'nec_complaints',
             'nec_media', 'nec_reports', 'nec_downloads', 'nec_download_stats',
             'nec_events', 'nec_observers', 'nec_security_logs', 'nec_sequences', 'login_logs',
+            'nec_political_parties',
         ];
         foreach ($tables as $t) {
             $this->command->info("  $t: " . DB::table($t)->count());
@@ -790,5 +792,62 @@ class PopulateAllSeeder extends Seeder
             ]);
         }
         $this->command->info('Login logs: ' . DB::table('login_logs')->count());
+    }
+
+    private function seedPoliticalParties($now): void
+    {
+        $parties = [
+            ['name' => 'African National Congress', 'acronym' => 'ANC', 'leader' => 'Gen. (Rtd) George Kongor Arop', 'color' => '#FFFFFF', 'status' => 'active'],
+            ['name' => "Sudan People's Liberation Movement", 'acronym' => 'SPLM', 'leader' => 'Gen. Salva Kiir Mayardit', 'color' => '#ED1B24', 'status' => 'active'],
+            ['name' => 'United Sudan African Party', 'acronym' => 'USAP', 'leader' => 'Hon. Joseph Malek Arop', 'color' => '#FFFFFF', 'status' => 'active'],
+            ['name' => 'United Democratic Salvation Front - Mainstream', 'acronym' => 'UDSF-M', 'leader' => 'Hon. Francis Ben Ataba', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'National Liberation Party', 'acronym' => 'NLP', 'leader' => 'Hon. Nkurumah Anai', 'color' => '#0000FF', 'status' => 'active'],
+            ['name' => 'National Congress Party', 'acronym' => 'NCP', 'leader' => 'Hon. Agnes Poni Lukudu', 'color' => '#90EE90', 'status' => 'active'],
+            ['name' => 'Democratic Change Party', 'acronym' => 'DC', 'leader' => 'Hon. Onyoti Adigo Nykuac', 'color' => '#0000FF', 'status' => 'active'],
+            ['name' => 'South Sudan Democratic Forum', 'acronym' => 'SSDF', 'leader' => 'Hon. Dr. Martin Elia Lomuro', 'color' => '#FFA500', 'status' => 'active'],
+            ['name' => 'United South Sudan Party', 'acronym' => 'USSP', 'leader' => 'Hon. Paulino Lukudu Obede', 'color' => '#000080', 'status' => 'active'],
+            ['name' => 'National United Democratic Front', 'acronym' => 'NUDF', 'leader' => 'Hon. Kornelio Kon Ngu', 'color' => '#FFFFFF', 'status' => 'active'],
+            ['name' => 'South Sudan Democratic Alliance', 'acronym' => 'SSDA', 'leader' => 'Hon. Pasqulina Phillip Waden', 'color' => '#87CEEB', 'status' => 'active'],
+            ['name' => 'Sudan African National Union - National', 'acronym' => 'SANU-N', 'leader' => 'Hon. Theresa Ciricio Iro', 'color' => '#0000FF', 'status' => 'active'],
+            ['name' => 'United Democratic Salvation Front', 'acronym' => 'UDSF', 'leader' => 'Hon. Rev. Emmanuel Sokiri', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'National Democratic Party', 'acronym' => 'NDP', 'leader' => 'Hon. James Aniceto', 'color' => '#004225', 'status' => 'active'],
+            ['name' => 'United Democratic Party', 'acronym' => 'UDP', 'leader' => 'Hon. Tong Lual Ayat', 'color' => '#FFA500', 'status' => 'active'],
+            ['name' => 'Federal Democratic Party', 'acronym' => 'FDP', 'leader' => 'Hon. Galdong Nganyek Bhok', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'United Democratic Front', 'acronym' => 'UDF', 'leader' => 'Hon. Bona Deng', 'color' => '#FFFFFF', 'status' => 'active'],
+            ['name' => 'Communist Party of South Sudan', 'acronym' => 'CPSS', 'leader' => 'Hon. Joseph Wol Modesto', 'color' => '#000000', 'status' => 'active'],
+            ['name' => 'Democratic Unionist Party', 'acronym' => 'DUP', 'leader' => 'Hon. Albino John Lako', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'South Sudan African National Union', 'acronym' => 'SSANU', 'leader' => 'Hon. Philip Palet', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'Generation Party', 'acronym' => 'GP', 'leader' => 'Hon. Looth Mah Tang', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'South Sudan National Party', 'acronym' => 'SSNP', 'leader' => 'Hon. Juma Said W', 'color' => '#FFFFFF', 'status' => 'active'],
+            ['name' => 'National Democratic Front', 'acronym' => 'NDF', 'leader' => 'Hon. Stephen Goro', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'Republican Party of South Sudan', 'acronym' => 'RPSS', 'leader' => 'Hon. Anthony Agiem', 'color' => '#FFFF00', 'status' => 'active'],
+            ['name' => 'Akut Bam Party', 'acronym' => 'ABP', 'leader' => 'Hon. Makuac Akol', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'Popular Congress Party', 'acronym' => 'PCP', 'leader' => 'Hon. Abdalla Deng Nhial', 'color' => '#87CEEB', 'status' => 'active'],
+            ['name' => 'South Sudan Generation Party', 'acronym' => 'SSGP', 'leader' => 'Adv. Mayen Jeramiah Turc', 'color' => '#FFFF00', 'status' => 'active'],
+            ['name' => 'National Justice Movement Party', 'acronym' => 'NJMP', 'leader' => 'Hon. Mater Mayind', 'color' => '#FFFFFF', 'status' => 'active'],
+            ['name' => 'South Sudan National Labor Party', 'acronym' => 'SSNLP', 'leader' => 'Hon. James Andrea Anyak', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'Social Democratic Party', 'acronym' => 'SDP', 'leader' => 'Mrs. Rain Ayen Deng', 'color' => '#008000', 'status' => 'active'],
+            ['name' => 'National Patriotic Movement', 'acronym' => 'NPM', 'leader' => 'Hon. Dr. Isaa Muzamil', 'color' => '#FFFF00', 'status' => 'active'],
+            ['name' => 'South Sudan Democratic Front', 'acronym' => 'SSDF', 'leader' => 'Hon. Prof. David De Chan', 'color' => '#0000FF', 'status' => 'active'],
+            ['name' => "Peoples' United Forum", 'acronym' => 'PUF', 'leader' => 'Dr. Gai Chol Paul', 'color' => '#008000', 'status' => 'active'],
+            ['name' => "People's Democratic Movement", 'acronym' => 'PDM', 'leader' => 'H.E. Josephine Lagu', 'color' => '#FFFFFF', 'status' => 'active'],
+            ['name' => 'IO Party', 'acronym' => 'IOP', 'leader' => 'Hon. Amb. Stephen Par Koul', 'color' => '#ADD8E6', 'status' => 'active'],
+            ['name' => 'National Democratic Movement', 'acronym' => 'NDM', 'leader' => 'Hon. Dr. Lam Akol Ajawin', 'color' => '#0000FF', 'status' => 'active'],
+            ['name' => 'South Sudan National Movement for Change', 'acronym' => 'SSNMC', 'leader' => 'Hon. Moro Isaac Jenesio', 'color' => '#ADD8E6', 'status' => 'active'],
+            ['name' => 'People Liberal Party', 'acronym' => 'PLP', 'leader' => 'Hon. Peter Mayen Majongdit', 'color' => '#ED1B24', 'status' => 'active'],
+            ['name' => 'Revive South Sudan Party', 'acronym' => 'RSSP', 'leader' => 'Hon. Mawien Dot Pheot', 'color' => '#90EE90', 'status' => 'active'],
+        ];
+
+        foreach ($parties as $p) {
+            DB::table('nec_political_parties')->updateOrInsert(
+                ['name' => $p['name']],
+                array_merge($p, [
+                    'founded' => null,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ])
+            );
+        }
+        $this->command->info('Political parties: ' . DB::table('nec_political_parties')->count());
     }
 }
