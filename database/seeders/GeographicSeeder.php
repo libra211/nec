@@ -47,7 +47,7 @@ class GeographicSeeder extends Seeder
         foreach ($adminAreas as $a) {
             $regionId = DB::table('nec_regions')->where('name', $a['region'])->value('id');
             DB::table('nec_states')->updateOrInsert(['name' => $a['name']], [
-                'name' => $a['name'], 'code' => $a['code'], 'region_id' => $regionId, 'capital' => $a['capital'], 'status' => 'active',
+                'name' => $a['name'], 'code' => $a['code'], 'region_id' => $regionId, 'capital' => $a['capital'], 'type' => 'admin_area', 'status' => 'active',
             ]);
         }
 

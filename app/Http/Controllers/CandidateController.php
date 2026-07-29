@@ -8,6 +8,7 @@ class CandidateController extends Controller
 {
     public function index()
     {
+        abort_unless(feature_enabled('public_feature_candidates'), 404);
         $candidates = Candidate::with(['politicalParty'])
             ->orderBy('name')
             ->get();

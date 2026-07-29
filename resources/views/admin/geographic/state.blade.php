@@ -10,7 +10,9 @@
                 <span class="text-muted small">/</span>
                 <span class="text-muted small">{{ $state->region->name }}</span>
             </div>
-            <h1 class="h3 fw-bold mb-0">{{ $state->name }} <span class="text-muted fw-normal" style="font-size:0.7em;">{{ $state->code }}</span></h1>
+            <h1 class="h3 fw-bold mb-0">{{ $state->name }} <span class="text-muted fw-normal" style="font-size:0.7em;">{{ $state->code }}</span>
+                @if(($state->type ?? '') === 'admin_area') <span class="badge bg-warning text-dark ms-2" style="font-size:0.5em;">ADMINISTRATIVE AREA</span> @endif
+            </h1>
             <p class="text-muted mb-0">Capital: {{ $state->capital }} · {{ $state->region->name }}</p>
         </div>
         <div>

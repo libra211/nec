@@ -137,7 +137,7 @@
                                 <label class="form-label">New State <span class="text-danger">*</span></label>
                                 <select name="new_state" class="form-select" required>
                                     <option value="">Select State</option>
-                                    @foreach(['Central Equatoria','Western Equatoria','Eastern Equatoria','Jonglei','Unity','Upper Nile','Warrap','Northern Bahr el Ghazal','Western Bahr el Ghazal','Lakes'] as $state)
+                                    @foreach($states as $state)
                                     <option value="{{ $state }}" {{ old('new_state') === $state ? 'selected' : '' }}>{{ $state }}</option>
                                     @endforeach
                                 </select>

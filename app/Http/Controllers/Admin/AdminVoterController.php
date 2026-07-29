@@ -46,7 +46,7 @@ class AdminVoterController extends Controller
         }
 
         $voters = $query->orderByDesc('created_at')->paginate(20);
-        $states = Voter::whereNull('deleted_at')->whereNotNull('state')->distinct()->pluck('state')->filter()->sort()->values();
+        $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->pluck('name');
         $counties = Voter::whereNull('deleted_at')->whereNotNull('county')->distinct()->pluck('county')->filter()->sort()->values();
         $constituencies = Voter::whereNull('deleted_at')->whereNotNull('constituency')->distinct()->pluck('constituency')->filter()->sort()->values();
 

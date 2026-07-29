@@ -2,29 +2,77 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agent;
 use App\Models\Announcement;
+use App\Models\Ballot;
 use App\Models\Candidate;
+use App\Models\Commissioner;
 use App\Models\Constituency;
 use App\Models\Download;
 use App\Models\ElectionEvent;
+use App\Models\Gallery;
 use App\Models\News;
 use App\Models\Observer;
+use App\Models\ObserverApplication;
 use App\Models\PoliticalParty;
+use App\Models\PollingStaff;
 use App\Models\PollingStation;
 use App\Models\Result;
+use App\Models\Speech;
+use App\Models\Subscriber;
 use App\Models\Voter;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
+    private function publicStatValue(string $stat, $autoValue)
+    {
+        $show = \App\Helpers\NecHelper::setting_get("public_show_{$stat}", '1');
+        if ($show !== '1') {
+            return null;
+        }
+        $source = \App\Helpers\NecHelper::setting_get("public_stat_{$stat}_source", 'auto');
+        if ($source === 'manual') {
+            $manual = \App\Helpers\NecHelper::setting_get("public_stat_{$stat}_value", '');
+            return $manual !== '' ? $manual : $autoValue;
+        }
+        return $autoValue;
+    }
+
     public function index()
     {
-        $stats = [
-            'voters' => Voter::count(),
+        $autoStat = fn(string $stat) => match ($stat) {
+            'total_voters' => Voter::count(),
             'constituencies' => Constituency::count(),
             'polling_stations' => PollingStation::count(),
             'parties' => PoliticalParty::count(),
             'candidates' => Candidate::count(),
             'observers' => Observer::count(),
+            'ballot_types' => Ballot::count(),
+            'agents' => Agent::where('status', 'active')->count(),
+            'commissioners' => Commissioner::count(),
+            'polling_staff' => PollingStaff::count(),
+            'trained_staff' => PollingStaff::where('trained', true)->count(),
+            'counties' => DB::table('nec_counties')->count(),
+            'payams' => DB::table('nec_payams')->count(),
+            'states_with_data' => Voter::whereNotNull('state')->distinct()->count('state'),
+            'news' => News::where('status', 'published')->count(),
+            'events' => ElectionEvent::where('start_date', '>=', now())->count(),
+            'gallery' => Gallery::count(),
+            'downloads' => Download::count(),
+            'speeches' => Speech::count(),
+            'subscribers' => Subscriber::count(),
+            'observer_apps' => ObserverApplication::count(),
+            default => 0,
+        };
+
+        $stats = [
+            'voters' => $this->publicStatValue('total_voters', $autoStat('total_voters')),
+            'constituencies' => $this->publicStatValue('constituencies', $autoStat('constituencies')),
+            'polling_stations' => $this->publicStatValue('polling_stations', $autoStat('polling_stations')),
+            'parties' => $this->publicStatValue('parties', $autoStat('parties')),
+            'candidates' => $this->publicStatValue('candidates', $autoStat('candidates')),
+            'observers' => $this->publicStatValue('observers', $autoStat('observers')),
         ];
 
         $latestNews = News::where('status', 'published')
@@ -51,13 +99,18 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
+        $electionDate = $this->publicStatValue('election_date', \App\Helpers\NecHelper::setting_get('election_date', '2026-12-22'));
+        $electionType = $this->publicStatValue('election_type', \App\Helpers\NecHelper::setting_get('election_type', 'General Elections'));
+
         return view('home', compact(
             'stats',
             'latestNews',
             'latestAnnouncements',
             'latestResults',
             'upcomingEvents',
-            'topDownloads'
+            'topDownloads',
+            'electionDate',
+            'electionType'
         ));
     }
 }

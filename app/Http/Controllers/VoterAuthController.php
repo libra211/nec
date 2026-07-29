@@ -7,6 +7,7 @@ use App\Models\Voter;
 use App\Models\VoterAccount;
 use App\Models\VoterTransfer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -230,8 +231,9 @@ class VoterAuthController extends Controller
     {
         $voter = Voter::where('voter_id', session('voter_id'))->firstOrFail();
         $constituencies = Constituency::where('status', 'active')->orderBy('name')->get();
+        $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->pluck('name');
 
-        return view('voter.portal.transfer', compact('voter', 'constituencies'));
+        return view('voter.portal.transfer', compact('voter', 'constituencies', 'states'));
     }
 
     public function transferSubmit(Request $request)

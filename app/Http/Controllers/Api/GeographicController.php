@@ -22,7 +22,7 @@ class GeographicController extends Controller
             $query->where('region_id', $request->region_id);
         }
 
-        $states = $query->get(['id', 'name', 'code', 'capital', 'region_id']);
+        $states = $query->get(['id', 'name', 'code', 'capital', 'region_id', 'type']);
 
         return response()->json($states);
     }
@@ -271,7 +271,8 @@ class GeographicController extends Controller
 
         $totals = [
             'regions' => DB::table('nec_regions')->where('status', 'active')->count(),
-            'states' => DB::table('nec_states')->where('status', 'active')->count(),
+            'states' => DB::table('nec_states')->where('status', 'active')->where('type', 'state')->count(),
+            'admin_areas' => DB::table('nec_states')->where('status', 'active')->where('type', 'admin_area')->count(),
             'counties' => DB::table('nec_counties')->where('status', 'active')->count(),
             'constituencies' => DB::table('nec_constituencies')->where('status', 'active')->count(),
             'payams' => DB::table('nec_payams')->where('status', 'active')->count(),

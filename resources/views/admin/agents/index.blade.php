@@ -94,7 +94,7 @@
                     @php
                         $allStates = [];
                         foreach(config('nec.regions') as $region) {
-                            $allStates = array_merge($allStates, $region['states']);
+                            $allStates = array_merge($allStates, $region['states'], $region['admin_areas'] ?? []);
                         }
                     @endphp
                     @foreach($allStates as $state)

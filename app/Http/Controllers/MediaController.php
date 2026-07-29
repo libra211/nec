@@ -32,6 +32,7 @@ class MediaController extends Controller
 
     public function gallery()
     {
+        abort_unless(feature_enabled('public_feature_gallery'), 404);
         $photos = Gallery::orderByDesc('created_at')->paginate(24);
 
         return view('media.gallery', compact('photos'));
@@ -39,6 +40,7 @@ class MediaController extends Controller
 
     public function videos()
     {
+        abort_unless(feature_enabled('public_feature_videos'), 404);
         $videos = Media::where('type', 'video')
             ->orderByDesc('created_at')
             ->paginate(12);
@@ -48,6 +50,7 @@ class MediaController extends Controller
 
     public function speeches()
     {
+        abort_unless(feature_enabled('public_feature_speeches'), 404);
         $speeches = Speech::orderByDesc('speech_date')->paginate(12);
 
         return view('media.speeches', compact('speeches'));

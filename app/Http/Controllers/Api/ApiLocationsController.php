@@ -21,7 +21,7 @@ class ApiLocationsController extends Controller
             'states' => response()->json([
                 'states' => State::orderBy('name')
                     ->when($parentId, fn ($q) => $q->where('region_id', $parentId))
-                    ->get(['id', 'name', 'region_id']),
+                    ->get(['id', 'name', 'region_id', 'type']),
             ]),
             'counties' => response()->json([
                 'counties' => County::orderBy('name')

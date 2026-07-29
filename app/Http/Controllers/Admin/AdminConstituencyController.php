@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Constituency;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminConstituencyController extends Controller
 {
@@ -31,7 +32,7 @@ class AdminConstituencyController extends Controller
 
         $constituencies = $query->orderByDesc('created_at')->paginate(15);
 
-        $states = Constituency::whereNotNull('state')->distinct()->pluck('state')->sort()->values();
+        $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->pluck('name');
 
         return view('admin.constituencies.index', compact('constituencies', 'states'));
     }

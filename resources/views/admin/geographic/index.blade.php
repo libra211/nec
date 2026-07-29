@@ -20,6 +20,7 @@
         $stats = [
             ['label' => 'Regions', 'value' => $totals['regions'], 'icon' => 'fa-globe-africa', 'color' => '#0d6efd'],
             ['label' => 'States', 'value' => $totals['states'], 'icon' => 'fa-map', 'color' => '#00914c'],
+            ['label' => 'Admin Areas', 'value' => $totals['admin_areas'], 'icon' => 'fa-map', 'color' => '#fd7e14'],
             ['label' => 'Counties', 'value' => $totals['counties'], 'icon' => 'fa-building', 'color' => '#198754'],
             ['label' => 'Constituencies', 'value' => $totals['constituencies'], 'icon' => 'fa-vote-yea', 'color' => '#20c997'],
             ['label' => 'Payams', 'value' => $totals['payams'], 'icon' => 'fa-sitemap', 'color' => '#ffc107'],
@@ -74,7 +75,9 @@
                                 @foreach($region->states as $state)
                                 <tr>
                                     <td>
-                                        <div class="fw-semibold">{{ $state->name }}</div>
+                                        <div class="fw-semibold">{{ $state->name }}
+                                            @if(($state->type ?? '') === 'admin_area') <span class="badge bg-warning text-dark ms-1" style="font-size:8px;">ADMIN AREA</span> @endif
+                                        </div>
                                         <small class="text-muted">{{ $state->code }} · {{ $state->capital }}</small>
                                     </td>
                                     <td class="text-center">

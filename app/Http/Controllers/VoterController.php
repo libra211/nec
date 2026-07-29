@@ -20,6 +20,7 @@ class VoterController extends Controller
 
     public function register(Request $request)
     {
+        abort_unless(feature_enabled('public_feature_voter_registration'), 404);
         $regions = DB::table('nec_regions')->where('status', 'active')->orderBy('sort_order')->get();
         $agents = Agent::where('status', 'active')->orderBy('first_name')->get();
 
@@ -163,6 +164,7 @@ class VoterController extends Controller
 
     public function status(Request $request)
     {
+        abort_unless(feature_enabled('public_feature_voter_inquiry'), 404);
         $voter = null;
         $error = null;
         $searched = false;
@@ -248,6 +250,7 @@ class VoterController extends Controller
 
     public function transfer(Request $request)
     {
+        abort_unless(feature_enabled('public_feature_voter_transfer'), 404);
         $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->get();
 
         if ($request->isMethod('post')) {

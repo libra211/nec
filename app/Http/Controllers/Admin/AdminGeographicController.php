@@ -22,7 +22,8 @@ class AdminGeographicController extends Controller
 
         $totals = [
             'regions' => $regions->count(),
-            'states' => State::count(),
+            'states' => State::states()->count(),
+            'admin_areas' => State::adminAreas()->count(),
             'counties' => County::count(),
             'constituencies' => Constituency::count(),
             'payams' => Payam::count(),
@@ -35,7 +36,11 @@ class AdminGeographicController extends Controller
 
     public function overview()
     {
-        $states = State::withCount(['counties', 'constituencies', 'pollingStations', 'payams'])
+        $states = State::states()->withCount(['counties', 'constituencies', 'pollingStations', 'payams'])
+            ->with('region')
+            ->orderBy('name')
+            ->get();
+        $adminAreas = State::adminAreas()->withCount(['counties', 'constituencies', 'pollingStations', 'payams'])
             ->with('region')
             ->orderBy('name')
             ->get();
@@ -56,6 +61,7 @@ class AdminGeographicController extends Controller
 
         $totals = [
             'states' => $states->count(),
+            'admin_areas' => $adminAreas->count(),
             'counties' => County::count(),
             'constituencies' => Constituency::count(),
             'payams' => Payam::count(),
@@ -64,7 +70,7 @@ class AdminGeographicController extends Controller
             'registered_voters' => PollingStation::sum('registered_voters'),
         ];
 
-        return view('admin.geographic.overview', compact('states', 'totals'));
+        return view('admin.geographic.overview', compact('states', 'adminAreas', 'totals'));
     }
 
     public function state($id)

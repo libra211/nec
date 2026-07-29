@@ -24,6 +24,7 @@ class ElectionController extends Controller
 
     public function results()
     {
+        abort_unless(feature_enabled('public_feature_results'), 404);
         $results = Result::with(['electionEvent', 'constituency'])
             ->orderByDesc('created_at')
             ->paginate(20);

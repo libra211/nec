@@ -10,16 +10,19 @@ class ObserverController extends Controller
 {
     public function index()
     {
+        abort_unless(feature_enabled('public_feature_observers'), 404);
         return view('observers.index');
     }
 
     public function accredit()
     {
+        abort_unless(feature_enabled('public_feature_observers'), 404);
         return view('observers.accredit');
     }
 
     public function apply()
     {
+        abort_unless(feature_enabled('public_feature_observers'), 404);
         return view('observers.apply');
     }
 

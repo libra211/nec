@@ -263,7 +263,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Settings
     Route::get('settings', [AdminSettingController::class, 'index'])->name('settings.index');
-    Route::post('settings', [AdminSettingController::class, 'update'])->name('settings.update');
+    Route::match(['post', 'put'], 'settings', [AdminSettingController::class, 'update'])->name('settings.update');
+    Route::post('settings/tool', [AdminSettingController::class, 'tool'])->name('settings.tool');
 
     // Users
     Route::resource('users', AdminUserController::class)->except(['show']);

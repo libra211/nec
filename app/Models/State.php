@@ -14,6 +14,16 @@ class State extends Model
 
     protected $guarded = [];
 
+    public function scopeStates($query)
+    {
+        return $query->where('type', 'state');
+    }
+
+    public function scopeAdminAreas($query)
+    {
+        return $query->where('type', 'admin_area');
+    }
+
     public function region()
     {
         return $this->belongsTo(Region::class);

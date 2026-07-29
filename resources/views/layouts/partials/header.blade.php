@@ -1,10 +1,22 @@
 @php
     $ticker_parties = 29; $ticker_constituencies = 102; $ticker_stations = 3284; $ticker_voters = 12000000;
     try {
-        $ticker_voters = max(\App\Models\Voter::count(), 12000000);
-        $ticker_constituencies = \App\Models\Constituency::where('status', 'active')->count() ?: $ticker_constituencies;
-        $ticker_parties = \App\Models\PoliticalParty::where('status', 'active')->count() ?: $ticker_parties;
-        $ticker_stations = \App\Models\PollingStation::where('status', 'active')->count() ?: $ticker_stations;
+        $autoVoters = \App\Models\Voter::count();
+        $ticker_voters = \App\Helpers\NecHelper::setting_get('public_stat_total_voters_source', 'auto') === 'manual'
+            ? (\App\Helpers\NecHelper::setting_get('public_stat_total_voters_value', '') ?: max($autoVoters, 12000000))
+            : max($autoVoters, 12000000);
+        $autoConst = \App\Models\Constituency::where('status', 'active')->count();
+        $ticker_constituencies = \App\Helpers\NecHelper::setting_get('public_stat_constituencies_source', 'auto') === 'manual'
+            ? (\App\Helpers\NecHelper::setting_get('public_stat_constituencies_value', '') ?: ($autoConst ?: $ticker_constituencies))
+            : ($autoConst ?: $ticker_constituencies);
+        $autoParties = \App\Models\PoliticalParty::where('status', 'active')->count();
+        $ticker_parties = \App\Helpers\NecHelper::setting_get('public_stat_parties_source', 'auto') === 'manual'
+            ? (\App\Helpers\NecHelper::setting_get('public_stat_parties_value', '') ?: ($autoParties ?: $ticker_parties))
+            : ($autoParties ?: $ticker_parties);
+        $autoStations = \App\Models\PollingStation::where('status', 'active')->count();
+        $ticker_stations = \App\Helpers\NecHelper::setting_get('public_stat_polling_stations_source', 'auto') === 'manual'
+            ? (\App\Helpers\NecHelper::setting_get('public_stat_polling_stations_value', '') ?: ($autoStations ?: $ticker_stations))
+            : ($autoStations ?: $ticker_stations);
     } catch (\Exception $e) {}
     function th($n) { if ($n >= 1000000) return round($n/1000000,1).'M'; if ($n >= 1000) return round($n/1000,1).'K'; return number_format($n); }
 @endphp
@@ -181,10 +193,19 @@
             <div class="overflow-hidden flex-grow-1" style="white-space:nowrap;">
                 <div class="ticker-scroll">
                     <span class="mx-3"><i class="fa-solid fa-check-circle text-success"></i> <strong>{{ date('Y') }} Elections:</strong> Voter registration ongoing — <a href="{{ route('voter.register') }}" class="text-warning text-decoration-none">Register Now</a></span>
+                    @if(\App\Helpers\NecHelper::setting_get('public_show_total_voters', '1') === '1')
                     <span class="mx-3"><i class="fa-solid fa-users text-info"></i> <strong>{{ th($ticker_voters) }}</strong> registered voters across <strong>{{ number_format($ticker_constituencies) }}</strong> constituencies</span>
+                    @endif
+                    @if(\App\Helpers\NecHelper::setting_get('public_show_parties', '1') === '1')
                     <span class="mx-3"><i class="fa-solid fa-flag text-primary"></i> <strong>{{ $ticker_parties }}</strong> political parties registered with SSNEC</span>
+                    @endif
+                    @if(\App\Helpers\NecHelper::setting_get('public_show_polling_stations', '1') === '1')
                     <span class="mx-3"><i class="fa-solid fa-building text-success"></i> <strong>{{ number_format($ticker_stations) }}</strong> polling stations nationwide</span>
-                    <span class="mx-3"><i class="fa-solid fa-calendar text-warning"></i> Next election: <strong>22 December 2026</strong> — <a href="{{ route('elections.calendar') }}" class="text-warning text-decoration-none">View Calendar</a></span>
+                    @endif
+                    @if(\App\Helpers\NecHelper::setting_get('public_show_election_date', '1') === '1')
+                    @php $tickerDate = \App\Helpers\NecHelper::setting_get('public_stat_election_date_source', 'auto') === 'manual' ? \App\Helpers\NecHelper::setting_get('public_stat_election_date_value', '22 December 2026') : \App\Helpers\NecHelper::setting_get('election_date', '22 December 2026'); @endphp
+                    <span class="mx-3"><i class="fa-solid fa-calendar text-warning"></i> Next election: <strong>{{ $tickerDate }}</strong> — <a href="{{ route('elections.calendar') }}" class="text-warning text-decoration-none">View Calendar</a></span>
+                    @endif
                 </div>
             </div>
         </div>

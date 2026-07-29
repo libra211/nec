@@ -2,6 +2,7 @@
 
 @php
     $stats['total_voters'] = $stats['voters'] ?? 12000000;
+    $showStat = fn($key) => isset($stats[$key]) && $stats[$key] !== null;
 @endphp
 
 @section('hero')
@@ -122,6 +123,7 @@
             <p class="text-muted mb-0">Key statistics for the 2026 General Elections</p>
         </div>
         <div class="stat-grid mb-0 stat-grid-6">
+            @if(($stats['voters'] ?? null) !== null)
             <div class="stat-slim info reveal reveal-delay-1">
                 <div class="d-flex align-items-center gap-3">
                     <div class="stat-icon"><i class="fas fa-users"></i></div>
@@ -131,6 +133,8 @@
                     </div>
                 </div>
             </div>
+            @endif
+            @if(($stats['constituencies'] ?? null) !== null)
             <div class="stat-slim purple reveal reveal-delay-2">
                 <div class="d-flex align-items-center gap-3">
                     <div class="stat-icon"><i class="fas fa-map-marked-alt"></i></div>
@@ -140,6 +144,8 @@
                     </div>
                 </div>
             </div>
+            @endif
+            @if(($stats['polling_stations'] ?? null) !== null)
             <div class="stat-slim teal reveal reveal-delay-3">
                 <div class="d-flex align-items-center gap-3">
                     <div class="stat-icon"><i class="fas fa-school"></i></div>
@@ -149,6 +155,8 @@
                     </div>
                 </div>
             </div>
+            @endif
+            @if(($stats['parties'] ?? null) !== null)
             <div class="stat-slim orange reveal reveal-delay-4">
                 <div class="d-flex align-items-center gap-3">
                     <div class="stat-icon"><i class="fas fa-flag"></i></div>
@@ -158,6 +166,8 @@
                     </div>
                 </div>
             </div>
+            @endif
+            @if(($stats['candidates'] ?? null) !== null)
             <div class="stat-slim danger reveal reveal-delay-5">
                 <div class="d-flex align-items-center gap-3">
                     <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
@@ -167,6 +177,8 @@
                     </div>
                 </div>
             </div>
+            @endif
+            @if(($stats['observers'] ?? null) !== null)
             <div class="stat-slim success reveal reveal-delay-5">
                 <div class="d-flex align-items-center gap-3">
                     <div class="stat-icon"><i class="fas fa-binoculars"></i></div>
@@ -176,6 +188,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </section>
@@ -184,7 +197,7 @@
 <section class="py-5 section-gradient">
     <div class="container text-center">
         <h2 class="text-white fw-bold mb-2 reveal">Countdown to Election Day</h2>
-        <p class="text-white-50 mb-4 reveal reveal-delay-1">General Elections — <strong>22 December 2026</strong></p>
+        <p class="text-white-50 mb-4 reveal reveal-delay-1">{{ $electionType ?? 'General Elections' }} — <strong>{{ $electionDate ? date('d F Y', strtotime($electionDate)) : '22 December 2026' }}</strong></p>
         <div class="row justify-content-center g-3" id="countdownTimer">
             <div class="col-3 col-md-2 reveal reveal-delay-1">
                 <div class="card-elevated bg-dark bg-opacity-25 text-center py-3 px-2 border-0">

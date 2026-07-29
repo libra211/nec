@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Helpers {
 
 use App\Models\Sequence;
 use App\Models\Setting;
@@ -100,6 +100,11 @@ class NecHelper
         return (bool) Setting::updateOrCreate(['key' => $key], ['value' => $value]);
     }
 
+    public static function feature_enabled(string $featureKey, bool $default = true): bool
+    {
+        return self::setting_get($featureKey, $default ? '1' : '0') === '1';
+    }
+
     public static function nec_encrypt($plaintext): string
     {
         return Crypt::encryptString((string) $plaintext);
@@ -141,31 +146,41 @@ class NecHelper
         return 'NEC' . $shortYear . $genderCode . $serial;
     }
 }
-
-if (!function_exists('e')) {
-    function e($str): string
-    {
-        return \App\Helpers\NecHelper::e($str);
-    }
 }
 
-if (!function_exists('t')) {
-    function t($v): string
-    {
-        return \App\Helpers\NecHelper::t($v);
+namespace {
+    if (!function_exists('e')) {
+        function e($str): string
+        {
+            return \App\Helpers\NecHelper::e($str);
+        }
     }
-}
 
-if (!function_exists('nec_encrypt')) {
-    function nec_encrypt($plaintext): string
-    {
-        return \App\Helpers\NecHelper::nec_encrypt($plaintext);
+    if (!function_exists('t')) {
+        function t($v): string
+        {
+            return \App\Helpers\NecHelper::t($v);
+        }
     }
-}
 
-if (!function_exists('nec_decrypt')) {
-    function nec_decrypt($ciphertext): string
-    {
-        return \App\Helpers\NecHelper::nec_decrypt($ciphertext);
+    if (!function_exists('nec_encrypt')) {
+        function nec_encrypt($plaintext): string
+        {
+            return \App\Helpers\NecHelper::nec_encrypt($plaintext);
+        }
+    }
+
+    if (!function_exists('nec_decrypt')) {
+        function nec_decrypt($ciphertext): string
+        {
+            return \App\Helpers\NecHelper::nec_decrypt($ciphertext);
+        }
+    }
+
+    if (!function_exists('feature_enabled')) {
+        function feature_enabled(string $featureKey, bool $default = true): bool
+        {
+            return \App\Helpers\NecHelper::feature_enabled($featureKey, $default);
+        }
     }
 }

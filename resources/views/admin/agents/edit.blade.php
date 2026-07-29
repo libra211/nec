@@ -78,6 +78,9 @@
                             @foreach($region['states'] as $state)
                                 <option value="{{ $state }}" {{ old('state', $agent->state) === $state ? 'selected' : '' }}>{{ $state }}</option>
                             @endforeach
+                            @foreach($region['admin_areas'] ?? [] as $area)
+                                <option value="{{ $area }}" {{ old('state', $agent->state) === $area ? 'selected' : '' }}>{{ $area }}</option>
+                            @endforeach
                         @endforeach
                     </select>
                     @error('state')
@@ -129,6 +132,9 @@
                         @foreach(config('nec.regions') as $region)
                             @foreach($region['states'] as $state)
                                 <option value="{{ $state }}" {{ old('assigned_state', $agent->assigned_state) === $state ? 'selected' : '' }}>{{ $state }}</option>
+                            @endforeach
+                            @foreach($region['admin_areas'] ?? [] as $area)
+                                <option value="{{ $area }}" {{ old('assigned_state', $agent->assigned_state) === $area ? 'selected' : '' }}>{{ $area }}</option>
                             @endforeach
                         @endforeach
                     </select>

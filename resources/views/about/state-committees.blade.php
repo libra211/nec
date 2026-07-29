@@ -259,15 +259,15 @@ var stateCenters = {
     'Eastern Equatoria': {lat:4.5,lng:33.0,color:'#198754'},
     'Western Equatoria': {lat:5.0,lng:29.5,color:'#20c997'},
     'Jonglei': {lat:7.0,lng:32.5,color:'#0dcaf0'},
-    'Greater Pibor': {lat:6.5,lng:33.5,color:'#17a2b8'},
+    'Greater Pibor Administrative Area': {lat:6.5,lng:33.5,color:'#17a2b8'},
     'Unity': {lat:9.0,lng:29.8,color:'#ffc107'},
-    'Ruweng': {lat:9.5,lng:29.5,color:'#fd7e14'},
+    'Ruweng Administrative Area': {lat:9.5,lng:29.5,color:'#fd7e14'},
     'Upper Nile': {lat:10.0,lng:32.8,color:'#fd7e14'},
     'Lakes': {lat:6.5,lng:29.5,color:'#6f42c1'},
     'Northern Bahr el Ghazal': {lat:8.7,lng:27.2,color:'#dc3545'},
     'Western Bahr el Ghazal': {lat:7.5,lng:26.0,color:'#e83e8c'},
     'Warrap': {lat:8.5,lng:28.0,color:'#6610f2'},
-    'Abyei': {lat:9.6,lng:28.4,color:'#343a40'},
+    'Abyei Special Administrative Area': {lat:9.6,lng:28.4,color:'#343a40'},
 };
 
 var shcMap = L.map('shcMap', {center:[7.5,30],zoom:6,scrollWheelZoom:true,zoomControl:true});

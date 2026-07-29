@@ -17,6 +17,7 @@
         @php
         $cards = [
             ['label' => 'States', 'value' => $totals['states'], 'color' => '#00914c', 'icon' => 'fa-map'],
+            ['label' => 'Admin Areas', 'value' => $totals['admin_areas'], 'color' => '#fd7e14', 'icon' => 'fa-map'],
             ['label' => 'Counties', 'value' => $totals['counties'], 'color' => '#0d6efd', 'icon' => 'fa-building'],
             ['label' => 'Constituencies', 'value' => $totals['constituencies'], 'color' => '#198754', 'icon' => 'fa-vote-yea'],
             ['label' => 'Payams', 'value' => $totals['payams'], 'color' => '#ffc107', 'icon' => 'fa-sitemap'],
@@ -39,9 +40,9 @@
     </div>
 
     {{-- States Table --}}
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-white border-bottom">
-            <h5 class="mb-0 fw-bold">All States</h5>
+            <h5 class="mb-0 fw-bold">States ({{ $totals['states'] }})</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -80,6 +81,56 @@
                         @empty
                         <tr>
                             <td colspan="8" class="text-center py-4 text-muted">No states found</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {{-- Admin Areas Table --}}
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0 fw-bold">Administrative Areas ({{ $totals['admin_areas'] }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="small fw-semibold">Administrative Area</th>
+                            <th class="small fw-semibold">Region</th>
+                            <th class="small fw-semibold text-center">Counties</th>
+                            <th class="small fw-semibold text-center">Constituencies</th>
+                            <th class="small fw-semibold text-center">Payams</th>
+                            <th class="small fw-semibold text-center">Bomas</th>
+                            <th class="small fw-semibold text-center">Stations</th>
+                            <th class="small fw-semibold text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($adminAreas as $area)
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">{{ $area->name }} <span class="badge bg-warning text-dark ms-1" style="font-size:8px;">ADMIN AREA</span></div>
+                                <small class="text-muted">{{ $area->code }} · {{ $area->capital }}</small>
+                            </td>
+                            <td><span class="badge bg-light text-dark">{{ $area->region->name ?? '-' }}</span></td>
+                            <td class="text-center fw-semibold">{{ $area->counties_count ?? 0 }}</td>
+                            <td class="text-center fw-semibold">{{ $area->constituencies_count ?? 0 }}</td>
+                            <td class="text-center fw-semibold">{{ $area->payams_count ?? 0 }}</td>
+                            <td class="text-center fw-semibold">{{ $area->bomas_count ?? 0 }}</td>
+                            <td class="text-center fw-semibold">{{ $area->polling_stations_count ?? 0 }}</td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.geographic.state', $area->id) }}" class="btn btn-sm btn-outline-success" title="Manage">
+                                    <i class="fas fa-cog"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">No administrative areas found</td>
                         </tr>
                         @endforelse
                     </tbody>

@@ -8,6 +8,8 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Support\InputSanitizer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,7 +19,7 @@ class AdminSettingController extends Controller
     {
         $settings = Setting::all()->keyBy('key');
         $user = User::find(session('admin_user_id'));
-        $allLoginLogs = LoginLog::latest('logged_at')->paginate(20);
+        $allLoginLogs = LoginLog::latest('logged_at')->paginate(50);
 
         return view('admin.settings.index', compact('settings', 'user', 'allLoginLogs'));
     }
@@ -34,7 +36,6 @@ class AdminSettingController extends Controller
             return $this->updatePublicDisplay($request);
         }
 
-        // Build validation rules by tab
         $rules = match ($tab) {
             'general' => [
                 'site_name' => 'nullable|string|max:255',
@@ -45,6 +46,29 @@ class AdminSettingController extends Controller
                 'office_hours' => 'nullable|string|max:255',
                 'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
                 'favicon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,ico,webp|max:1024',
+            ],
+            'public-content' => [
+                'hero_heading' => 'nullable|string|max:200',
+                'hero_subheading' => 'nullable|string|max:500',
+                'hero_cta_text' => 'nullable|string|max:50',
+                'hero_cta_url' => 'nullable|string|max:255',
+                'about_title' => 'nullable|string|max:200',
+                'about_subtitle' => 'nullable|string|max:200',
+                'about_content' => 'nullable|string|max:2000',
+                'mission_text' => 'nullable|string|max:1000',
+                'vision_text' => 'nullable|string|max:1000',
+                'footer_about' => 'nullable|string|max:500',
+                'footer_copyright' => 'nullable|string|max:200',
+            ],
+            'seo' => [
+                'meta_description' => 'nullable|string|max:500',
+                'meta_keywords' => 'nullable|string|max:500',
+                'google_analytics_id' => 'nullable|string|max:50',
+                'google_tag_manager_id' => 'nullable|string|max:50',
+                'facebook_pixel_id' => 'nullable|string|max:50',
+            ],
+            'notifications' => [
+                'notify_email' => 'nullable|email|max:255',
             ],
             'sms' => [
                 'sms_provider' => 'nullable|string|max:50',
@@ -88,16 +112,17 @@ class AdminSettingController extends Controller
                 'max_login_attempts' => 'nullable|integer|min:1|max:50',
                 'brute_force_window' => 'nullable|integer|min:1|max:120',
                 'session_lifetime' => 'nullable|integer|min:5|max:1440',
+                'password_min_length' => 'nullable|integer|min:6|max:64',
                 'recaptcha_enabled' => 'nullable|string|in:0,1,on,off,true,false',
                 'recaptcha_site_key' => 'nullable|string|max:500',
                 'recaptcha_secret_key' => 'nullable|string|max:500',
+                'allowed_ips' => 'nullable|string|max:2000',
             ],
             default => [],
         };
 
         $validated = $request->validate($rules);
 
-        // Handle file uploads
         if ($request->hasFile('logo')) {
             $path = $request->file('logo')->store('settings', 'public');
             $validated['logo'] = Storage::url($path);
@@ -107,12 +132,16 @@ class AdminSettingController extends Controller
             $validated['favicon'] = Storage::url($path);
         }
 
-        // Handle toggle/checkbox fields explicitly
-        if ($tab === 'sms') {
-            $validated['sms_enabled'] = $request->boolean('sms_enabled') ? '1' : '0';
-        }
-        if ($tab === 'security') {
-            $validated['recaptcha_enabled'] = $request->boolean('recaptcha_enabled') ? '1' : '0';
+        // Handle boolean toggles
+        $boolFields = [
+            'sms' => ['sms_enabled'],
+            'security' => ['recaptcha_enabled', 'ip_whitelist_enabled', 'password_require_special'],
+            'notifications' => ['notify_new_contact', 'notify_new_voter_registration', 'notify_new_observer_application', 'notify_new_complaint'],
+        ];
+        if (isset($boolFields[$tab])) {
+            foreach ($boolFields[$tab] as $field) {
+                $validated[$field] = $request->boolean($field) ? '1' : '0';
+            }
         }
 
         foreach ($validated as $key => $value) {
@@ -120,6 +149,73 @@ class AdminSettingController extends Controller
         }
 
         return back()->with('success', 'Settings updated successfully.')->with('active_tab', $tab);
+    }
+
+    public function tool(Request $request)
+    {
+        $tool = $request->input('tool');
+        $result = ['success' => true, 'message' => ''];
+
+        try {
+            match ($tool) {
+                'view' => (function () use (&$result) {
+                    Artisan::call('view:clear');
+                    $result['message'] = 'View cache cleared successfully. All Blade templates will be recompiled.';
+                })(),
+                'config' => (function () use (&$result) {
+                    Artisan::call('config:clear');
+                    $result['message'] = 'Config cache cleared. Configuration will be reloaded from source files.';
+                })(),
+                'route' => (function () use (&$result) {
+                    Artisan::call('route:clear');
+                    $result['message'] = 'Route cache cleared. Routes will be reloaded.';
+                })(),
+                'app' => (function () use (&$result) {
+                    Cache::flush();
+                    Artisan::call('view:clear');
+                    Artisan::call('config:clear');
+                    $result['message'] = 'All application cache cleared (view, config, data cache).';
+                })(),
+                'maintenance' => (function () use (&$result) {
+                    if (app()->isDownForMaintenance()) {
+                        Artisan::call('up');
+                        $result['message'] = 'Site is now live. Maintenance mode disabled.';
+                    } else {
+                        Artisan::call('down', ['--retry' => 60]);
+                        $result['message'] = 'Site is now in maintenance mode (503). Only users with the IP whitelist can access it.';
+                    }
+                })(),
+                'backup' => (function () use (&$result) {
+                    $result['success'] = false;
+                    $result['message'] = 'Database backup is not yet implemented. This will use your configured backup driver.';
+                })(),
+                'logs' => (function () use (&$result) {
+                    $logFile = storage_path('logs/laravel.log');
+                    if (file_exists($logFile)) {
+                        $size = round(filesize($logFile) / 1024 / 1024, 2);
+                        $lines = tail($logFile, 20);
+                        $result['message'] = "Log file size: {$size} MB. Last 20 lines:\n\n" . $lines;
+                    } else {
+                        $result['success'] = false;
+                        $result['message'] = 'No log file found at storage/logs/laravel.log';
+                    }
+                })(),
+                'info' => (function () use (&$result) {
+                    $result['success'] = true;
+                    $software = $_SERVER['SERVER_SOFTWARE'] ?? 'CLI';
+                    $result['message'] = 'PHP ' . phpversion() . ' | ' . php_uname('s') . ' ' . php_uname('r') . ' | ' . $software;
+                })(),
+                default => (function () use (&$result) {
+                    $result['success'] = false;
+                    $result['message'] = 'Unknown tool: ' . $tool;
+                })(),
+            };
+        } catch (\Exception $e) {
+            $result['success'] = false;
+            $result['message'] = 'Error: ' . $e->getMessage();
+        }
+
+        return response()->json($result);
     }
 
     private function updateProfile(Request $request)
@@ -138,7 +234,6 @@ class AdminSettingController extends Controller
             return back()->with('error', 'User not found.')->with('active_tab', 'profile');
         }
 
-        // Verify current password if trying to change
         if ($request->filled('new_password')) {
             if (!Hash::check($validated['current_password'], $user->password)) {
                 return back()->with('error', 'Current password is incorrect.')->with('active_tab', 'profile');
@@ -160,7 +255,6 @@ class AdminSettingController extends Controller
 
         $user->update($updateData);
 
-        // Refresh session
         session(['admin_user_name' => $updateData['name'], 'admin_email' => $updateData['email']]);
 
         return back()->with('success', 'Profile updated successfully.')->with('active_tab', 'profile');
@@ -168,19 +262,62 @@ class AdminSettingController extends Controller
 
     private function updatePublicDisplay(Request $request)
     {
-        $toggles = [
-            'public_show_registration_stats', 'public_show_voter_count',
-            'public_show_party_count', 'public_show_candidate_count',
-            'public_show_constituency_count', 'public_show_polling_station_count',
-            'public_show_news_count', 'public_show_event_count',
-            'public_show_gallery_count', 'public_show_download_count',
-            'public_show_observer_count', 'public_show_agent_count',
-            'public_show_commissioner_count', 'public_show_staff_count',
-            'public_show_election_date', 'public_show_registration_deadline',
+        $allStats = [
+            'election_date', 'registration_deadline', 'election_type',
+            'total_voters', 'gender_split', 'registration_type', 'age_distribution', 'weekly_trend',
+            'constituencies', 'polling_stations', 'counties', 'payams', 'states_with_data',
+            'parties', 'candidates', 'observers', 'ballot_types',
+            'agents', 'commissioners', 'polling_staff', 'trained_staff',
+            'news', 'events', 'gallery', 'downloads', 'speeches', 'subscribers',
         ];
 
-        foreach ($toggles as $key) {
+        $numericStats = [
+            'total_voters', 'constituencies', 'polling_stations', 'counties', 'payams',
+            'states_with_data', 'parties', 'candidates', 'observers', 'ballot_types',
+            'agents', 'commissioners', 'polling_staff', 'trained_staff',
+            'news', 'events', 'gallery', 'downloads', 'speeches', 'subscribers',
+        ];
+
+        $textStats = ['election_type'];
+        $dateStats = ['election_date', 'registration_deadline'];
+
+        $featureToggles = [
+            'public_feature_parties', 'public_feature_candidates', 'public_feature_results',
+            'public_feature_voter_registration', 'public_feature_voter_inquiry', 'public_feature_voter_transfer',
+            'public_feature_observers', 'public_feature_gallery', 'public_feature_downloads',
+            'public_feature_education', 'public_feature_news', 'public_feature_events',
+            'public_feature_speeches', 'public_feature_videos',
+        ];
+        foreach ($featureToggles as $key) {
             \App\Helpers\NecHelper::setting_set($key, $request->boolean($key) ? '1' : '0');
+        }
+
+        foreach ($allStats as $stat) {
+            \App\Helpers\NecHelper::setting_set("public_show_{$stat}", $request->boolean("public_show_{$stat}") ? '1' : '0');
+        }
+
+        foreach ($numericStats as $stat) {
+            $source = $request->input("public_stat_{$stat}_source", 'auto');
+            \App\Helpers\NecHelper::setting_set("public_stat_{$stat}_source", $source);
+            if ($source === 'manual') {
+                \App\Helpers\NecHelper::setting_set("public_stat_{$stat}_value", $request->input("public_stat_{$stat}_value", ''));
+            }
+        }
+
+        foreach ($textStats as $stat) {
+            $source = $request->input("public_stat_{$stat}_source", 'auto');
+            \App\Helpers\NecHelper::setting_set("public_stat_{$stat}_source", $source);
+            if ($source === 'manual') {
+                \App\Helpers\NecHelper::setting_set("public_stat_{$stat}_value", $request->input("public_stat_{$stat}_value", ''));
+            }
+        }
+
+        foreach ($dateStats as $stat) {
+            $source = $request->input("public_stat_{$stat}_source", 'auto');
+            \App\Helpers\NecHelper::setting_set("public_stat_{$stat}_source", $source);
+            if ($source === 'manual') {
+                \App\Helpers\NecHelper::setting_set("public_stat_{$stat}_value", $request->input("public_stat_{$stat}_value", ''));
+            }
         }
 
         return back()->with('success', 'Public display settings updated.')->with('active_tab', 'public-display');
@@ -189,7 +326,25 @@ class AdminSettingController extends Controller
     public function loginLogs()
     {
         $logs = LoginLog::latest('logged_at')->paginate(50);
-
         return view('admin.settings.partials.login-logs', compact('logs'));
+    }
+}
+
+if (!function_exists('tail')) {
+    function tail($file, $lines = 10) {
+        $fp = fopen($file, 'r');
+        if (!$fp) return '';
+        fseek($fp, -1, SEEK_END);
+        $pos = ftell($fp);
+        $output = '';
+        $count = 0;
+        while ($pos > 0 && $count < $lines) {
+            $char = fgetc($fp);
+            if ($char === "\n") $count++;
+            if ($count <= $lines) $output = $char . $output;
+            fseek($fp, --$pos);
+        }
+        fclose($fp);
+        return trim($output);
     }
 }
