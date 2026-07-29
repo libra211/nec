@@ -17,17 +17,16 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0"><i class="fas fa-cogs me-2"></i>Site Settings</h2>
+    <div>
+        <h2 class="mb-0 fw-bold"><i class="fas fa-cogs me-2 text-primary"></i>Site Settings</h2>
+        <p class="text-muted small mb-0 mt-1">Configure system-wide preferences and features</p>
+    </div>
 </div>
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show"><i class="fas fa-check-circle me-2"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
-@endif
-
 <div class="row">
-    <div class="col-lg-9">
-        <div class="card">
-            <div class="card-header p-0">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white p-0 border-bottom-0">
                 <ul class="nav nav-tabs card-header-tabs m-0 px-3 pt-2" role="tablist">
                     @foreach($tabs as $key => $tab)
                     <li class="nav-item" role="presentation">
@@ -423,42 +422,87 @@
 
                     </div>
 
-                    <hr>
+                    <hr class="my-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <input type="hidden" name="_tab" value="{{ $activeTab }}">
-                        <button type="submit" class="btn btn-nec-green btn-lg px-5"><i class="fas fa-save me-1"></i> Save Settings</button>
+                        <div>
+                            <button type="submit" class="btn btn-primary px-5"><i class="fas fa-save me-1"></i> Save Settings</button>
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary ms-2"><i class="fas fa-arrow-left me-1"></i> Back to Dashboard</a>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
 
-    <div class="col-lg-3">
-        <div class="card mb-3">
-            <div class="card-header"><h5 class="mb-0 fw-bold"><i class="fas fa-chart-pie me-1"></i> Quick Stats</h5></div>
-            <div class="card-body">
-                @php
-                    $stats = [
-                        'Total Voters' => number_format($settings['stat_total_voters']->value ?? \App\Models\User::count()),
-                        'Political Parties' => $stats['parties'] ?? \App\Models\PoliticalParty::count(),
-                        'Candidates' => $stats['candidates'] ?? \App\Models\Candidate::count(),
-                        'Observers' => $stats['observers'] ?? \App\Models\Observer::count(),
-                        'News Articles' => \App\Models\News::count(),
-                        'Contact Messages' => \App\Models\Contact::count(),
-                    ];
-                @endphp
-                @foreach($stats as $label => $value)
-                <div class="d-flex justify-content-between py-1 small border-bottom"><span class="text-muted">{{ $label }}</span><strong>{{ $value }}</strong></div>
-                @endforeach
+        {{-- Quick Stats & System Info at bottom --}}
+        <div class="row g-3 mt-2">
+            <div class="col-lg-7">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-bottom-0 py-3">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-chart-pie text-primary me-2"></i>Quick Stats</h5>
+                    </div>
+                    <div class="card-body pt-0">
+                        @php
+                            $statCards = [
+                                'Total Voters' => ['value' => number_format($settings['stat_total_voters']->value ?? \App\Models\User::count()), 'icon' => 'fa-users', 'color' => 'primary'],
+                                'Political Parties' => ['value' => $stats['parties'] ?? \App\Models\PoliticalParty::count(), 'icon' => 'fa-flag', 'color' => 'success'],
+                                'Candidates' => ['value' => $stats['candidates'] ?? \App\Models\Candidate::count(), 'icon' => 'fa-user-tie', 'color' => 'warning'],
+                                'Observers' => ['value' => $stats['observers'] ?? \App\Models\Observer::count(), 'icon' => 'fa-eye', 'color' => 'info'],
+                                'News Articles' => ['value' => \App\Models\News::count(), 'icon' => 'fa-newspaper', 'color' => 'danger'],
+                                'Contact Messages' => ['value' => \App\Models\Contact::count(), 'icon' => 'fa-envelope', 'color' => 'secondary'],
+                            ];
+                        @endphp
+                        <div class="row g-2">
+                            @foreach($statCards as $label => $info)
+                            <div class="col-md-6 col-lg-4">
+                                <div class="d-flex align-items-center p-3 rounded-3 border bg-light bg-opacity-25">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:42px;height:42px;background:rgba(var(--bs-{{ $info['color'] }}-rgb),0.1);flex-shrink:0;">
+                                        <i class="fas {{ $info['icon'] }} text-{{ $info['color'] }}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold fs-5">{{ $info['value'] }}</div>
+                                        <div class="small text-muted">{{ $label }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="card">
-            <div class="card-header"><h5 class="mb-0 fw-bold"><i class="fas fa-info-circle me-1"></i> System Info</h5></div>
-            <div class="card-body small">
-                <div class="d-flex justify-content-between py-1"><span class="text-muted">PHP</span><strong>{{ phpversion() }}</strong></div>
-                <div class="d-flex justify-content-between py-1"><span class="text-muted">Laravel</span><strong>{{ app()->version() }}</strong></div>
-                <div class="d-flex justify-content-between py-1"><span class="text-muted">Server</span><strong>{{ php_uname('s') }}</strong></div>
-                <div class="d-flex justify-content-between py-1"><span class="text-muted">Debug</span><strong>{{ config('app.debug') ? 'ON' : 'OFF' }}</strong></div>
+            <div class="col-lg-5">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-bottom-0 py-3">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-server text-info me-2"></i>System Information</h5>
+                    </div>
+                    <div class="card-body pt-0">
+                        @php
+                            $sysInfo = [
+                                ['label' => 'PHP Version', 'value' => phpversion(), 'icon' => 'fa-brands fa-php', 'color' => '#777bb3'],
+                                ['label' => 'Laravel Version', 'value' => app()->version(), 'icon' => 'fas fa-code-branch', 'color' => '#ff2d20'],
+                                ['label' => 'Server OS', 'value' => php_uname('s'), 'icon' => 'fas fa-desktop', 'color' => 'var(--text-muted)'],
+                                ['label' => 'Environment', 'value' => config('app.debug') ? 'Debug ON' : 'Production', 'icon' => 'fas fa-shield-alt', 'color' => config('app.debug') ? '#f59e0b' : '#10b981'],
+                                ['label' => 'Database', 'value' => 'MariaDB', 'icon' => 'fas fa-database', 'color' => '#00758f'],
+                                ['label' => 'Cache Driver', 'value' => config('cache.default') ?? 'file', 'icon' => 'fas fa-bolt', 'color' => '#6366f1'],
+                            ];
+                        @endphp
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-sm mb-0">
+                                <tbody>
+                                    @foreach($sysInfo as $info)
+                                    <tr>
+                                        <td class="ps-0 py-2" style="width:40px;">
+                                            <i class="{{ $info['icon'] }}" style="color:{{ $info['color'] }};width:18px;text-align:center;"></i>
+                                        </td>
+                                        <td class="text-muted small py-2">{{ $info['label'] }}</td>
+                                        <td class="text-end fw-semibold small py-2">{{ $info['value'] }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
