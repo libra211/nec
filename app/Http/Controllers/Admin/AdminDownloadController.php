@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Download;
 use App\Support\InputSanitizer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminDownloadController extends Controller
 {
@@ -40,6 +41,7 @@ class AdminDownloadController extends Controller
             'download_count' => 'nullable|integer|min:0',
         ]);
 
+        $validated = $this->detectFileMeta($validated);
         $download = Download::create(InputSanitizer::clean($validated));
 
         $this->logActivity('download_created', "Created download: {$download->title}", $download);
@@ -63,6 +65,7 @@ class AdminDownloadController extends Controller
             'file_type' => 'nullable|string|max:50',
         ]);
 
+        $validated = $this->detectFileMeta($validated);
         $download->update(InputSanitizer::clean($validated));
 
         $this->logActivity('download_updated', "Updated download: {$download->title}", $download);
@@ -75,5 +78,22 @@ class AdminDownloadController extends Controller
         $download->delete();
         $this->logActivity('download_deleted', "Deleted download: {$download->title}", $download);
         return back()->with('success', 'Download resource deleted.');
+    }
+
+    private function detectFileMeta(array $data): array
+    {
+        if (empty($data['file_type']) && !empty($data['file_path'])) {
+            $ext = pathinfo($data['file_path'], PATHINFO_EXTENSION);
+            if ($ext) $data['file_type'] = strtolower($ext);
+        }
+
+        if (empty($data['file_size']) && !empty($data['file_path'])) {
+            $path = $data['file_path'];
+            if (Storage::exists($path)) {
+                $data['file_size'] = Storage::size($path);
+            }
+        }
+
+        return $data;
     }
 }

@@ -405,51 +405,54 @@
 <!-- CIVIC EDUCATION -->
 <section class="py-5" style="background:#fff;">
     <div class="container">
-        <div class="row align-items-center g-3">
-            <div class="col-lg-6 reveal">
-                <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;"><i class="fas fa-gavel me-1"></i> KNOW YOUR RIGHTS</span>
-                <h2 class="fw-bold mb-3">Civic & Voter Education</h2>
-                <p class="text-muted mb-4">Understanding the electoral process is the foundation of a strong democracy. Explore our civic education materials to learn about your rights and responsibilities as a voter.</p>
-                <div class="row g-2">
-                    <div class="col-6">
-                        <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-green);">
-                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(0,145,76,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fas fa-check-circle" style="color:var(--nec-green);font-size:0.85rem;"></i>
+        <div class="row g-3">
+            <div class="col-lg-6 d-flex reveal">
+                <div class="d-flex flex-column justify-content-center">
+                    <span class="badge bg-dark fw-bold px-4 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;"><i class="fas fa-gavel me-1"></i> KNOW YOUR RIGHTS</span>
+                    <h2 class="fw-bold mb-3">Civic & Voter Education</h2>
+                    <p class="text-muted mb-3">Understanding the electoral process is the foundation of a strong democracy. Explore our civic education materials to learn about your rights and responsibilities as a voter.</p>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-green);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:rgba(0,145,76,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="fas fa-check-circle" style="color:var(--nec-green);font-size:0.85rem;"></i>
+                                </div>
+                                <span class="small fw-semibold">Voter Checklist</span>
                             </div>
-                            <span class="small fw-semibold">Voter Checklist</span>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-gold);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="fas fa-gavel" style="color:var(--nec-gold);font-size:0.85rem;"></i>
+                                </div>
+                                <span class="small fw-semibold">Electoral Laws</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-green);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:rgba(0,145,76,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="fas fa-eye" style="color:var(--nec-green);font-size:0.85rem;"></i>
+                                </div>
+                                <span class="small fw-semibold">Observer Guide</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-gold);">
+                                <div style="width:32px;height:32px;border-radius:8px;background:rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="fas fa-question-circle" style="color:var(--nec-gold);font-size:0.85rem;"></i>
+                                </div>
+                                <span class="small fw-semibold">FAQ</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-gold);">
-                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fas fa-gavel" style="color:var(--nec-gold);font-size:0.85rem;"></i>
-                            </div>
-                            <span class="small fw-semibold">Electoral Laws</span>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-green);">
-                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(0,145,76,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fas fa-eye" style="color:var(--nec-green);font-size:0.85rem;"></i>
-                            </div>
-                            <span class="small fw-semibold">Observer Guide</span>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-gold);">
-                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fas fa-question-circle" style="color:var(--nec-gold);font-size:0.85rem;"></i>
-                            </div>
-                            <span class="small fw-semibold">FAQ</span>
-                        </div>
-                    </div>
+                    <p class="text-muted small mb-3"><i class="fas fa-check-circle me-1" style="color:var(--nec-green);"></i> Every citizen aged 18+ has the right to vote in South Sudan's elections. Your vote is your voice — make it count.</p>
+                    <a href="{{ route('voter.education') }}" class="btn fw-bold px-4 py-2 align-self-start" style="background:var(--nec-green);color:#fff;border-radius:6px;">
+                        <i class="fas fa-graduation-cap me-2"></i> Explore Resources
+                    </a>
                 </div>
-                <a href="{{ route('voter.education') }}" class="btn fw-bold px-4 py-2 mt-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
-                    <i class="fas fa-graduation-cap me-2"></i> Explore Resources
-                </a>
             </div>
-            <div class="col-lg-6 text-center reveal-right">
-                <div style="position:relative;display:inline-block;width:100%;">
+            <div class="col-lg-6 d-flex reveal-right">
+                <div class="d-flex align-items-center" style="position:relative;width:100%;">
                     <div style="width:100%;aspect-ratio:4/3;border-radius:5px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1);">
                         <img src="{{ asset('assets/images/flag-gu.webp') }}" alt="Flag of South Sudan" style="width:100%;height:100%;object-fit:cover;">
                     </div>
@@ -478,9 +481,10 @@
             @forelse($topDownloads as $j => $d)
             <div class="col-md-4 col-lg-2 reveal {{ $d_delays[$j % 4] }}">
                 <a href="{{ asset($d->file_path) }}" class="stat-slim {{ $stat_colors[$j % 6] }} text-decoration-none d-block" target="_blank">
-                    <div class="stat-icon"><i class="fas fa-file-{{ strtolower($d->file_type ?: 'alt') }}"></i></div>
+                    <div class="stat-icon"><i class="fas {{ $d->file_icon }}"></i></div>
                     <div class="stat-label">{{ e($d->title) }}</div>
-                    <div class="stat-value-sm" style="font-size:1rem;font-weight:600;">{{ e($d->file_size ?: 'Download') }}</div>
+                    <div style="font-size:0.6rem;color:rgba(0,0,0,0.45);margin-bottom:2px;">{{ $d->file_type_label }}</div>
+                    <div class="stat-value-sm" style="font-size:0.85rem;font-weight:600;">{{ $d->formatted_size }}</div>
                 </a>
             </div>
             @empty
@@ -498,43 +502,30 @@
             <h2 class="fw-bold reveal">NEC Commissioners</h2>
             <p class="text-muted mb-0">Meet the commissioners steering South Sudan's electoral process</p>
         </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="border-bottom:2px solid var(--nec-green);">
-                <thead style="background:var(--nec-green);color:#fff;">
-                    <tr>
-                        <th style="width:50px;border:0;">#</th>
-                        <th style="border:0;">Name</th>
-                        <th style="border:0;">Position</th>
-                        <th style="border:0;width:140px;">Appointed</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($commissioners as $c)
-                    <tr>
-                        <td class="fw-bold" style="color:var(--nec-green);">{{ $loop->iteration }}</td>
-                        <td>
-                            <div class="d-flex align-items-center gap-3">
-                                <div style="width:42px;height:42px;border-radius:50%;background:var(--nec-gray-100);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:2px solid var(--nec-green);">
-                                    @if($c->photo)
-                                    <img src="{{ asset($c->photo) }}" alt="" style="width:100%;height:100%;object-fit:cover;">
-                                    @else
-                                    <span class="fw-bold small" style="color:var(--nec-green);">NE</span>
-                                    @endif
-                                </div>
-                                <div>
-                                    <div class="fw-semibold small">{{ $c->name }}</div>
-                                    @if($c->department)<div class="text-muted" style="font-size:0.7rem;">{{ $c->department }}</div>@endif
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-light text-dark border fw-semibold px-3 py-1" style="font-size:0.7rem;border-radius:0;">{{ $c->position }}</span></td>
-                        <td class="small text-muted">{{ $c->appointed_date ? $c->appointed_date->format('d M Y') : '—' }}</td>
-                    </tr>
-                    @empty
-                    <tr><td colspan="4" class="text-center text-muted py-4">No commissioners listed yet.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div class="row g-4 justify-content-center">
+            @forelse($commissioners as $c)
+            <div class="col-6 col-md-4 col-lg-3 reveal reveal-delay-{{ $loop->iteration % 4 }}">
+                <div class="card border-0 shadow-sm text-center h-100 p-4" style="border-radius:12px;">
+                    <div class="mx-auto mb-3" style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid var(--nec-green);">
+                        @if($c->photo)
+                        <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                        <div style="width:100%;height:100%;background:var(--nec-green);display:flex;align-items:center;justify-content:center;"><span class="fw-bold text-white" style="font-size:1.2rem;">NE</span></div>
+                        @endif
+                    </div>
+                    <h6 class="fw-bold mb-1 small">{{ $c->name }}</h6>
+                    <span class="badge bg-light text-dark border fw-semibold mb-2 px-3 py-1" style="font-size:0.7rem;">{{ $c->position }}</span>
+                    @if($c->department)<p class="text-muted mb-2" style="font-size:0.7rem;">{{ $c->department }}</p>@endif
+                    <div class="d-flex justify-content-center gap-2 mt-auto pt-2 border-top">
+                        @if($c->facebook_url)<a href="{{ $c->facebook_url }}" class="text-decoration-none" style="color:#1877F2;font-size:0.9rem;" target="_blank" rel="noopener"><i class="fab fa-facebook"></i></a>@endif
+                        @if($c->twitter_url)<a href="{{ $c->twitter_url }}" class="text-decoration-none" style="color:#000;font-size:0.9rem;" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>@endif
+                        @if($c->linkedin_url)<a href="{{ $c->linkedin_url }}" class="text-decoration-none" style="color:#0A66C2;font-size:0.85rem;" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a>@endif
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="col-12 text-center text-muted py-4"><p>No commissioners listed yet.</p></div>
+            @endforelse
         </div>
         <div class="text-center mt-4">
             <a href="{{ route('about.commissioners') }}" class="btn fw-bold px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
