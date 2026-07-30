@@ -66,6 +66,8 @@ class AdminComplaintController extends Controller
         }
         $complaint->save();
 
+        $this->logActivity('complaint_status_changed', "Changed complaint {$complaint->subject} status to {$validated['status']}", $complaint);
+
         return back()->with('success', 'Complaint status updated to ' . ucfirst(str_replace('_', ' ', $validated['status'])) . '.');
     }
 }

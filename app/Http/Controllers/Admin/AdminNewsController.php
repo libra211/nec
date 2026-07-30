@@ -95,6 +95,8 @@ class AdminNewsController extends Controller
 
         $news = News::create($validated);
 
+        $this->logActivity('news_created', "Created news: {$news->title}", $news);
+
         return redirect()->route('admin.news.index')
             ->with('success', 'News article created.');
     }
@@ -133,6 +135,8 @@ class AdminNewsController extends Controller
 
         $news->update($validated);
 
+        $this->logActivity('news_updated', "Updated news: {$news->title}", $news);
+
         return redirect()->route('admin.news.index')
             ->with('success', 'News article updated.');
     }
@@ -143,6 +147,8 @@ class AdminNewsController extends Controller
         $news->status = 'trash';
         $news->save();
         $news->delete();
+
+        $this->logActivity('news_deleted', "Deleted news: {$news->title}", $news);
 
         return redirect()->route('admin.news.index')
             ->with('success', 'News article moved to trash.');
@@ -166,6 +172,8 @@ class AdminNewsController extends Controller
             default => throw new \InvalidArgumentException("Unknown action: {$action}"),
         };
 
+        $this->logActivity('news_bulk_action', "Bulk {$action} on {$count} news items");
+
         return back()->with('success', "{$count} article(s) updated.");
     }
 
@@ -176,6 +184,8 @@ class AdminNewsController extends Controller
         $news->save();
         $news->restore();
 
+        $this->logActivity('news_restored', "Restored news: {$news->title}", $news);
+
         return redirect()->route('admin.news.index')
             ->with('success', 'News article restored.');
     }
@@ -184,6 +194,8 @@ class AdminNewsController extends Controller
     {
         $news = News::onlyTrashed()->findOrFail($id);
         $news->forceDelete();
+
+        $this->logActivity('news_force_deleted', "Permanently deleted news: {$news->title}", $news);
 
         return redirect()->route('admin.news.index')
             ->with('success', 'News article permanently deleted.');
@@ -197,6 +209,8 @@ class AdminNewsController extends Controller
             $news->published_at = $news->published_at ?? now();
         }
         $news->save();
+
+        $this->logActivity('news_status_changed', "Changed news {$news->title} status to {$news->status}", $news);
 
         return back()->with('success', 'News status toggled.');
     }

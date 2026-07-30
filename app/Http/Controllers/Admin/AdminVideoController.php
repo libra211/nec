@@ -45,7 +45,9 @@ class AdminVideoController extends Controller
 
         $validated['type'] = 'video';
 
-        Media::create($validated);
+        $video = Media::create($validated);
+
+        $this->logActivity('video_created', "Created video: {$video->title}", $video);
 
         return redirect()->route('admin.videos.index')->with('success', 'Video created.');
     }
@@ -73,6 +75,8 @@ class AdminVideoController extends Controller
 
         $video->update($validated);
 
+        $this->logActivity('video_updated', "Updated video: {$video->title}", $video);
+
         return redirect()->route('admin.videos.index')->with('success', 'Video updated.');
     }
 
@@ -80,6 +84,8 @@ class AdminVideoController extends Controller
     {
         $video = Media::where('type', 'video')->findOrFail($id);
         $video->delete();
+
+        $this->logActivity('video_deleted', "Deleted video: {$video->title}", $video);
 
         return redirect()->route('admin.videos.index')->with('success', 'Video deleted.');
     }

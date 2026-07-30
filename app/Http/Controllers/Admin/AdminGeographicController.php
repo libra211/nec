@@ -125,7 +125,9 @@ class AdminGeographicController extends Controller
             'longitude' => 'nullable|numeric',
         ]);
 
-        State::create($validated);
+        $state = State::create($validated);
+
+        $this->logActivity('geographic_created', "Created state: {$state->name}", $state);
 
         return redirect()->route('admin.geographic.index')->with('success', 'State created successfully.');
     }
@@ -143,6 +145,8 @@ class AdminGeographicController extends Controller
 
         $state->update($validated);
 
+        $this->logActivity('geographic_updated', "Updated state: {$state->name}", $state);
+
         return redirect()->back()->with('success', 'State updated successfully.');
     }
 
@@ -155,6 +159,8 @@ class AdminGeographicController extends Controller
         }
 
         $state->delete();
+
+        $this->logActivity('geographic_deleted', "Deleted state: {$state->name}", $state);
 
         return redirect()->route('admin.geographic.index')->with('success', 'State deleted successfully.');
     }
@@ -170,7 +176,9 @@ class AdminGeographicController extends Controller
             'registered_voters' => 'nullable|integer|min:0',
         ]);
 
-        County::create($validated);
+        $county = County::create($validated);
+
+        $this->logActivity('geographic_created', "Created county: {$county->name}", $county);
 
         return redirect()->back()->with('success', 'County created successfully.');
     }
@@ -189,6 +197,8 @@ class AdminGeographicController extends Controller
 
         $county->update($validated);
 
+        $this->logActivity('geographic_updated', "Updated county: {$county->name}", $county);
+
         return redirect()->back()->with('success', 'County updated successfully.');
     }
 
@@ -201,6 +211,8 @@ class AdminGeographicController extends Controller
         }
 
         $county->delete();
+
+        $this->logActivity('geographic_deleted', "Deleted county: {$county->name}", $county);
 
         return redirect()->back()->with('success', 'County deleted successfully.');
     }
@@ -215,7 +227,9 @@ class AdminGeographicController extends Controller
             'longitude' => 'nullable|numeric',
         ]);
 
-        Constituency::create($validated);
+        $constituencyModel = Constituency::create($validated);
+
+        $this->logActivity('geographic_created', "Created constituency: {$constituencyModel->name}", $constituencyModel);
 
         return redirect()->back()->with('success', 'Constituency created successfully.');
     }
@@ -233,6 +247,8 @@ class AdminGeographicController extends Controller
 
         $constituency->update($validated);
 
+        $this->logActivity('geographic_updated', "Updated constituency: {$constituency->name}", $constituency);
+
         return redirect()->back()->with('success', 'Constituency updated successfully.');
     }
 
@@ -246,6 +262,8 @@ class AdminGeographicController extends Controller
 
         $constituency->delete();
 
+        $this->logActivity('geographic_deleted', "Deleted constituency: {$constituency->name}", $constituency);
+
         return redirect()->back()->with('success', 'Constituency deleted successfully.');
     }
 
@@ -258,7 +276,9 @@ class AdminGeographicController extends Controller
             'longitude' => 'nullable|numeric',
         ]);
 
-        Payam::create($validated);
+        $payam = Payam::create($validated);
+
+        $this->logActivity('geographic_created', "Created payam: {$payam->name}", $payam);
 
         return redirect()->back()->with('success', 'Payam created successfully.');
     }
@@ -275,6 +295,8 @@ class AdminGeographicController extends Controller
 
         $payam->update($validated);
 
+        $this->logActivity('geographic_updated', "Updated payam: {$payam->name}", $payam);
+
         return redirect()->back()->with('success', 'Payam updated successfully.');
     }
 
@@ -282,6 +304,8 @@ class AdminGeographicController extends Controller
     {
         $payam = Payam::findOrFail($id);
         $payam->delete();
+
+        $this->logActivity('geographic_deleted', "Deleted payam: {$payam->name}", $payam);
 
         return redirect()->back()->with('success', 'Payam deleted successfully.');
     }
@@ -295,7 +319,9 @@ class AdminGeographicController extends Controller
             'longitude' => 'nullable|numeric',
         ]);
 
-        Boma::create($validated);
+        $boma = Boma::create($validated);
+
+        $this->logActivity('geographic_created', "Created boma: {$boma->name}", $boma);
 
         return redirect()->back()->with('success', 'Boma created successfully.');
     }
@@ -312,6 +338,8 @@ class AdminGeographicController extends Controller
 
         $boma->update($validated);
 
+        $this->logActivity('geographic_updated', "Updated boma: {$boma->name}", $boma);
+
         return redirect()->back()->with('success', 'Boma updated successfully.');
     }
 
@@ -324,6 +352,8 @@ class AdminGeographicController extends Controller
         }
 
         $boma->delete();
+
+        $this->logActivity('geographic_deleted', "Deleted boma: {$boma->name}", $boma);
 
         return redirect()->back()->with('success', 'Boma deleted successfully.');
     }

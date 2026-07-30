@@ -59,7 +59,9 @@ class AdminAnnouncementController extends Controller
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['title']);
 
-        Announcement::create($validated);
+        $announcement = Announcement::create($validated);
+
+        $this->logActivity('announcement_created', "Created announcement: {$announcement->title}", $announcement);
 
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement created.');
     }
@@ -90,6 +92,8 @@ class AdminAnnouncementController extends Controller
 
         $announcement->update($validated);
 
+        $this->logActivity('announcement_updated', "Updated announcement: {$announcement->title}", $announcement);
+
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement updated.');
     }
 
@@ -99,6 +103,8 @@ class AdminAnnouncementController extends Controller
         $announcement->status = 'trash';
         $announcement->save();
         $announcement->delete();
+
+        $this->logActivity('announcement_deleted', "Deleted announcement: {$announcement->title}", $announcement);
 
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement moved to trash.');
     }
@@ -119,6 +125,8 @@ class AdminAnnouncementController extends Controller
             default => throw new \InvalidArgumentException("Unknown action: {$action}"),
         };
 
+        $this->logActivity('announcement_bulk_action', "Bulk {$action} on {$count} announcements");
+
         return back()->with('success', "{$count} announcement(s) updated.");
     }
 
@@ -127,6 +135,8 @@ class AdminAnnouncementController extends Controller
         $announcement = Announcement::findOrFail($id);
         $announcement->status = $announcement->status === 'published' ? 'draft' : 'published';
         $announcement->save();
+
+        $this->logActivity('announcement_status_changed', "Changed announcement {$announcement->title} status to {$announcement->status}", $announcement);
 
         return back()->with('success', 'Announcement status toggled.');
     }
@@ -138,12 +148,18 @@ class AdminAnnouncementController extends Controller
         $announcement->save();
         $announcement->restore();
 
+        $this->logActivity('announcement_restored', "Restored announcement: {$announcement->title}", $announcement);
+
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement restored.');
     }
 
     public function forceDelete($id)
     {
-        Announcement::onlyTrashed()->findOrFail($id)->forceDelete();
+        $announcement = Announcement::onlyTrashed()->findOrFail($id);
+        $announcement->forceDelete();
+
+        $this->logActivity('announcement_force_deleted', "Permanently deleted announcement: {$announcement->title}", $announcement);
+
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement permanently deleted.');
     }
 }

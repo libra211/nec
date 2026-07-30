@@ -59,7 +59,9 @@ class AdminPartyController extends Controller
             $validated['registration_document'] = $request->file('registration_document')->store('parties/documents', 'public');
         }
 
-        PoliticalParty::create($validated);
+        $party = PoliticalParty::create($validated);
+
+        $this->logActivity('party_created', "Created party: {$party->name}", $party);
 
         return redirect()->route('admin.parties.index')->with('success', 'Party created.');
     }
@@ -115,6 +117,8 @@ class AdminPartyController extends Controller
 
         $party->update($validated);
 
+        $this->logActivity('party_updated', "Updated party: {$party->name}", $party);
+
         return redirect()->route('admin.parties.index')->with('success', 'Party updated.');
     }
 
@@ -123,6 +127,8 @@ class AdminPartyController extends Controller
         $party = PoliticalParty::findOrFail($id);
         $party->status = $party->status ? 0 : 1;
         $party->save();
+
+        $this->logActivity('party_status_changed', "Changed party {$party->name} status to " . ($party->status ? 'active' : 'inactive'), $party);
 
         return response()->json([
             'status' => $party->status,
@@ -143,6 +149,51 @@ class AdminPartyController extends Controller
 
         $party->delete();
 
+        $this->logActivity('party_deleted', "Deleted party: {$party->name}", $party);
+
         return redirect()->route('admin.parties.index')->with('success', 'Party deleted.');
+    }
+
+    public function trashed(Request $request)
+    {
+        $query = PoliticalParty::onlyTrashed();
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $parties = $query->orderByDesc('deleted_at')->paginate(20);
+
+        return view('admin.parties.trashed', compact('parties'));
+    }
+
+    public function restore($id)
+    {
+        $party = PoliticalParty::onlyTrashed()->findOrFail($id);
+        $party->update(['deleted_at' => null, 'updated_at' => now()]);
+
+        $this->logActivity('party_restored', "Restored party: {$party->name}", $party);
+
+        return redirect()->route('admin.parties.index')->with('success', 'Party restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $party = PoliticalParty::onlyTrashed()->findOrFail($id);
+
+        if ($party->logo) {
+            Storage::disk('public')->delete($party->logo);
+        }
+        if ($party->registration_document) {
+            Storage::disk('public')->delete($party->registration_document);
+        }
+
+        $party->forceDelete();
+
+        $this->logActivity('party_force_deleted', "Permanently deleted party: {$party->name}", $party);
+
+        return redirect()->route('admin.parties.trashed')->with('success', 'Party permanently deleted.');
     }
 }

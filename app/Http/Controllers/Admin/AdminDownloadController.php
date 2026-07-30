@@ -40,7 +40,9 @@ class AdminDownloadController extends Controller
             'download_count' => 'nullable|integer|min:0',
         ]);
 
-        Download::create(InputSanitizer::clean($validated));
+        $download = Download::create(InputSanitizer::clean($validated));
+
+        $this->logActivity('download_created', "Created download: {$download->title}", $download);
 
         return redirect()->route('admin.downloads.index')->with('success', 'Download resource added successfully.');
     }
@@ -63,12 +65,15 @@ class AdminDownloadController extends Controller
 
         $download->update(InputSanitizer::clean($validated));
 
+        $this->logActivity('download_updated', "Updated download: {$download->title}", $download);
+
         return redirect()->route('admin.downloads.index')->with('success', 'Download resource updated.');
     }
 
     public function destroy(Download $download)
     {
         $download->delete();
+        $this->logActivity('download_deleted', "Deleted download: {$download->title}", $download);
         return back()->with('success', 'Download resource deleted.');
     }
 }

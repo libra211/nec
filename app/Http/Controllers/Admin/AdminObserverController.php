@@ -46,6 +46,8 @@ class AdminObserverController extends Controller
 
         $observer->update(['status' => $validated['status']]);
 
+        $this->logActivity('observer_status_changed', "Changed observer {$observer->email} status to {$validated['status']}", $observer);
+
         return back()->with('success', 'Observer status updated.');
     }
 }

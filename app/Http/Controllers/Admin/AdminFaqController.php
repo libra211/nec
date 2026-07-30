@@ -50,7 +50,9 @@ class AdminFaqController extends Controller
             'status' => 'required|in:published,draft,trash',
         ]);
 
-        Faq::create($validated);
+        $faq = Faq::create($validated);
+
+        $this->logActivity('faq_created', "Created FAQ: {$faq->question}", $faq);
 
         return redirect()->route('admin.faqs.index')->with('success', 'FAQ created.');
     }
@@ -76,6 +78,8 @@ class AdminFaqController extends Controller
 
         $faq->update($validated);
 
+        $this->logActivity('faq_updated', "Updated FAQ: {$faq->question}", $faq);
+
         return redirect()->route('admin.faqs.index')->with('success', 'FAQ updated.');
     }
 
@@ -83,6 +87,8 @@ class AdminFaqController extends Controller
     {
         $faq = Faq::findOrFail($id);
         $faq->delete();
+
+        $this->logActivity('faq_deleted', "Deleted FAQ: {$faq->question}", $faq);
 
         return redirect()->route('admin.faqs.index')->with('success', 'FAQ deleted.');
     }
@@ -94,6 +100,8 @@ class AdminFaqController extends Controller
         foreach ($order as $position => $id) {
             Faq::where('id', $id)->update(['sort_order' => $position]);
         }
+
+        $this->logActivity('faq_reordered', "Reordered FAQs");
 
         return response()->json(['success' => true]);
     }

@@ -45,6 +45,8 @@ class AdminVoterTransferController extends Controller
             'admin_notes' => 'Approved by ' . session('admin_user_name'),
         ]);
 
+        $this->logActivity('transfer_approved', "Approved transfer for {$transfer->full_name}", $transfer);
+
         return back()->with('success', 'Transfer approved successfully.');
     }
 
@@ -56,6 +58,8 @@ class AdminVoterTransferController extends Controller
             'processed_date' => now(),
             'admin_notes' => 'Rejected by ' . session('admin_user_name'),
         ]);
+
+        $this->logActivity('transfer_rejected', "Rejected transfer for {$transfer->full_name}", $transfer);
 
         return back()->with('success', 'Transfer rejected.');
     }
@@ -79,6 +83,8 @@ class AdminVoterTransferController extends Controller
                 'processed_date' => now(),
             ]);
         }
+
+        $this->logActivity('transfer_bulk_action', "Bulk {$request->input('action')} on " . count($transfers) . " transfers", $transfers->first());
 
         return back()->with('success', count($transfers) . ' transfer(s) processed.');
     }

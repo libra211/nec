@@ -46,41 +46,48 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th class="small fw-semibold">State</th>
-                            <th class="small fw-semibold">Region</th>
-                            <th class="small fw-semibold text-center">Counties</th>
-                            <th class="small fw-semibold text-center">Constituencies</th>
-                            <th class="small fw-semibold text-center">Payams</th>
-                            <th class="small fw-semibold text-center">Bomas</th>
-                            <th class="small fw-semibold text-center">Stations</th>
-                            <th class="small fw-semibold text-end">Actions</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 8px 10px 16px;font-size:0.75rem;letter-spacing:0.3px;">STATE</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">REGION</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">COUNTIES</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">CONSTITUENCIES</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">PAYAMS</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">BOMAS</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">STATIONS</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 16px 10px 12px;text-align:right;font-size:0.75rem;letter-spacing:0.3px;">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($states as $state)
-                        <tr>
-                            <td>
+                        <tr style="border-bottom:1px solid #f1f3f5;">
+                            <td style="padding:10px 8px 10px 16px;color:#1e293b;">
                                 <div class="fw-semibold">{{ $state->name }}</div>
-                                <small class="text-muted">{{ $state->code }} · {{ $state->capital }}</small>
+                                <small style="color:#64748b;">{{ $state->code }} · {{ $state->capital }}</small>
                             </td>
-                            <td><span class="badge bg-light text-dark">{{ $state->region->name ?? '-' }}</span></td>
-                            <td class="text-center fw-semibold">{{ $state->counties_count ?? 0 }}</td>
-                            <td class="text-center fw-semibold">{{ $state->constituencies_count ?? 0 }}</td>
-                            <td class="text-center fw-semibold">{{ $state->payams_count ?? 0 }}</td>
-                            <td class="text-center fw-semibold">{{ $state->bomas_count ?? 0 }}</td>
-                            <td class="text-center fw-semibold">{{ $state->polling_stations_count ?? 0 }}</td>
-                            <td class="text-end">
-                                <a href="{{ route('admin.geographic.state', $state->id) }}" class="btn btn-sm btn-outline-success" title="Manage">
+                            <td style="padding:10px 12px;color:#475569;"><span class="badge bg-light text-dark">{{ $state->region->name ?? '-' }}</span></td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $state->counties_count ?? 0 }}</td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $state->constituencies_count ?? 0 }}</td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $state->payams_count ?? 0 }}</td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $state->bomas_count ?? 0 }}</td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $state->polling_stations_count ?? 0 }}</td>
+                            <td style="padding:10px 16px 10px 12px;text-align:right;">
+                                <a href="{{ route('admin.geographic.state', $state->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;" title="Manage">
                                     <i class="fas fa-cog"></i>
                                 </a>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">No states found</td>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="d-flex align-items-center justify-content-center mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(108,117,125,0.08);">
+                                        <i class="fas fa-map" style="color:#6c757d;font-size:1.25rem;"></i>
+                                    </div>
+                                    <p class="text-muted mb-0">No states found</p>
+                                </div>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -96,41 +103,48 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th class="small fw-semibold">Administrative Area</th>
-                            <th class="small fw-semibold">Region</th>
-                            <th class="small fw-semibold text-center">Counties</th>
-                            <th class="small fw-semibold text-center">Constituencies</th>
-                            <th class="small fw-semibold text-center">Payams</th>
-                            <th class="small fw-semibold text-center">Bomas</th>
-                            <th class="small fw-semibold text-center">Stations</th>
-                            <th class="small fw-semibold text-end">Actions</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 8px 10px 16px;font-size:0.75rem;letter-spacing:0.3px;">ADMINISTRATIVE AREA</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">REGION</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">COUNTIES</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">CONSTITUENCIES</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">PAYAMS</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">BOMAS</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">STATIONS</th>
+                            <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 16px 10px 12px;text-align:right;font-size:0.75rem;letter-spacing:0.3px;">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($adminAreas as $area)
-                        <tr>
-                            <td>
+                        <tr style="border-bottom:1px solid #f1f3f5;">
+                            <td style="padding:10px 8px 10px 16px;color:#1e293b;">
                                 <div class="fw-semibold">{{ $area->name }} <span class="badge bg-warning text-dark ms-1" style="font-size:8px;">ADMIN AREA</span></div>
-                                <small class="text-muted">{{ $area->code }} · {{ $area->capital }}</small>
+                                <small style="color:#64748b;">{{ $area->code }} · {{ $area->capital }}</small>
                             </td>
-                            <td><span class="badge bg-light text-dark">{{ $area->region->name ?? '-' }}</span></td>
-                            <td class="text-center fw-semibold">{{ $area->counties_count ?? 0 }}</td>
-                            <td class="text-center fw-semibold">{{ $area->constituencies_count ?? 0 }}</td>
-                            <td class="text-center fw-semibold">{{ $area->payams_count ?? 0 }}</td>
-                            <td class="text-center fw-semibold">{{ $area->bomas_count ?? 0 }}</td>
-                            <td class="text-center fw-semibold">{{ $area->polling_stations_count ?? 0 }}</td>
-                            <td class="text-end">
-                                <a href="{{ route('admin.geographic.state', $area->id) }}" class="btn btn-sm btn-outline-success" title="Manage">
+                            <td style="padding:10px 12px;color:#475569;"><span class="badge bg-light text-dark">{{ $area->region->name ?? '-' }}</span></td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $area->counties_count ?? 0 }}</td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $area->constituencies_count ?? 0 }}</td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $area->payams_count ?? 0 }}</td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $area->bomas_count ?? 0 }}</td>
+                            <td style="padding:10px 12px;color:#475569;text-align:center;font-weight:600;">{{ $area->polling_stations_count ?? 0 }}</td>
+                            <td style="padding:10px 16px 10px 12px;text-align:right;">
+                                <a href="{{ route('admin.geographic.state', $area->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;" title="Manage">
                                     <i class="fas fa-cog"></i>
                                 </a>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">No administrative areas found</td>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="d-flex align-items-center justify-content-center mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(108,117,125,0.08);">
+                                        <i class="fas fa-map" style="color:#6c757d;font-size:1.25rem;"></i>
+                                    </div>
+                                    <p class="text-muted mb-0">No administrative areas found</p>
+                                </div>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>

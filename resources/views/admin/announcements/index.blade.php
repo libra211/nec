@@ -8,69 +8,103 @@
     <a href="{{ route('admin.announcements.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Announcement</a>
 </div>
 
-<div class="card mb-3">
+<div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
     <div class="card-body py-2 px-3 d-flex align-items-center flex-wrap gap-2">
         <a href="{{ route('admin.announcements.index') }}" class="btn btn-sm {{ !$currentStatus ? 'btn-dark' : 'btn-outline-secondary' }}">All <span class="badge bg-secondary ms-1">{{ $counts['all'] }}</span></a>
         <a href="{{ route('admin.announcements.index', ['status' => 'published']) }}" class="btn btn-sm {{ $currentStatus === 'published' ? 'btn-success' : 'btn-outline-success' }}">Published <span class="badge bg-success ms-1">{{ $counts['published'] }}</span></a>
         <a href="{{ route('admin.announcements.index', ['status' => 'draft']) }}" class="btn btn-sm {{ $currentStatus === 'draft' ? 'btn-warning' : 'btn-outline-warning' }}">Drafts <span class="badge bg-warning text-dark ms-1">{{ $counts['draft'] }}</span></a>
         <a href="{{ route('admin.announcements.index', ['status' => 'trash']) }}" class="btn btn-sm {{ $currentStatus === 'trash' ? 'btn-danger' : 'btn-outline-danger' }}">Trash <span class="badge bg-danger ms-1">{{ $counts['trash'] }}</span></a>
-        <form action="" method="GET" class="d-inline-flex align-items-center gap-1 ms-auto">
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
+    <div class="card-body">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span style="width:28px;height:28px;border-radius:8px;background:rgba(46,139,87,0.1);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-search" style="color:#2E8B57;font-size:13px;"></i>
+            </span>
+            <span style="font-size:0.85rem;font-weight:600;color:#1e293b;">Search</span>
+            @if(request('search'))
+                <a href="{{ route('admin.announcements.index', $currentStatus ? ['status' => $currentStatus] : []) }}" class="text-decoration-none" style="font-size:0.75rem;color:#64748b;margin-left:auto;">Clear</a>
+            @endif
+        </div>
+        <form action="" method="GET" class="row g-3">
             @if($currentStatus) <input type="hidden" name="status" value="{{ $currentStatus }}"> @endif
-            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search announcements..." value="{{ request('search') }}" style="width:200px;">
-            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-search"></i></button>
+            <div class="col-md-4">
+                <label class="d-block mb-1" style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;color:#64748b;">Search</label>
+                <input type="text" name="search" class="form-control" placeholder="Search announcements..." value="{{ request('search') }}" style="border-radius:8px;">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-success w-100" style="border-radius:8px;"><i class="fas fa-search"></i> Search</button>
+            </div>
         </form>
     </div>
 </div>
 
 <form action="{{ route('admin.announcements.bulk-action') }}" method="POST" id="bulkForm">@csrf
-<div class="card"><div class="card-body p-0">
-<table class="table table-hover mb-0">
-    <thead class="table-light">
-        <tr>
-            <th width="30"><input type="checkbox" id="selectAll"></th>
-            <th>Title</th>
-            <th>Type</th>
-            <th class="text-center">Views</th>
-            <th>Status</th>
-            <th>Published</th>
-            <th class="text-center">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @forelse($announcements as $item)
-        <tr>
-            <td><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="row-checkbox"></td>
-            <td>
-                <a href="{{ route('admin.announcements.edit', $item->id) }}" class="fw-semibold text-decoration-none">{{ e($item->title) }}</a>
-                @if($item->meta_description)
-                <div class="small text-muted">{{ Str::limit(e($item->meta_description), 80) }}</div>
-                @endif
-            </td>
-            <td><span class="badge bg-info">{{ e($item->type ?? 'general') }}</span></td>
-            <td class="text-center"><span class="badge bg-secondary"><i class="fas fa-eye me-1"></i>{{ number_format($item->views ?? 0) }}</span></td>
-            <td>
-                @if($item->status === 'published') <span class="badge bg-success">Published</span>
-                @elseif($item->status === 'draft') <span class="badge bg-warning text-dark">Draft</span>
-                @else <span class="badge bg-danger">Trash</span> @endif
-            </td>
-            <td class="small">{{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('d M Y') : ($item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('d M Y') : '—') }}</td>
-            <td class="text-center" style="white-space:nowrap;">
-                @if($item->status !== 'trash')
-                <a href="{{ route('admin.announcements.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
-                <a href="{{ route('admin.announcements.toggle-status', $item->id) }}" class="btn btn-sm btn-outline-{{ $item->status === 'published' ? 'warning' : 'success' }}" title="{{ $item->status === 'published' ? 'Unpublish' : 'Publish' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
-                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.announcements.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
-                @else
-                <a href="{{ route('admin.announcements.restore', $item->id) }}" class="btn btn-sm btn-outline-success" title="Restore"><i class="fas fa-undo"></i></a>
-                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('{{ route('admin.announcements.force-delete', $item->id) }}')" title="Delete"><i class="fas fa-times"></i></button>
-                @endif
-            </td>
-        </tr>
-        @empty
-        <tr><td colspan="7" class="text-center py-4 text-muted">No announcements found.</td></tr>
-        @endforelse
-    </tbody>
-</table>
-</div>@if($announcements->hasPages())<div class="card-footer">{{ $announcements->links() }}</div>@endif</div>
+<div class="card border-0 shadow-sm rounded-3 overflow-hidden mb-3">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 8px 10px 16px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;width:30px;"><input type="checkbox" id="selectAll" style="accent-color:#fff;"></th>
+                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Title</th>
+                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Type</th>
+                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;text-align:center;">Views</th>
+                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Status</th>
+                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Published</th>
+                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 16px 10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($announcements as $item)
+                <tr style="border-bottom:1px solid #f1f3f5;">
+                    <td style="padding:10px 8px 10px 16px;"><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="row-checkbox"></td>
+                    <td style="padding:10px 12px;">
+                        <a href="{{ route('admin.announcements.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ e($item->title) }}</a>
+                        @if($item->meta_description)
+                        <div class="small text-muted" style="color:#64748b;">{{ Str::limit(e($item->meta_description), 80) }}</div>
+                        @endif
+                    </td>
+                    <td style="padding:10px 12px;"><span class="badge bg-info">{{ e($item->type ?? 'general') }}</span></td>
+                    <td style="padding:10px 12px;text-align:center;"><span class="badge bg-secondary"><i class="fas fa-eye me-1"></i>{{ number_format($item->views ?? 0) }}</span></td>
+                    <td style="padding:10px 12px;">
+                        @if($item->status === 'published') <span class="badge bg-success">Published</span>
+                        @elseif($item->status === 'draft') <span class="badge bg-warning text-dark">Draft</span>
+                        @else <span class="badge bg-danger">Trash</span> @endif
+                    </td>
+                    <td style="padding:10px 12px;color:#64748b;">{{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('d M Y') : ($item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('d M Y') : '—') }}</td>
+                    <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
+                        @if($item->status !== 'trash')
+                        <a href="{{ route('admin.announcements.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                        <a href="{{ route('admin.announcements.toggle-status', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba({{ $item->status === 'published' ? '6,182,212' : '46,139,87' }},0.08);color:{{ $item->status === 'published' ? '#0891b2' : '#2E8B57' }};border:none;" title="{{ $item->status === 'published' ? 'Unpublish' : 'Publish' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
+                        <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.announcements.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        @else
+                        <a href="{{ route('admin.announcements.restore', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;" title="Restore"><i class="fas fa-undo"></i></a>
+                        <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.announcements.force-delete', $item->id) }}')" title="Delete"><i class="fas fa-times"></i></button>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        <div style="width:52px;height:52px;border-radius:14px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="fas fa-bullhorn" style="color:#94a3b8;font-size:20px;"></i>
+                        </div>
+                        <p style="color:#64748b;margin-bottom:8px;font-size:0.9rem;">No announcements found.</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($announcements->total() > 0)
+    <div class="card-footer bg-white border-top d-flex flex-wrap justify-content-between align-items-center gap-2 px-4 py-3">
+        <div style="font-size:0.75rem;color:#64748b;">Showing {{ $announcements->firstItem() }} to {{ $announcements->lastItem() }} of {{ $announcements->total() }} entries</div>
+        {{ $announcements->links() }}
+    </div>
+    @endif
+</div>
 
 <div class="mt-2 d-flex align-items-center gap-2">
     <span class="text-muted small" id="selectedCount">0 selected</span>

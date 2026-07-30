@@ -54,12 +54,16 @@ class AdminSubscriberController extends Controller
         }, 'subscribers_' . date('Y-m-d') . '.csv', [
             'Content-Type' => 'text/csv',
         ]);
+
+        $this->logActivity('subscriber_exported', "Exported " . $subscribers->count() . " subscribers to CSV");
     }
 
     public function destroy($id)
     {
         $subscriber = Subscriber::findOrFail($id);
         $subscriber->delete();
+
+        $this->logActivity('subscriber_deleted', "Deleted subscriber: {$subscriber->email}", $subscriber);
 
         return redirect()->route('admin.subscribers.index')->with('success', 'Subscriber deleted.');
     }

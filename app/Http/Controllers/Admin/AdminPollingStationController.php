@@ -53,7 +53,9 @@ class AdminPollingStationController extends Controller
             'status' => 'required|in:active,inactive,trash',
         ]);
 
-        PollingStation::create($validated);
+        $pollingStation = PollingStation::create($validated);
+
+        $this->logActivity('polling_station_created', "Created polling station: {$pollingStation->name}", $pollingStation);
 
         return redirect()->route('admin.polling-stations.index')->with('success', 'Polling station created.');
     }
@@ -85,6 +87,8 @@ class AdminPollingStationController extends Controller
 
         $pollingStation->update($validated);
 
+        $this->logActivity('polling_station_updated', "Updated polling station: {$pollingStation->name}", $pollingStation);
+
         return redirect()->route('admin.polling-stations.index')->with('success', 'Polling station updated.');
     }
 
@@ -92,6 +96,8 @@ class AdminPollingStationController extends Controller
     {
         $pollingStation = PollingStation::findOrFail($id);
         $pollingStation->delete();
+
+        $this->logActivity('polling_station_deleted', "Deleted polling station: {$pollingStation->name}", $pollingStation);
 
         return redirect()->route('admin.polling-stations.index')->with('success', 'Polling station deleted.');
     }

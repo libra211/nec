@@ -148,6 +148,8 @@ class AdminSettingController extends Controller
             \App\Helpers\NecHelper::setting_set($key, $value ?? '');
         }
 
+        $this->logActivity('settings_updated', "Updated settings tab: {$tab}");
+
         return back()->with('success', 'Settings updated successfully.')->with('active_tab', $tab);
     }
 
@@ -215,6 +217,8 @@ class AdminSettingController extends Controller
             $result['message'] = 'Error: ' . $e->getMessage();
         }
 
+        $this->logActivity('tool_executed', "Ran tool: {$tool}");
+
         return response()->json($result);
     }
 
@@ -269,6 +273,8 @@ class AdminSettingController extends Controller
         $user->update($updateData);
 
         session(['admin_user_name' => $updateData['name'], 'admin_email' => $updateData['email']]);
+
+        $this->logActivity('profile_updated', "Updated profile: {$user->name}", $user);
 
         return back()->with('success', 'Profile updated successfully.')->with('active_tab', 'profile');
     }
@@ -333,14 +339,11 @@ class AdminSettingController extends Controller
             }
         }
 
+        $this->logActivity('public_display_updated', "Updated public display settings");
+
         return back()->with('success', 'Public display settings updated.')->with('active_tab', 'public-display');
     }
 
-    public function loginLogs()
-    {
-        $logs = LoginLog::latest('logged_at')->paginate(50);
-        return view('admin.settings.partials.login-logs', compact('logs'));
-    }
 }
 
 if (!function_exists('tail')) {

@@ -65,7 +65,9 @@ class AdminGalleryController extends Controller
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['title']);
 
-        Gallery::create($validated);
+        $gallery = Gallery::create($validated);
+
+        $this->logActivity('gallery_created', "Created gallery: {$gallery->title}", $gallery);
 
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery image created.');
     }
@@ -95,6 +97,8 @@ class AdminGalleryController extends Controller
 
         $gallery->update($validated);
 
+        $this->logActivity('gallery_updated', "Updated gallery: {$gallery->title}", $gallery);
+
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery image updated.');
     }
 
@@ -104,6 +108,8 @@ class AdminGalleryController extends Controller
         $gallery->status = 'trash';
         $gallery->save();
         $gallery->delete();
+
+        $this->logActivity('gallery_deleted', "Deleted gallery: {$gallery->title}", $gallery);
 
         return redirect()->route('admin.gallery.index')->with('success', 'Gallery image moved to trash.');
     }
@@ -124,6 +130,8 @@ class AdminGalleryController extends Controller
             default => throw new \InvalidArgumentException("Unknown action: {$action}"),
         };
 
+        $this->logActivity('gallery_bulk_action', "Bulk {$action} on {$count} gallery items");
+
         return back()->with('success', "{$count} image(s) updated.");
     }
 
@@ -132,6 +140,8 @@ class AdminGalleryController extends Controller
         $gallery = Gallery::findOrFail($id);
         $gallery->status = $gallery->status === 'published' ? 'draft' : 'published';
         $gallery->save();
+
+        $this->logActivity('gallery_status_changed', "Changed gallery {$gallery->title} status to {$gallery->status}", $gallery);
 
         return back()->with('success', 'Image status toggled.');
     }
@@ -143,12 +153,18 @@ class AdminGalleryController extends Controller
         $gallery->save();
         $gallery->restore();
 
+        $this->logActivity('gallery_restored', "Restored gallery: {$gallery->title}", $gallery);
+
         return redirect()->route('admin.gallery.index')->with('success', 'Image restored.');
     }
 
     public function forceDelete($id)
     {
-        Gallery::onlyTrashed()->findOrFail($id)->forceDelete();
+        $gallery = Gallery::onlyTrashed()->findOrFail($id);
+        $gallery->forceDelete();
+
+        $this->logActivity('gallery_force_deleted', "Permanently deleted gallery: {$gallery->title}", $gallery);
+
         return redirect()->route('admin.gallery.index')->with('success', 'Image permanently deleted.');
     }
 }

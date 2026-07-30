@@ -61,7 +61,9 @@ class AdminEducationController extends Controller
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['title']);
 
-        EducationMaterial::create($validated);
+        $material = EducationMaterial::create($validated);
+
+        $this->logActivity('education_created', "Created education material: {$material->title}", $material);
 
         return redirect()->route('admin.education.index')->with('success', 'Education material created.');
     }
@@ -93,6 +95,8 @@ class AdminEducationController extends Controller
 
         $material->update($validated);
 
+        $this->logActivity('education_updated', "Updated education material: {$material->title}", $material);
+
         return redirect()->route('admin.education.index')->with('success', 'Education material updated.');
     }
 
@@ -102,6 +106,8 @@ class AdminEducationController extends Controller
         $material->status = 'trash';
         $material->save();
         $material->delete();
+
+        $this->logActivity('education_deleted', "Deleted education material: {$material->title}", $material);
 
         return redirect()->route('admin.education.index')->with('success', 'Education material moved to trash.');
     }
@@ -122,6 +128,8 @@ class AdminEducationController extends Controller
             default => throw new \InvalidArgumentException("Unknown action: {$action}"),
         };
 
+        $this->logActivity('education_bulk_action', "Bulk {$action} on {$count} education materials");
+
         return back()->with('success', "{$count} material(s) updated.");
     }
 
@@ -130,6 +138,8 @@ class AdminEducationController extends Controller
         $material = EducationMaterial::findOrFail($id);
         $material->status = $material->status === 'published' ? 'draft' : 'published';
         $material->save();
+
+        $this->logActivity('education_status_changed', "Changed education material {$material->title} status to {$material->status}", $material);
 
         return back()->with('success', 'Material status toggled.');
     }
@@ -141,12 +151,18 @@ class AdminEducationController extends Controller
         $material->save();
         $material->restore();
 
+        $this->logActivity('education_restored', "Restored education material: {$material->title}", $material);
+
         return redirect()->route('admin.education.index')->with('success', 'Material restored.');
     }
 
     public function forceDelete($id)
     {
-        EducationMaterial::onlyTrashed()->findOrFail($id)->forceDelete();
+        $material = EducationMaterial::onlyTrashed()->findOrFail($id);
+        $material->forceDelete();
+
+        $this->logActivity('education_force_deleted', "Permanently deleted education material: {$material->title}", $material);
+
         return redirect()->route('admin.education.index')->with('success', 'Material permanently deleted.');
     }
 }

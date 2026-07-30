@@ -54,7 +54,9 @@ class AdminPetitionController extends Controller
             'status' => 'required|in:filed,hearing,decided,dismissed,withdrawn',
         ]);
 
-        ElectionPetition::create(InputSanitizer::clean($validated));
+        $petition = ElectionPetition::create(InputSanitizer::clean($validated));
+
+        $this->logActivity('petition_created', "Created petition: {$petition->petition_number}", $petition);
 
         return redirect()->route('admin.petitions.index')->with('success', 'Election petition filed successfully.');
     }
@@ -84,12 +86,15 @@ class AdminPetitionController extends Controller
 
         $petition->update(InputSanitizer::clean($validated));
 
+        $this->logActivity('petition_updated', "Updated petition: {$petition->petition_number}", $petition);
+
         return redirect()->route('admin.petitions.index')->with('success', 'Petition updated successfully.');
     }
 
     public function destroy(ElectionPetition $petition)
     {
         $petition->delete();
+        $this->logActivity('petition_deleted', "Deleted petition: {$petition->petition_number}", $petition);
         return back()->with('success', 'Petition record deleted.');
     }
 }

@@ -59,7 +59,9 @@ class AdminBallotController extends Controller
             'notes' => 'nullable|string|max:2000',
         ]);
 
-        Ballot::create(InputSanitizer::clean($validated));
+        $ballot = Ballot::create(InputSanitizer::clean($validated));
+
+        $this->logActivity('ballot_created', "Created ballot: {$ballot->election_name}", $ballot);
 
         return redirect()->route('admin.ballots.index')->with('success', 'Ballot record created successfully.');
     }
@@ -89,12 +91,15 @@ class AdminBallotController extends Controller
 
         $ballot->update(InputSanitizer::clean($validated));
 
+        $this->logActivity('ballot_updated', "Updated ballot: {$ballot->election_name}", $ballot);
+
         return redirect()->route('admin.ballots.index')->with('success', 'Ballot record updated successfully.');
     }
 
     public function destroy(Ballot $ballot)
     {
         $ballot->delete();
+        $this->logActivity('ballot_deleted', "Deleted ballot: {$ballot->election_name}", $ballot);
         return back()->with('success', 'Ballot record deleted.');
     }
 }

@@ -45,12 +45,32 @@ class AdminVoterController extends Controller
             $query->where('constituency', $constituency);
         }
 
-        $voters = $query->orderByDesc('created_at')->paginate(20);
+        $sortColumn = $request->input('sort', 'created_at');
+        $sortDirection = $request->input('direction', 'desc');
+
+        $allowedSortColumns = ['voter_id', 'full_name', 'gender', 'state', 'county', 'constituency', 'status', 'created_at'];
+        if (!in_array($sortColumn, $allowedSortColumns)) {
+            $sortColumn = 'created_at';
+        }
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $voters = $query->orderBy($sortColumn, $sortDirection)->paginate(20);
         $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->pluck('name');
         $counties = Voter::whereNull('deleted_at')->whereNotNull('county')->distinct()->pluck('county')->filter()->sort()->values();
         $constituencies = Voter::whereNull('deleted_at')->whereNotNull('constituency')->distinct()->pluck('constituency')->filter()->sort()->values();
 
-        return view('admin.voters.index', compact('voters', 'states', 'counties', 'constituencies'));
+        $stats = [
+            'total_voters' => Voter::whereNull('deleted_at')->count(),
+            'active_voters' => Voter::whereNull('deleted_at')->where('status', 'active')->count(),
+            'suspended_voters' => Voter::whereNull('deleted_at')->where('status', 'suspended')->count(),
+            'male_voters' => Voter::whereNull('deleted_at')->where('gender', 'M')->count(),
+            'female_voters' => Voter::whereNull('deleted_at')->where('gender', 'F')->count(),
+            'pending_transfers' => \App\Models\VoterTransfer::where('status', 'pending')->count(),
+        ];
+
+        return view('admin.voters.index', compact('voters', 'states', 'counties', 'constituencies', 'stats'));
     }
 
     public function create()
@@ -251,7 +271,7 @@ class AdminVoterController extends Controller
             fclose($handle);
         };
 
-        $this->logActivity('voters_exported', "Exported " . $voters->count() . " voters to CSV");
+        $this->logActivity('voters_exported', "Exported " . $voters->count() . " voters to CSV", $voters->first());
 
         return response()->stream($callback, 200, $headers);
     }
@@ -267,6 +287,7 @@ class AdminVoterController extends Controller
         $voterIds = $validated['voter_ids'];
         $count = 0;
         $now = now();
+        $firstVoter = null;
 
         foreach ($voterIds as $voterId) {
             $voter = Voter::where('id', $voterId)->whereNull('deleted_at')->first();
@@ -280,10 +301,11 @@ class AdminVoterController extends Controller
                 'delete' => $voter->update(['deleted_at' => $now, 'updated_at' => $now]),
             };
 
+            $firstVoter ??= $voter;
             $count++;
         }
 
-        $this->logActivity('voter_bulk_action', "Bulk {$action} on {$count} voters");
+        $this->logActivity('voter_bulk_action', "Bulk {$action} on {$count} voters", $firstVoter);
 
         return back()->with('success', "{$count} voters processed successfully.");
     }

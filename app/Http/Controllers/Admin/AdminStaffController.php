@@ -52,7 +52,7 @@ class AdminStaffController extends Controller
             'state' => 'nullable|string|max:100',
         ]);
 
-        User::create([
+        $staff = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
@@ -63,6 +63,8 @@ class AdminStaffController extends Controller
             'employee_id' => 'EMP' . strtoupper(uniqid()),
             'status' => 'active',
         ]);
+
+        $this->logActivity('staff_created', "Created staff: {$staff->name} ({$staff->email})", $staff);
 
         return redirect()->route('admin.staff.index')->with('success', 'Staff member created successfully.');
     }
@@ -103,12 +105,15 @@ class AdminStaffController extends Controller
 
         $staff->update($data);
 
+        $this->logActivity('staff_updated', "Updated staff: {$staff->name}", $staff);
+
         return redirect()->route('admin.staff.index')->with('success', 'Staff member updated successfully.');
     }
 
     public function destroy(User $staff)
     {
         $staff->delete();
+        $this->logActivity('staff_deleted', "Deleted staff: {$staff->name}", $staff);
         return redirect()->route('admin.staff.index')->with('success', 'Staff member deleted.');
     }
 
@@ -117,6 +122,8 @@ class AdminStaffController extends Controller
         $request->validate(['status' => 'required|in:active,inactive,suspended']);
 
         $staff->update(['status' => $request->input('status')]);
+
+        $this->logActivity('staff_status_changed', "Changed staff {$staff->name} status to {$request->input('status')}", $staff);
 
         return back()->with('success', 'Status updated successfully.');
     }
@@ -132,6 +139,8 @@ class AdminStaffController extends Controller
             'state' => $request->input('state'),
             'department' => $request->input('department'),
         ]);
+
+        $this->logActivity('staff_assigned', "Assigned staff {$staff->name} to state: {$request->input('state')}, dept: {$request->input('department')}", $staff);
 
         return back()->with('success', 'Assignment updated successfully.');
     }

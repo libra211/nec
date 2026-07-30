@@ -61,7 +61,9 @@ class AdminSpeechController extends Controller
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['title']);
 
-        Speech::create($validated);
+        $speech = Speech::create($validated);
+
+        $this->logActivity('speech_created', "Created speech: {$speech->title}", $speech);
 
         return redirect()->route('admin.speeches.index')->with('success', 'Speech created.');
     }
@@ -93,6 +95,8 @@ class AdminSpeechController extends Controller
 
         $speech->update($validated);
 
+        $this->logActivity('speech_updated', "Updated speech: {$speech->title}", $speech);
+
         return redirect()->route('admin.speeches.index')->with('success', 'Speech updated.');
     }
 
@@ -102,6 +106,8 @@ class AdminSpeechController extends Controller
         $speech->status = 'trash';
         $speech->save();
         $speech->delete();
+
+        $this->logActivity('speech_deleted', "Deleted speech: {$speech->title}", $speech);
 
         return redirect()->route('admin.speeches.index')->with('success', 'Speech moved to trash.');
     }
@@ -122,6 +128,8 @@ class AdminSpeechController extends Controller
             default => throw new \InvalidArgumentException("Unknown action: {$action}"),
         };
 
+        $this->logActivity('speech_bulk_action', "Bulk {$action} on {$count} speeches");
+
         return back()->with('success', "{$count} speech(es) updated.");
     }
 
@@ -130,6 +138,8 @@ class AdminSpeechController extends Controller
         $speech = Speech::findOrFail($id);
         $speech->status = $speech->status === 'published' ? 'draft' : 'published';
         $speech->save();
+
+        $this->logActivity('speech_status_changed', "Changed speech {$speech->title} status to {$speech->status}", $speech);
 
         return back()->with('success', 'Speech status toggled.');
     }
@@ -141,12 +151,18 @@ class AdminSpeechController extends Controller
         $speech->save();
         $speech->restore();
 
+        $this->logActivity('speech_restored', "Restored speech: {$speech->title}", $speech);
+
         return redirect()->route('admin.speeches.index')->with('success', 'Speech restored.');
     }
 
     public function forceDelete($id)
     {
-        Speech::onlyTrashed()->findOrFail($id)->forceDelete();
+        $speech = Speech::onlyTrashed()->findOrFail($id);
+        $speech->forceDelete();
+
+        $this->logActivity('speech_force_deleted', "Permanently deleted speech: {$speech->title}", $speech);
+
         return redirect()->route('admin.speeches.index')->with('success', 'Speech permanently deleted.');
     }
 }

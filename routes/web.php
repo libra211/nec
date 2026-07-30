@@ -193,7 +193,8 @@ Route::post('/api/voter/check-duplicate', [VoterController::class, 'checkDuplica
 Route::post('/api/voter/auto-save', [VoterController::class, 'autoSave'])->name('api.voter.auto-save');
 
 // Admin login (redirect to unified)
-Route::redirect('/admin/login', '/login')->name('admin.login');
+Route::get('/admin/login', function () { return redirect('/login'); })->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'unifiedLogin'])->middleware('throttle:login')->name('admin.login.submit');
 Route::redirect('/admin/forgot-password', '/forgot-password')->name('admin.forgot-password');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
@@ -242,6 +243,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Parties
     Route::put('parties/{id}/toggle-status', [AdminPartyController::class, 'toggleStatus'])->name('parties.toggle-status');
+    Route::get('parties/trashed', [AdminPartyController::class, 'trashed'])->name('parties.trashed');
+    Route::post('parties/{id}/restore', [AdminPartyController::class, 'restore'])->name('parties.restore');
+    Route::delete('parties/{id}/force-delete', [AdminPartyController::class, 'forceDelete'])->name('parties.force-delete');
     Route::resource('parties', AdminPartyController::class);
 
     // Observers
@@ -350,6 +354,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Candidates
     Route::put('candidates/{id}/toggle-status', [AdminCandidateController::class, 'toggleStatus'])->name('candidates.toggle-status');
+    Route::get('candidates/trashed', [AdminCandidateController::class, 'trashed'])->name('candidates.trashed');
+    Route::post('candidates/{id}/restore', [AdminCandidateController::class, 'restore'])->name('candidates.restore');
+    Route::delete('candidates/{id}/force-delete', [AdminCandidateController::class, 'forceDelete'])->name('candidates.force-delete');
     Route::resource('candidates', AdminCandidateController::class);
 
     // Results
@@ -418,6 +425,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('permissions/sync', [\App\Http\Controllers\Admin\PermissionController::class, 'sync'])->name('permissions.sync');
 
     // Registration Agents
+    Route::get('agents/trashed', [AgentController::class, 'trashed'])->name('agents.trashed');
+    Route::post('agents/{id}/restore', [AgentController::class, 'restore'])->name('agents.restore');
+    Route::delete('agents/{id}/force-delete', [AgentController::class, 'forceDelete'])->name('agents.force-delete');
     Route::resource('agents', AgentController::class)->except(['show']);
     Route::patch('agents/{agent}/status', [AgentController::class, 'updateStatus'])->name('agents.status');
     Route::get('agents/{agent}/voters', [AgentController::class, 'voters'])->name('agents.voters');

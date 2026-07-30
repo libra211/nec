@@ -37,7 +37,9 @@ class AdminCommissionerController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        Commissioner::create($validated);
+        $commissioner = Commissioner::create($validated);
+
+        $this->logActivity('commissioner_created', "Created commissioner: {$commissioner->name}", $commissioner);
 
         return redirect()->route('admin.commissioners.index')->with('success', 'Commissioner added.');
     }
@@ -64,6 +66,8 @@ class AdminCommissionerController extends Controller
 
         $commissioner->update($validated);
 
+        $this->logActivity('commissioner_updated', "Updated commissioner: {$commissioner->name}", $commissioner);
+
         return redirect()->route('admin.commissioners.index')->with('success', 'Commissioner updated.');
     }
 
@@ -71,6 +75,8 @@ class AdminCommissionerController extends Controller
     {
         $commissioner = Commissioner::findOrFail($id);
         $commissioner->delete();
+
+        $this->logActivity('commissioner_deleted', "Deleted commissioner: {$commissioner->name}", $commissioner);
 
         return redirect()->route('admin.commissioners.index')->with('success', 'Commissioner deleted.');
     }

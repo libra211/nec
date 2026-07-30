@@ -60,7 +60,9 @@ class AdminPollingStaffController extends Controller
             'notes' => 'nullable|string|max:2000',
         ]);
 
-        PollingStaff::create(InputSanitizer::clean($validated));
+        $staff = PollingStaff::create(InputSanitizer::clean($validated));
+
+        $this->logActivity('polling_staff_created', "Created polling staff: {$staff->full_name}", $staff);
 
         return redirect()->route('admin.polling-staff.index')->with('success', 'Polling staff member added successfully.');
     }
@@ -89,12 +91,15 @@ class AdminPollingStaffController extends Controller
 
         $pollingStaff->update(InputSanitizer::clean($validated));
 
+        $this->logActivity('polling_staff_updated', "Updated polling staff: {$pollingStaff->full_name}", $pollingStaff);
+
         return redirect()->route('admin.polling-staff.index')->with('success', 'Polling staff updated successfully.');
     }
 
     public function destroy(PollingStaff $pollingStaff)
     {
         $pollingStaff->delete();
+        $this->logActivity('polling_staff_deleted', "Deleted polling staff: {$pollingStaff->full_name}", $pollingStaff);
         return back()->with('success', 'Polling staff member removed.');
     }
 
@@ -102,6 +107,7 @@ class AdminPollingStaffController extends Controller
     {
         $pollingStaff->status = $pollingStaff->status === 'active' ? 'inactive' : 'active';
         $pollingStaff->save();
+        $this->logActivity('polling_staff_status_changed', "Changed polling staff {$pollingStaff->full_name} status to {$pollingStaff->status}", $pollingStaff);
         return back()->with('success', 'Status updated to ' . ucfirst($pollingStaff->status) . '.');
     }
 }

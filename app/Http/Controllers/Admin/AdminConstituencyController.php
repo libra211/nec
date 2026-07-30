@@ -53,7 +53,9 @@ class AdminConstituencyController extends Controller
             'status' => 'required|in:active,inactive,trash',
         ]);
 
-        Constituency::create($validated);
+        $constituency = Constituency::create($validated);
+
+        $this->logActivity('constituency_created', "Created constituency: {$constituency->name}", $constituency);
 
         return redirect()->route('admin.constituencies.index')->with('success', 'Constituency created.');
     }
@@ -80,6 +82,8 @@ class AdminConstituencyController extends Controller
 
         $constituency->update($validated);
 
+        $this->logActivity('constituency_updated', "Updated constituency: {$constituency->name}", $constituency);
+
         return redirect()->route('admin.constituencies.index')->with('success', 'Constituency updated.');
     }
 
@@ -87,6 +91,8 @@ class AdminConstituencyController extends Controller
     {
         $constituency = Constituency::findOrFail($id);
         $constituency->delete();
+
+        $this->logActivity('constituency_deleted', "Deleted constituency: {$constituency->name}", $constituency);
 
         return redirect()->route('admin.constituencies.index')->with('success', 'Constituency deleted.');
     }

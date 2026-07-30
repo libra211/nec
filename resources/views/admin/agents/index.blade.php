@@ -71,16 +71,27 @@
     </div>
 </div>
 
-<div class="card border-0 shadow-sm mb-4">
+<div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
     <div class="card-body">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="d-inline-flex align-items-center justify-content-center" style="width:28px;height:28px;border-radius:8px;background:rgba(46,139,87,0.1);color:#2E8B57;">
+                <i class="fas fa-filter" style="font-size:12px;"></i>
+            </span>
+            <span style="font-size:0.85rem;font-weight:600;color:#1e293b;">Filters & Search</span>
+            @if(request('search') || request('status') || request('state'))
+            <a href="{{ route('admin.agents.index') }}" class="ms-auto" style="font-size:0.75rem;color:#64748b;text-decoration:none;">
+                <i class="fas fa-times me-1"></i>Clear
+            </a>
+            @endif
+        </div>
         <form method="GET" action="{{ route('admin.agents.index') }}" class="row g-3 align-items-end">
             <div class="col-md-4">
-                <label class="form-label small text-muted">Search</label>
-                <input type="text" name="search" class="form-control" placeholder="Name, phone, or email..." value="{{ request('search') }}">
+                <label style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;color:#64748b;margin-bottom:4px;display:block;">Search</label>
+                <input type="text" name="search" class="form-control" placeholder="Name, phone, or email..." value="{{ request('search') }}" style="border-radius:8px;">
             </div>
             <div class="col-md-3">
-                <label class="form-label small text-muted">Status</label>
-                <select name="status" class="form-select">
+                <label style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;color:#64748b;margin-bottom:4px;display:block;">Status</label>
+                <select name="status" class="form-select" style="border-radius:8px;">
                     <option value="">All Status</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
@@ -88,8 +99,8 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label small text-muted">State</label>
-                <select name="state" class="form-select">
+                <label style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;color:#64748b;margin-bottom:4px;display:block;">State</label>
+                <select name="state" class="form-select" style="border-radius:8px;">
                     <option value="">All States</option>
                     @php
                         $allStates = [];
@@ -104,46 +115,46 @@
             </div>
             <div class="col-md-2">
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-outline-primary flex-grow-1"><i class="fas fa-search me-1"></i> Filter</button>
-                    <a href="{{ route('admin.agents.index') }}" class="btn btn-outline-secondary"><i class="fas fa-times"></i></a>
+                    <button type="submit" class="btn btn-success flex-grow-1" style="border-radius:8px;"><i class="fas fa-search me-1"></i> Filter</button>
+                    <a href="{{ route('admin.agents.index') }}" class="btn btn-outline-secondary" style="border-radius:8px;"><i class="fas fa-times"></i></a>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body">
+<div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+    <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="table-light">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Title</th>
-                        <th>Assigned Area</th>
-                        <th>Status</th>
-                        <th>Voters Registered</th>
-                        <th style="width:auto;">Actions</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 8px 10px 16px;font-size:0.75rem;letter-spacing:0.3px;">#</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Name</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Phone</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Email</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Title</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Assigned Area</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Status</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Voters</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 16px 10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:right;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($agents as $agent)
-                    <tr>
-                        <td>{{ $agents->firstItem() + $loop->index }}</td>
-                        <td>
+                    <tr style="border-bottom:1px solid #f1f3f5;">
+                        <td style="padding:10px 8px 10px 16px;color:#64748b;">{{ $agents->firstItem() + $loop->index }}</td>
+                        <td style="padding:10px 12px;">
                             <div class="d-flex align-items-center">
                                 <img src="{{ asset('assets/images/default-avatar.png') }}" alt="" class="rounded-circle me-2" width="32" height="32">
-                                <strong>{{ e($agent->first_name) }} {{ e($agent->last_name) }}</strong>
+                                <strong style="color:#1e293b;">{{ e($agent->first_name) }} {{ e($agent->last_name) }}</strong>
                             </div>
                         </td>
-                        <td>{{ e($agent->phone ?? '-') }}</td>
-                        <td>{{ e($agent->email ?? '-') }}</td>
-                        <td>{{ e($agent->title ?? '-') }}</td>
-                        <td>{{ e($agent->assigned_area ?? '-') }}</td>
-                        <td>
+                        <td style="padding:10px 12px;color:#475569;">{{ e($agent->phone ?? '-') }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ e($agent->email ?? '-') }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ e($agent->title ?? '-') }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ e($agent->assigned_area ?? '-') }}</td>
+                        <td style="padding:10px 12px;">
                             @php
                                 $statusClasses = [
                                     'active' => 'success',
@@ -153,28 +164,39 @@
                             @endphp
                             <span class="badge bg-{{ $statusClasses[$agent->status] ?? 'secondary' }}">{{ ucfirst($agent->status) }}</span>
                         </td>
-                        <td>{{ $agent->voters_count ?? 0 }}</td>
-                        <td style="white-space:nowrap;">
-                                    <a href="{{ route('admin.agents.voters', $agent) }}" class="btn btn-sm btn-outline-info" title="View Voters"><i class="fas fa-users"></i></a>
-                                    <a href="{{ route('admin.agents.edit', $agent) }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
-                                    <button type="button" class="btn btn-sm btn-outline-{{ $agent->status === 'active' ? 'warning' : 'success' }}" title="{{ $agent->status === 'active' ? 'Suspend' : 'Activate' }}" onclick="toggleStatus('{{ route('admin.agents.status', $agent) }}', {{ $agent->status === 'active' ? 'false' : 'true' }})"><i class="fas fa-{{ $agent->status === 'active' ? 'ban' : 'check' }}"></i></button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" onclick="confirmDelete('{{ route('admin.agents.destroy', $agent) }}')"><i class="fas fa-trash"></i></button>
+                        <td style="padding:10px 12px;color:#475569;">{{ $agent->voters_count ?? 0 }}</td>
+                        <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
+                            <a href="{{ route('admin.agents.voters', $agent) }}" class="btn btn-sm rounded-3" title="View Voters" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;"><i class="fas fa-users"></i></a>
+                            <a href="{{ route('admin.agents.edit', $agent) }}" class="btn btn-sm rounded-3" title="Edit" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;"><i class="fas fa-edit"></i></a>
+                            @php
+                                $toggleBg = $agent->status === 'active' ? 'rgba(245,158,11,0.08)' : 'rgba(34,197,94,0.08)';
+                                $toggleColor = $agent->status === 'active' ? '#f59e0b' : '#22c55e';
+                            @endphp
+                            <button type="button" class="btn btn-sm rounded-3" title="{{ $agent->status === 'active' ? 'Suspend' : 'Activate' }}" style="padding:3px 8px;background:{{ $toggleBg }};color:{{ $toggleColor }};border:none;" onclick="toggleStatus('{{ route('admin.agents.status', $agent) }}', {{ $agent->status === 'active' ? 'false' : 'true' }})"><i class="fas fa-{{ $agent->status === 'active' ? 'ban' : 'check' }}"></i></button>
+                            <button type="button" class="btn btn-sm rounded-3" title="Delete" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.agents.destroy', $agent) }}')"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="text-center py-4 text-muted">
-                            <i class="fas fa-user-tag fa-2x mb-2 d-block"></i>
-                            No registration agents found.
+                        <td colspan="9" class="text-center py-5">
+                            <div style="width:52px;height:52px;border-radius:14px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                                <i class="fas fa-user-tag text-muted" style="font-size:1.3rem;opacity:0.5;"></i>
+                            </div>
+                            <p class="text-muted mb-1" style="font-size:0.85rem;">No registration agents found</p>
+                            <p class="text-muted mb-3" style="font-size:0.7rem;">Try adjusting your search or filter criteria</p>
+                            <a href="{{ route('admin.agents.create') }}" class="btn btn-sm btn-success rounded-3 px-3"><i class="fas fa-plus me-1"></i>Add Agent</a>
                         </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="d-flex justify-content-center mt-3">
-            {{ $agents->withQueryString()->links() }}
+    </div>
+    <div class="card-footer bg-white border-top d-flex flex-wrap justify-content-between align-items-center gap-2 px-4 py-3">
+        <div style="font-size:0.75rem;color:#64748b;">
+            Showing {{ $agents->firstItem() }}–{{ $agents->lastItem() }} of {{ $agents->total() }} agents
         </div>
+        <div>{{ $agents->withQueryString()->links() }}</div>
     </div>
 </div>
 @endsection

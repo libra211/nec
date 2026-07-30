@@ -69,8 +69,8 @@ class AgentController extends Controller
 
         $validated['voters_registered'] = 0;
 
-        Agent::create($validated);
-        $this->logActivity('agent_created', "Created registration agent: {$validated['first_name']} {$validated['last_name']}");
+        $agent = Agent::create($validated);
+        $this->logActivity('agent_created', "Created registration agent: {$agent->full_name}", $agent);
 
         return redirect()->route('admin.agents.index')->with('success', 'Registration agent created successfully.');
     }
@@ -101,16 +101,15 @@ class AgentController extends Controller
         ]);
 
         $agent->update($validated);
-        $this->logActivity('agent_updated', "Updated registration agent: {$agent->full_name}");
+        $this->logActivity('agent_updated', "Updated registration agent: {$agent->full_name}", $agent);
 
         return redirect()->route('admin.agents.index')->with('success', 'Agent updated successfully.');
     }
 
     public function destroy(Agent $agent)
     {
-        $name = $agent->full_name;
         $agent->delete();
-        $this->logActivity('agent_deleted', "Deleted registration agent: {$name}");
+        $this->logActivity('agent_deleted', "Deleted registration agent: {$agent->full_name}", $agent);
 
         return redirect()->route('admin.agents.index')->with('success', 'Agent deleted.');
     }
@@ -119,7 +118,7 @@ class AgentController extends Controller
     {
         $request->validate(['status' => 'required|in:active,inactive,suspended']);
         $agent->update(['status' => $request->input('status')]);
-        $this->logActivity('agent_status_changed', "Agent {$agent->full_name} status -> {$request->input('status')}");
+        $this->logActivity('agent_status_changed', "Agent {$agent->full_name} status -> {$request->input('status')}", $agent);
 
         return redirect()->back()->with('success', 'Agent status updated.');
     }
@@ -131,5 +130,41 @@ class AgentController extends Controller
             ->paginate(20);
 
         return view('admin.agents.voters', compact('agent', 'voters'));
+    }
+
+    public function trashed(Request $request)
+    {
+        $query = Agent::onlyTrashed();
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $agents = $query->orderByDesc('deleted_at')->paginate(20);
+
+        return view('admin.agents.trashed', compact('agents'));
+    }
+
+    public function restore($id)
+    {
+        $agent = Agent::onlyTrashed()->findOrFail($id);
+        $agent->update(['deleted_at' => null, 'updated_at' => now()]);
+
+        $this->logActivity('agent_restored', "Restored agent: {$agent->full_name}", $agent);
+
+        return redirect()->route('admin.agents.index')->with('success', 'Agent restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $agent = Agent::onlyTrashed()->findOrFail($id);
+        $agent->forceDelete();
+
+        $this->logActivity('agent_force_deleted', "Permanently deleted agent: {$agent->full_name}", $agent);
+
+        return redirect()->route('admin.agents.trashed')->with('success', 'Agent permanently deleted.');
     }
 }

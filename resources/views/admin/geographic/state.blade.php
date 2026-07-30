@@ -122,47 +122,57 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead class="table-light">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
                                 <tr>
-                                    <th class="small fw-semibold">Station</th>
-                                    <th class="small fw-semibold">Constituency</th>
-                                    <th class="small fw-semibold text-center">Type</th>
-                                    <th class="small fw-semibold text-center">Voters</th>
-                                    <th class="small fw-semibold text-center">GPS</th>
-                                    <th class="small fw-semibold text-end">Actions</th>
+                                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 8px 10px 16px;font-size:0.75rem;letter-spacing:0.3px;">STATION</th>
+                                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">CONSTITUENCY</th>
+                                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">TYPE</th>
+                                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">VOTERS</th>
+                                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-align:center;">GPS</th>
+                                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 16px 10px 12px;text-align:right;font-size:0.75rem;letter-spacing:0.3px;">ACTIONS</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($pollingStations as $station)
-                                <tr>
-                                    <td class="fw-semibold small">{{ $station->name }}</td>
-                                    <td class="small text-muted">{{ $station->constituency->name ?? '-' }}</td>
-                                    <td class="text-center"><span class="badge bg-light text-dark">{{ $station->station_type ?? 'Standard' }}</span></td>
-                                    <td class="text-center small">{{ number_format($station->registered_voters ?? 0) }}</td>
-                                    <td class="text-center">
+                                <tr style="border-bottom:1px solid #f1f3f5;">
+                                    <td style="padding:10px 8px 10px 16px;color:#1e293b;font-weight:600;">{{ $station->name }}</td>
+                                    <td style="padding:10px 12px;color:#475569;">{{ $station->constituency->name ?? '-' }}</td>
+                                    <td style="padding:10px 12px;color:#475569;text-align:center;"><span class="badge bg-light text-dark">{{ $station->station_type ?? 'Standard' }}</span></td>
+                                    <td style="padding:10px 12px;color:#475569;text-align:center;">{{ number_format($station->registered_voters ?? 0) }}</td>
+                                    <td style="padding:10px 12px;color:#475569;text-align:center;">
                                         @if($station->latitude && $station->longitude)
                                         <span class="badge bg-success"><i class="fas fa-check"></i></span>
                                         @else
                                         <span class="badge bg-secondary">N/A</span>
                                         @endif
                                     </td>
-                                    <td class="text-end">
-                                        <a href="{{ route('admin.polling-stations.edit', $station->id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                    <td style="padding:10px 16px 10px 12px;text-align:right;">
+                                        <a href="{{ route('admin.polling-stations.edit', $station->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit">
                                             <i class="fas fa-pen"></i>
                                         </a>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-4 text-muted">No polling stations found</td>
+                                    <td colspan="6" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <div class="d-flex align-items-center justify-content-center mb-3" style="width:52px;height:52px;border-radius:14px;background:rgba(220,53,69,0.08);">
+                                                <i class="fas fa-map-pin" style="color:#dc3545;font-size:1.25rem;"></i>
+                                            </div>
+                                            <p class="text-muted mb-0">No polling stations found</p>
+                                        </div>
+                                    </td>
                                 </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    @if($pollingStations->hasPages())
-                    <div class="px-3 py-2">{{ $pollingStations->links() }}</div>
+                    @if($pollingStations->hasPages() || $pollingStations->total() > 0)
+                    <div class="card-footer bg-white border-top d-flex flex-wrap justify-content-between align-items-center gap-2 px-4 py-3">
+                        <span style="font-size:0.75rem;color:#64748b;">Showing {{ $pollingStations->firstItem() }} to {{ $pollingStations->lastItem() }} of {{ $pollingStations->total() }} polling stations</span>
+                        {{ $pollingStations->links() }}
+                    </div>
                     @endif
                 </div>
             </div>

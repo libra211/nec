@@ -47,7 +47,9 @@ class AdminReportController extends Controller
         $data['status'] = 'published';
         $data['published_at'] = now();
 
-        Report::create($data);
+        $report = Report::create($data);
+
+        $this->logActivity('report_created', "Created report: {$report->title}", $report);
 
         return back()->with('success', 'Report uploaded successfully.');
     }
@@ -59,6 +61,8 @@ class AdminReportController extends Controller
         }
         $report->delete();
 
+        $this->logActivity('report_deleted', "Deleted report: {$report->title}", $report);
+
         return back()->with('success', 'Report deleted.');
     }
 
@@ -66,6 +70,8 @@ class AdminReportController extends Controller
     {
         $report = Report::withTrashed()->findOrFail($id);
         $report->restore();
+
+        $this->logActivity('report_restored', "Restored report: {$report->title}", $report);
 
         return back()->with('success', 'Report restored.');
     }

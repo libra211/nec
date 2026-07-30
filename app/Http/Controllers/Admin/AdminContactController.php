@@ -50,6 +50,8 @@ class AdminContactController extends Controller
 
         $contact->update(['status' => $validated['status']]);
 
+        $this->logActivity('contact_status_changed', "Changed contact {$contact->subject} status to {$validated['status']}", $contact);
+
         return back()->with('success', 'Contact status updated.');
     }
 
@@ -57,6 +59,8 @@ class AdminContactController extends Controller
     {
         $contact = Contact::findOrFail($id);
         $contact->delete();
+
+        $this->logActivity('contact_deleted', "Deleted contact: {$contact->subject}", $contact);
 
         return back()->with('success', 'Contact message deleted.');
     }

@@ -61,7 +61,9 @@ class AdminEventController extends Controller
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['title']);
 
-        Event::create($validated);
+        $event = Event::create($validated);
+
+        $this->logActivity('event_created', "Created event: {$event->title}", $event);
 
         return redirect()->route('admin.events.index')->with('success', 'Event created.');
     }
@@ -94,6 +96,8 @@ class AdminEventController extends Controller
 
         $event->update($validated);
 
+        $this->logActivity('event_updated', "Updated event: {$event->title}", $event);
+
         return redirect()->route('admin.events.index')->with('success', 'Event updated.');
     }
 
@@ -103,6 +107,8 @@ class AdminEventController extends Controller
         $event->status = 'trash';
         $event->save();
         $event->delete();
+
+        $this->logActivity('event_deleted', "Deleted event: {$event->title}", $event);
 
         return redirect()->route('admin.events.index')->with('success', 'Event moved to trash.');
     }
@@ -123,6 +129,8 @@ class AdminEventController extends Controller
             default => throw new \InvalidArgumentException("Unknown action: {$action}"),
         };
 
+        $this->logActivity('event_bulk_action', "Bulk {$action} on {$count} events");
+
         return back()->with('success', "{$count} event(s) updated.");
     }
 
@@ -131,6 +139,8 @@ class AdminEventController extends Controller
         $event = Event::findOrFail($id);
         $event->status = $event->status === 'published' ? 'draft' : 'published';
         $event->save();
+
+        $this->logActivity('event_status_changed', "Changed event {$event->title} status to {$event->status}", $event);
 
         return back()->with('success', 'Event status toggled.');
     }
@@ -142,12 +152,18 @@ class AdminEventController extends Controller
         $event->save();
         $event->restore();
 
+        $this->logActivity('event_restored', "Restored event: {$event->title}", $event);
+
         return redirect()->route('admin.events.index')->with('success', 'Event restored.');
     }
 
     public function forceDelete($id)
     {
-        Event::onlyTrashed()->findOrFail($id)->forceDelete();
+        $event = Event::onlyTrashed()->findOrFail($id);
+        $event->forceDelete();
+
+        $this->logActivity('event_force_deleted', "Permanently deleted event: {$event->title}", $event);
+
         return redirect()->route('admin.events.index')->with('success', 'Event permanently deleted.');
     }
 }

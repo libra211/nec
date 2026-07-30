@@ -21,6 +21,10 @@ class AdminResultController extends Controller
             });
         }
 
+        if ($electionType = $request->input('election_type')) {
+            $query->where('election_type', $electionType);
+        }
+
         if ($status = $request->input('status')) {
             $query->where('status', $status);
         }
@@ -69,7 +73,9 @@ class AdminResultController extends Controller
             $validated['turnout'] = round(($request->total_votes / $request->registered_voters) * 100, 2);
         }
 
-        Result::create($validated);
+        $result = Result::create($validated);
+
+        $this->logActivity('result_created', "Created result: {$result->election_name}", $result);
 
         return redirect()->route('admin.results.index')->with('success', 'Result created.');
     }
@@ -103,6 +109,8 @@ class AdminResultController extends Controller
 
         $result->update($validated);
 
+        $this->logActivity('result_updated', "Updated result: {$result->election_name}", $result);
+
         return redirect()->route('admin.results.index')->with('success', 'Result updated.');
     }
 
@@ -111,6 +119,8 @@ class AdminResultController extends Controller
         $result = Result::findOrFail($id);
         $result->status = $result->status === 'active' ? 'inactive' : 'active';
         $result->save();
+
+        $this->logActivity('result_status_changed', "Changed result {$result->election_name} status to {$result->status}", $result);
 
         return response()->json([
             'status' => $result->status,
@@ -122,6 +132,8 @@ class AdminResultController extends Controller
     {
         $result = Result::findOrFail($id);
         $result->delete();
+
+        $this->logActivity('result_deleted', "Deleted result: {$result->election_name}", $result);
 
         return redirect()->route('admin.results.index')->with('success', 'Result deleted.');
     }

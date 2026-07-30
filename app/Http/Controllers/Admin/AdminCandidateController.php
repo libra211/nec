@@ -76,7 +76,9 @@ class AdminCandidateController extends Controller
             $validated['photo'] = $request->file('photo')->store('candidates/photos', 'public');
         }
 
-        Candidate::create($validated);
+        $candidate = Candidate::create($validated);
+
+        $this->logActivity('candidate_created', "Created candidate: {$candidate->name}", $candidate);
 
         return redirect()->route('admin.candidates.index')->with('success', 'Candidate created.');
     }
@@ -149,6 +151,8 @@ class AdminCandidateController extends Controller
 
         $candidate->update($validated);
 
+        $this->logActivity('candidate_updated', "Updated candidate: {$candidate->name}", $candidate);
+
         return redirect()->route('admin.candidates.index')->with('success', 'Candidate updated.');
     }
 
@@ -157,6 +161,8 @@ class AdminCandidateController extends Controller
         $candidate = Candidate::findOrFail($id);
         $candidate->status = $candidate->status === 'active' ? 'inactive' : 'active';
         $candidate->save();
+
+        $this->logActivity('candidate_status_changed', "Changed candidate {$candidate->name} status to {$candidate->status}", $candidate);
 
         return response()->json([
             'status' => $candidate->status,
@@ -174,6 +180,49 @@ class AdminCandidateController extends Controller
 
         $candidate->delete();
 
+        $this->logActivity('candidate_deleted', "Deleted candidate: {$candidate->name}", $candidate);
+
         return redirect()->route('admin.candidates.index')->with('success', 'Candidate deleted.');
+    }
+
+    public function trashed(Request $request)
+    {
+        $query = Candidate::onlyTrashed();
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('constituency', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $candidates = $query->orderByDesc('deleted_at')->paginate(20);
+
+        return view('admin.candidates.trashed', compact('candidates'));
+    }
+
+    public function restore($id)
+    {
+        $candidate = Candidate::onlyTrashed()->findOrFail($id);
+        $candidate->update(['deleted_at' => null, 'updated_at' => now()]);
+
+        $this->logActivity('candidate_restored', "Restored candidate: {$candidate->name}", $candidate);
+
+        return redirect()->route('admin.candidates.index')->with('success', 'Candidate restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $candidate = Candidate::onlyTrashed()->findOrFail($id);
+
+        if ($candidate->photo) {
+            Storage::disk('public')->delete($candidate->photo);
+        }
+
+        $candidate->forceDelete();
+
+        $this->logActivity('candidate_force_deleted', "Permanently deleted candidate: {$candidate->name}", $candidate);
+
+        return redirect()->route('admin.candidates.trashed')->with('success', 'Candidate permanently deleted.');
     }
 }
