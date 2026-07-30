@@ -17,6 +17,7 @@ use App\Models\Contact;
 use App\Models\Announcement;
 use App\Models\PollingStation;
 use App\Models\Gallery;
+use App\Models\GalleryAlbum;
 use App\Models\Speech;
 use App\Models\EducationMaterial;
 use App\Models\Subscriber;
@@ -131,7 +132,7 @@ class DashboardController extends Controller
             $stats['new_complaints'] = Complaint::where('status', 'new')->count();
             $stats['total_reports'] = Report::count();
             $stats['total_parties'] = PoliticalParty::count();
-            $stats['total_gallery'] = Gallery::count();
+            $stats['total_gallery'] = GalleryAlbum::count();
             $stats['total_speeches'] = Speech::count();
             $stats['total_education'] = EducationMaterial::count();
             $stats['total_subscribers'] = Subscriber::count();

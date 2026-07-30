@@ -90,6 +90,10 @@ class AdminFaqController extends Controller
 
         $this->logActivity('faq_deleted', "Deleted FAQ: {$faq->question}", $faq);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'FAQ deleted.']);
+        }
+
         return redirect()->route('admin.faqs.index')->with('success', 'FAQ deleted.');
     }
 

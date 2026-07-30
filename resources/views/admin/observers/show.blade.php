@@ -55,7 +55,7 @@
 <div class="card mt-4">
     <div class="card-header"><h5 class="mb-0"><i class="fas fa-sync-alt me-2"></i>Update Status</h5></div>
     <div class="card-body">
-        <form action="{{ route('admin.observers.updateStatus', $observer->id) }}" method="POST">
+        <form action="{{ route('admin.observers.status', $observer->id) }}" method="POST">
             @csrf
             @method('PATCH')
             <div class="row g-3 align-items-end">

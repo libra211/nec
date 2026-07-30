@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0"><i class="fas fa-images me-2"></i>Gallery</h2>
-    <a href="{{ route('admin.gallery.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Image</a>
+    <h2 class="mb-0"><i class="fas fa-images me-2"></i>Gallery Albums</h2>
+    <a href="{{ route('admin.gallery.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Album</a>
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 overflow-hidden mb-4">
@@ -22,26 +22,17 @@
         <div class="d-flex align-items-center gap-2 mb-3">
             <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(46,139,87,0.1);color:#2E8B57;"><i class="fas fa-filter" style="font-size:0.75rem;"></i></span>
             <span style="font-size:0.85rem;font-weight:600;color:#1e293b;">Filters & Search</span>
-            @if(request('search') || request('album'))
+            @if(request('search'))
             <a href="{{ route('admin.gallery.index', ['status' => $currentStatus ?: null]) }}" class="btn btn-sm ms-auto" style="font-size:0.75rem;color:#6b7280;text-decoration:none;"><i class="fas fa-times me-1"></i>Clear</a>
             @endif
         </div>
         <form action="" method="GET" class="row g-2 align-items-end">
             @if($currentStatus) <input type="hidden" name="status" value="{{ $currentStatus }}"> @endif
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <label style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;color:#6b7280;margin-bottom:4px;display:block;">Search</label>
-                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search gallery..." value="{{ request('search') }}" style="border-radius:8px;">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search albums..." value="{{ request('search') }}" style="border-radius:8px;">
             </div>
             <div class="col-md-3">
-                <label style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;color:#6b7280;margin-bottom:4px;display:block;">Album</label>
-                <select name="album" class="form-select form-select-sm" style="border-radius:8px;">
-                    <option value="">All Albums</option>
-                    @foreach($albums as $al)
-                        <option value="{{ $al }}" {{ request('album') === $al ? 'selected' : '' }}>{{ $al }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-2">
                 <button class="btn btn-success w-100" style="border-radius:8px;"><i class="fas fa-search me-1"></i> Filter</button>
             </div>
         </form>
@@ -55,9 +46,9 @@
             <thead>
                 <tr>
                     <th width="30" style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 8px 10px 16px;font-size:0.75rem;letter-spacing:0.3px;"><input type="checkbox" id="selectAll"></th>
-                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Image</th>
-                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Title</th>
+                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Cover</th>
                     <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Album</th>
+                    <th class="text-center" style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Images</th>
                     <th class="text-center" style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Views</th>
                     <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Status</th>
                     <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Created</th>
@@ -65,54 +56,55 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($galleries as $item)
+                @forelse($albums as $album)
                 <tr style="border-bottom:1px solid #f1f3f5;">
-                    <td style="padding:10px 8px 10px 16px;"><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="row-checkbox"></td>
+                    <td style="padding:10px 8px 10px 16px;"><input type="checkbox" name="ids[]" value="{{ $album->id }}" class="row-checkbox"></td>
                     <td style="padding:10px 12px;">
-                        @if($item->image_path)
-                        <img src="{{ $item->image_path }}" alt="{{ $item->title }}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;">
+                        @if($album->featured_image)
+                        <img src="{{ asset($album->featured_image) }}" alt="{{ $album->title }}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;">
                         @else
-                        <span class="text-muted small">No image</span>
+                        <div style="width:60px;height:40px;border-radius:4px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;"><i class="fas fa-image" style="color:#94a3b8;font-size:0.9rem;"></i></div>
                         @endif
                     </td>
                     <td style="padding:10px 12px;color:#1e293b;">
-                        <a href="{{ route('admin.gallery.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ e($item->title) }}</a>
-                        @if($item->description)
-                        <div class="small text-muted" style="color:#64748b;">{{ Str::limit(e($item->description), 60) }}</div>
+                        <a href="{{ route('admin.gallery.edit', $album->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ e($album->title) }}</a>
+                        @if($album->description)
+                        <div class="small text-muted" style="color:#64748b;">{{ Str::limit(e($album->description), 60) }}</div>
                         @endif
                     </td>
-                    <td style="padding:10px 12px;color:#475569;"><span class="badge bg-info">{{ e($item->album ?? 'General') }}</span></td>
-                    <td class="text-center" style="padding:10px 12px;color:#475569;"><span class="badge bg-secondary"><i class="fas fa-eye me-1"></i>{{ number_format($item->views ?? 0) }}</span></td>
+                    <td class="text-center" style="padding:10px 12px;color:#475569;"><span class="badge bg-info"><i class="fas fa-image me-1"></i>{{ number_format($album->images_count) }}</span></td>
+                    <td class="text-center" style="padding:10px 12px;color:#475569;"><span class="badge bg-secondary"><i class="fas fa-eye me-1"></i>{{ number_format($album->views ?? 0) }}</span></td>
                     <td style="padding:10px 12px;color:#475569;">
-                        @if($item->status === 'published') <span class="badge bg-success">Published</span>
-                        @elseif($item->status === 'draft') <span class="badge bg-warning text-dark">Draft</span>
+                        @if($album->status === 'published') <span class="badge bg-success">Published</span>
+                        @elseif($album->status === 'draft') <span class="badge bg-warning text-dark">Draft</span>
                         @else <span class="badge bg-danger">Trash</span> @endif
                     </td>
-                    <td style="padding:10px 12px;color:#64748b;">{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}</td>
+                    <td style="padding:10px 12px;color:#64748b;">{{ \Carbon\Carbon::parse($album->created_at)->format('d M Y') }}</td>
                     <td class="text-center" style="padding:10px 16px 10px 12px;white-space:nowrap;">
-                        @if($item->status !== 'trash')
-                        <a href="{{ route('admin.gallery.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
-                        <a href="{{ route('admin.gallery.toggle-status', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba({{ $item->status === 'published' ? '234,179,8' : '46,139,87' }},0.08);color:{{ $item->status === 'published' ? '#ca8a04' : '#2E8B57' }};border:none;" title="{{ $item->status === 'published' ? 'Unpublish' : 'Publish' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
-                        <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.gallery.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        @if($album->status !== 'trash')
+                        <a href="{{ route('admin.gallery.edit', $album->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                        <a href="{{ route('media.gallery', ['album' => $album->slug]) }}" class="btn btn-sm rounded-3" target="_blank" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;" title="View"><i class="fas fa-eye"></i></a>
+                        <a href="{{ route('admin.gallery.toggle-status', $album->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba({{ $album->status === 'published' ? '234,179,8' : '46,139,87' }},0.08);color:{{ $album->status === 'published' ? '#ca8a04' : '#2E8B57' }};border:none;" title="{{ $album->status === 'published' ? 'Unpublish' : 'Publish' }}"><i class="fas fa-{{ $album->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
+                        <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.gallery.destroy', $album->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
                         @else
-                        <a href="{{ route('admin.gallery.restore', $item->id) }}" class="btn btn-sm" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;border-radius:8px;" title="Restore"><i class="fas fa-undo"></i></a>
-                        <button class="btn btn-sm" style="padding:3px 8px;background:rgba(220,38,38,0.08);color:#dc2626;border:none;border-radius:8px;" onclick="confirmDelete('{{ route('admin.gallery.force-delete', $item->id) }}')" title="Delete"><i class="fas fa-times"></i></button>
+                        <a href="{{ route('admin.gallery.restore', $album->id) }}" class="btn btn-sm" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;border-radius:8px;" title="Restore"><i class="fas fa-undo"></i></a>
+                        <button class="btn btn-sm" style="padding:3px 8px;background:rgba(220,38,38,0.08);color:#dc2626;border:none;border-radius:8px;" onclick="confirmDelete('{{ route('admin.gallery.force-delete', $album->id) }}')" title="Delete"><i class="fas fa-times"></i></button>
                         @endif
                     </td>
                 </tr>
                 @empty
                 <tr><td colspan="8" class="text-center py-5" style="color:#64748b;">
                     <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:#f1f5f9;margin-bottom:12px;"><i class="fas fa-images" style="font-size:1.25rem;color:#94a3b8;"></i></div>
-                    <div style="font-weight:500;margin-bottom:4px;color:#1e293b;">No gallery images found</div>
+                    <div style="font-weight:500;margin-bottom:4px;color:#1e293b;">No gallery albums found</div>
                 </td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    @if($galleries->hasPages())
+    @if($albums->hasPages())
     <div class="card-footer bg-white border-top d-flex flex-wrap justify-content-between align-items-center gap-2 px-4 py-3">
-        <div style="font-size:0.75rem;color:#64748b;">Showing {{ $galleries->firstItem() }} to {{ $galleries->lastItem() }} of {{ $galleries->total() }} images</div>
-        <div>{{ $galleries->links() }}</div>
+        <div style="font-size:0.75rem;color:#64748b;">Showing {{ $albums->firstItem() }} to {{ $albums->lastItem() }} of {{ $albums->total() }} albums</div>
+        <div>{{ $albums->links() }}</div>
     </div>
     @endif
 </div>

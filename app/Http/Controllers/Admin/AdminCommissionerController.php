@@ -78,6 +78,10 @@ class AdminCommissionerController extends Controller
 
         $this->logActivity('commissioner_deleted', "Deleted commissioner: {$commissioner->name}", $commissioner);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Commissioner deleted.']);
+        }
+
         return redirect()->route('admin.commissioners.index')->with('success', 'Commissioner deleted.');
     }
 }

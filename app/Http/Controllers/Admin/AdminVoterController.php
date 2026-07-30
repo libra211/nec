@@ -184,6 +184,10 @@ class AdminVoterController extends Controller
 
         $this->logActivity('voter_deleted', "Soft deleted voter: {$voter->full_name} ({$voter->voter_id})", $voter);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Voter removed successfully.']);
+        }
+
         return redirect()->route('admin.voters.index')->with('success', 'Voter removed successfully.');
     }
 

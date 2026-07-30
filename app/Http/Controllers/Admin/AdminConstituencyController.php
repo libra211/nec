@@ -94,6 +94,10 @@ class AdminConstituencyController extends Controller
 
         $this->logActivity('constituency_deleted', "Deleted constituency: {$constituency->name}", $constituency);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Constituency deleted.']);
+        }
+
         return redirect()->route('admin.constituencies.index')->with('success', 'Constituency deleted.');
     }
 }

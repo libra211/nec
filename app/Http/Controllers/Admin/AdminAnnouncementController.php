@@ -14,8 +14,8 @@ class AdminAnnouncementController extends Controller
         $query = Announcement::query();
         $status = $request->input('status');
 
-        if ($status === 'draft') $query->where('status', 'draft');
-        elseif ($status === 'trash') $query->where('status', 'trash');
+        if ($status === 'trash') $query = Announcement::onlyTrashed();
+        elseif ($status === 'draft') $query->where('status', 'draft');
         elseif ($status === 'published') $query->where('status', 'published');
         else $query->where('status', '!=', 'trash');
 
@@ -32,7 +32,7 @@ class AdminAnnouncementController extends Controller
             'all' => Announcement::where('status', '!=', 'trash')->count(),
             'published' => Announcement::where('status', 'published')->count(),
             'draft' => Announcement::where('status', 'draft')->count(),
-            'trash' => Announcement::where('status', 'trash')->count(),
+            'trash' => Announcement::onlyTrashed()->where('status', 'trash')->count(),
         ];
 
         return view('admin.announcements.index', compact('announcements', 'counts', 'status'));
@@ -106,6 +106,10 @@ class AdminAnnouncementController extends Controller
 
         $this->logActivity('announcement_deleted', "Deleted announcement: {$announcement->title}", $announcement);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Announcement moved to trash.']);
+        }
+
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement moved to trash.');
     }
 
@@ -159,6 +163,10 @@ class AdminAnnouncementController extends Controller
         $announcement->forceDelete();
 
         $this->logActivity('announcement_force_deleted', "Permanently deleted announcement: {$announcement->title}", $announcement);
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Announcement permanently deleted.']);
+        }
 
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement permanently deleted.');
     }

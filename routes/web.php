@@ -385,6 +385,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('faqs/reorder', [AdminFaqController::class, 'reorder'])->name('faqs.reorder');
 
     // Polling Stations
+    Route::get('polling-stations/counties', [AdminPollingStationController::class, 'getCounties'])->name('polling-stations.counties');
+    Route::get('polling-stations/constituencies', [AdminPollingStationController::class, 'getConstituencies'])->name('polling-stations.constituencies');
+    Route::get('polling-stations/generate-code', [AdminPollingStationController::class, 'generateCode'])->name('polling-stations.generate-code');
     Route::resource('polling-stations', AdminPollingStationController::class)->except(['show']);
 
     // Geographic Management

@@ -14,8 +14,8 @@ class AdminEventController extends Controller
         $query = Event::query();
         $status = $request->input('status');
 
-        if ($status === 'draft') $query->where('status', 'draft');
-        elseif ($status === 'trash') $query->where('status', 'trash');
+        if ($status === 'trash') $query = Event::onlyTrashed();
+        elseif ($status === 'draft') $query->where('status', 'draft');
         elseif ($status === 'published') $query->where('status', 'published');
         else $query->where('status', '!=', 'trash');
 
@@ -32,7 +32,7 @@ class AdminEventController extends Controller
             'all' => Event::where('status', '!=', 'trash')->count(),
             'published' => Event::where('status', 'published')->count(),
             'draft' => Event::where('status', 'draft')->count(),
-            'trash' => Event::where('status', 'trash')->count(),
+            'trash' => Event::onlyTrashed()->where('status', 'trash')->count(),
         ];
 
         return view('admin.events.index', compact('events', 'counts', 'status'));
@@ -54,12 +54,17 @@ class AdminEventController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'organizer' => 'nullable|string|max:255',
             'event_type' => 'nullable|string|max:50',
-            'featured_image' => 'nullable|string|max:500',
+            'featured_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'meta_description' => 'nullable|string|max:500',
             'status' => 'required|in:draft,published',
         ]);
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['title']);
+
+        if ($request->hasFile('featured_image')) {
+            $path = $request->file('featured_image')->store('events', 'public');
+            $validated['featured_image'] = asset('storage/' . $path);
+        }
 
         $event = Event::create($validated);
 
@@ -87,12 +92,19 @@ class AdminEventController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'organizer' => 'nullable|string|max:255',
             'event_type' => 'nullable|string|max:50',
-            'featured_image' => 'nullable|string|max:500',
+            'featured_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'meta_description' => 'nullable|string|max:500',
             'status' => 'required|in:draft,published',
         ]);
 
         $validated['slug'] = $validated['slug'] ?: Str::slug($validated['title']);
+
+        if ($request->hasFile('featured_image')) {
+            $path = $request->file('featured_image')->store('events', 'public');
+            $validated['featured_image'] = asset('storage/' . $path);
+        } elseif ($request->input('remove_image') === '1') {
+            $validated['featured_image'] = null;
+        }
 
         $event->update($validated);
 
@@ -109,6 +121,10 @@ class AdminEventController extends Controller
         $event->delete();
 
         $this->logActivity('event_deleted', "Deleted event: {$event->title}", $event);
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Event moved to trash.']);
+        }
 
         return redirect()->route('admin.events.index')->with('success', 'Event moved to trash.');
     }
@@ -163,6 +179,10 @@ class AdminEventController extends Controller
         $event->forceDelete();
 
         $this->logActivity('event_force_deleted', "Permanently deleted event: {$event->title}", $event);
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Event permanently deleted.']);
+        }
 
         return redirect()->route('admin.events.index')->with('success', 'Event permanently deleted.');
     }

@@ -1,74 +1,231 @@
 @extends('admin.layouts.app')
-@section('title', 'Edit News Article')
+@section('title', 'Edit Article')
+@section('extra_css')
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs5.min.css" rel="stylesheet">
+<style>
+#wp-editor { background:#f0f0f1; min-height:calc(100vh - 60px); margin:-1.5rem; padding-bottom:40px; }
+#wp-admin-bar { background:#fff; border-bottom:1px solid #dcdcde; padding:10px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.wp-bar-left { display:flex; align-items:center; gap:12px; }
+.wp-bar-left h1 { font-size:1.2rem; font-weight:600; margin:0; color:#1d2327; }
+.wp-back-btn { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; color:#787c82; text-decoration:none; transition:all .15s; }
+.wp-back-btn:hover { background:#f0f0f1; color:#1d2327; }
+.wp-status-badge { font-size:0.7rem; font-weight:500; padding:2px 10px; border-radius:3px; text-transform:uppercase; letter-spacing:0.3px; }
+.wp-status-badge.draft { background:#f0f6fc; color:#1d2327; border:1px solid #c3c4c7; }
+.wp-status-badge.published { background:#edfaef; color:#008a20; border:1px solid #68de7c; }
+.wp-exit-link { font-size:0.8rem; color:#787c82; text-decoration:none; margin-left:8px; }
+.wp-exit-link:hover { color:#1d2327; text-decoration:underline; }
+.wp-bar-right { display:flex; align-items:center; gap:8px; }
+.wp-btn-save { background:#f6f7f7; border:1px solid #2271b1; color:#2271b1; padding:6px 16px; border-radius:3px; font-size:0.8rem; font-weight:500; cursor:pointer; transition:all .15s; }
+.wp-btn-save:hover { background:#f0f0f1; }
+.wp-btn-publish { background:#2271b1; border:1px solid #2271b1; color:#fff; padding:6px 16px; border-radius:3px; font-size:0.8rem; font-weight:500; cursor:pointer; transition:all .15s; }
+.wp-btn-publish:hover { background:#135e96; border-color:#135e96; }
+#wp-editor-grid { display:flex; gap:20px; padding:20px; max-width:1400px; margin:0 auto; }
+#wp-editor-main { flex:1; min-width:0; }
+#wp-editor-sidebar { width:300px; flex-shrink:0; }
+#titlediv { background:#fff; border:1px solid #dcdcde; border-radius:4px; margin-bottom:8px; display:flex; }
+#titlediv input { width:100%; padding:12px 14px; font-size:1.3rem; font-weight:600; border:none; outline:none; background:transparent; color:#1d2327; }
+#titlediv input::placeholder { color:#9ca0a4; font-weight:400; }
+#edit-slug-box { background:#fff; border:1px solid #dcdcde; border-top:none; border-radius:0 0 4px 4px; padding:8px 14px; margin-bottom:16px; display:flex; align-items:center; gap:4px; font-size:0.78rem; color:#50575e; margin-top:-1px; }
+#edit-slug-box .slug-prefix { color:#646970; }
+.slug-field { border:none; background:transparent; color:#2271b1; font-size:0.78rem; outline:none; flex:1; min-width:80px; padding:2px 0; }
+.slug-field:focus { border-bottom:1px solid #2271b1; }
+#wp-content-editor { background:#fff; border:1px solid #dcdcde; border-radius:4px; }
+.meta-box { background:#fff; border:1px solid #dcdcde; border-radius:4px; margin-bottom:16px; }
+.meta-box-header { padding:8px 12px; font-size:0.78rem; font-weight:600; color:#1d2327; border-bottom:1px solid #dcdcde; background:#f6f7f7; text-transform:uppercase; letter-spacing:0.3px; }
+.meta-box-body { padding:12px; }
+.meta-field { margin-bottom:10px; }
+.meta-field label { font-size:0.75rem; font-weight:500; color:#50575e; margin-bottom:3px; display:block; text-transform:uppercase; letter-spacing:0.2px; }
+.wp-image-placeholder { border:2px dashed #c3c4c7; border-radius:6px; padding:24px 12px; cursor:pointer; color:#787c82; transition:all .15s; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.wp-image-placeholder:hover { border-color:#2271b1; color:#2271b1; background:#f0f6fc; }
+.wp-image-placeholder i { font-size:1.5rem; }
+.wp-image-placeholder span { font-size:0.8rem; }
+@media (max-width:768px) { #wp-editor-grid { flex-direction:column; } #wp-editor-sidebar { width:100%; } }
+</style>
+@endsection
+
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0"><i class="fas fa-newspaper text-primary me-2"></i>Edit News Article</h1>
-    <a href="{{ route('admin.news.index') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i> Back</a>
-</div>
-
-<div class="card">
-    <div class="card-body">
-        @if($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+<div id="wp-editor">
+    <div id="wp-admin-bar">
+        <div class="wp-bar-left">
+            <a href="{{ route('admin.news.index') }}" class="wp-back-btn"><i class="fas fa-chevron-left"></i></a>
+            <h1>Edit Article</h1>
+            <span class="wp-status-badge {{ $news->status }}">{{ ucfirst($news->status) }}</span>
+            <a href="{{ route('admin.news.index') }}" class="wp-exit-link">Exit editor</a>
         </div>
-        @endif
-
-        <form action="{{ route('admin.news.update', $article->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <div class="row g-3">
-                <div class="col-md-8">
-                    <label class="form-label">Title *</label>
-                    <input type="text" name="title" class="form-control" value="{{ old('title', $article->title) }}" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Slug</label>
-                    <input type="text" name="slug" class="form-control" value="{{ old('slug', $article->slug) }}">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Category *</label>
-                    <select name="category" class="form-select" required>
-                        @foreach(['general','elections','voter_registration','announcements','press_release'] as $cat)
-                            <option value="{{ $cat }}" {{ old('category', $article->category) === $cat ? 'selected' : '' }}>{{ ucwords(str_replace('_', ' ', $cat)) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Author</label>
-                    <input type="text" name="author" class="form-control" value="{{ old('author', $article->author) }}">
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Excerpt</label>
-                    <textarea name="excerpt" class="form-control" rows="2">{{ old('excerpt', $article->excerpt) }}</textarea>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Content *</label>
-                    <textarea name="content" class="form-control" rows="12" required>{{ old('content', $article->content) }}</textarea>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Featured Image</label>
-                    <input type="file" name="image" class="form-control" accept=".jpg,.jpeg,.png">
-                    @if($article->image)
-                        <div class="mt-2"><img src="{{ asset('storage/' . $article->image) }}" alt="" width="80" class="rounded"></div>
-                    @endif
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Tags</label>
-                    <input type="text" name="tags" class="form-control" value="{{ old('tags', $article->tags) }}" placeholder="Comma-separated">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Status *</label>
-                    <select name="status" class="form-select" required>
-                        <option value="published" {{ old('status', $article->status) === 'published' ? 'selected' : '' }}>Published</option>
-                        <option value="draft" {{ old('status', $article->status) === 'draft' ? 'selected' : '' }}>Draft</option>
-                    </select>
-                </div>
-            </div>
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Update Article</button>
-            </div>
-        </form>
+        <div class="wp-bar-right">
+            <button type="submit" form="news-form" class="wp-btn-save" onclick="document.getElementById('status-input').value='draft'"><i class="fas fa-save me-1"></i> Save Draft</button>
+            <button type="submit" form="news-form" class="wp-btn-publish" onclick="document.getElementById('status-input').value='published'"><i class="fas fa-paper-plane me-1"></i> Update</button>
+        </div>
     </div>
+
+    @if($errors->any())
+    <div class="alert alert-danger rounded-3 border-0 mx-3 mt-3">
+        <ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+    </div>
+    @endif
+
+    <form id="news-form" action="{{ route('admin.news.update', $news->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="status" id="status-input" value="{{ $news->status }}">
+
+        <div id="wp-editor-grid">
+            <div id="wp-editor-main">
+                <div id="titlediv">
+                    <input type="text" name="title" id="title" value="{{ old('title', $news->title) }}" placeholder="Add title" autocomplete="off" oninput="autoSlug()" required>
+                </div>
+
+                <div id="edit-slug-box">
+                    <strong>Permalink:</strong>
+                    <span class="slug-prefix">{{ url('/news') }}/</span>
+                    <input type="text" name="slug" id="slug" value="{{ old('slug', $news->slug) }}" placeholder="auto-generated" class="slug-field">
+                    <button type="button" class="btn btn-sm btn-link" onclick="document.getElementById('slug').dataset.modified='1';document.getElementById('slug').focus()">Edit</button>
+                </div>
+
+                <div id="wp-content-editor">
+                    <textarea name="content" id="editor" required>{{ old('content', $news->content) }}</textarea>
+                </div>
+            </div>
+
+            <div id="wp-editor-sidebar">
+                <div class="meta-box">
+                    <div class="meta-box-header">Publish</div>
+                    <div class="meta-box-body">
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary w-100 mb-2" onclick="document.getElementById('status-input').value='published'"><i class="fas fa-paper-plane me-1"></i> Update</button>
+                            <button type="submit" class="btn btn-outline-secondary w-100" onclick="document.getElementById('status-input').value='draft'"><i class="fas fa-save me-1"></i> Save Draft</button>
+                        </div>
+                        <div class="meta-field">
+                            <label>Status</label>
+                            <select name="status_display" class="form-select form-select-sm" onchange="document.getElementById('status-input').value=this.value">
+                                <option value="draft" {{ $news->status === 'draft' ? 'selected' : '' }}>Draft</option>
+                                <option value="published" {{ $news->status === 'published' ? 'selected' : '' }}>Published</option>
+                            </select>
+                        </div>
+                        <div class="meta-field">
+                            <label>Visibility</label>
+                            <select name="visibility" class="form-select form-select-sm">
+                                <option value="public" {{ $news->status === 'published' ? 'selected' : '' }}>Public</option>
+                                <option value="private">Private</option>
+                            </select>
+                        </div>
+                        <div class="meta-field">
+                            <label>Publish Date</label>
+                            <input type="datetime-local" name="published_at" class="form-control form-control-sm" value="{{ old('published_at', $news->published_at ? $news->published_at->format('Y-m-d\TH:i') : '') }}">
+                        </div>
+                        <div class="meta-field">
+                            <label>Author</label>
+                            <input type="text" name="author" class="form-control form-control-sm" value="{{ old('author', $news->author) }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="meta-box">
+                    <div class="meta-box-header">Categories</div>
+                    <div class="meta-box-body">
+                        @php $cats = ['general' => 'General', 'elections' => 'Elections', 'voter_registration' => 'Voter Registration', 'announcements' => 'Announcements', 'press_release' => 'Press Release']; @endphp
+                        @foreach($cats as $val => $label)
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="category" value="{{ $val }}" id="cat_{{ $val }}" {{ old('category', $news->category) === $val ? 'checked' : '' }} required>
+                            <label class="form-check-label" for="cat_{{ $val }}">{{ $label }}</label>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="meta-box">
+                    <div class="meta-box-header">Tags</div>
+                    <div class="meta-box-body">
+                        <input type="text" name="tags" class="form-control form-control-sm" value="{{ old('tags', $tags) }}" placeholder="Separate with commas">
+                        <div class="form-text mt-1">e.g. elections, NEC, 2026</div>
+                    </div>
+                </div>
+
+                <div class="meta-box">
+                    <div class="meta-box-header">Featured Image</div>
+                    <div class="meta-box-body text-center">
+                        <div id="featured-image-preview" class="mb-2" style="{{ $news->image ? '' : 'display:none' }}">
+                            <img id="image-preview-img" src="{{ $news->image ? asset('storage/' . $news->image) : '' }}" alt="" style="max-width:100%;max-height:160px;border-radius:6px;">
+                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="clearFeaturedImage()"><i class="fas fa-trash me-1"></i> Remove</button>
+                        </div>
+                        <div id="featured-image-placeholder" class="wp-image-placeholder" onclick="document.getElementById('image-input').click()" style="{{ $news->image ? 'display:none' : '' }}">
+                            <i class="fas fa-image"></i>
+                            <span>Set featured image</span>
+                        </div>
+                        <input type="file" name="image" id="image-input" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="previewFeaturedImage(this)">
+                    </div>
+                </div>
+
+                <div class="meta-box">
+                    <div class="meta-box-header">Excerpt</div>
+                    <div class="meta-box-body">
+                        <textarea name="excerpt" class="form-control form-control-sm" rows="3" placeholder="Write a brief excerpt...">{{ old('excerpt', $news->excerpt) }}</textarea>
+                    </div>
+                </div>
+
+                <div class="meta-box">
+                    <div class="meta-box-header">Delete</div>
+                    <div class="meta-box-body">
+                        <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="confirmDelete('{{ route('admin.news.destroy', $news->id) }}')"><i class="fas fa-trash me-1"></i> Move to Trash</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
+@endsection
+
+@section('extra_scripts')
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs5.min.js"></script>
+<script>
+function autoSlug() {
+    var title = document.getElementById('title').value;
+    var slugField = document.getElementById('slug');
+    if (!slugField.dataset.modified) {
+        slugField.value = title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    }
+}
+$(document).ready(function () {
+    document.getElementById('slug').addEventListener('input', function () {
+        this.dataset.modified = this.value !== '' ? '1' : '';
+    });
+    $('#editor').summernote({
+        height: 420,
+        placeholder: 'Start writing...',
+        toolbar: [
+            ['style', ['p', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']],
+            ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph', 'align']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video', 'hr', 'symbol']],
+            ['view', ['fullscreen', 'codeview', 'help']],
+            ['height', ['height']]
+        ],
+        fontSizes: ['8','9','10','11','12','13','14','16','18','20','24','28','36','48'],
+        callbacks: {
+            onChange: function(contents) { document.getElementById('editor').value = contents; }
+        }
+    });
+});
+function previewFeaturedImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('featured-image-preview').style.display = 'block';
+            document.getElementById('image-preview-img').src = e.target.result;
+            document.getElementById('featured-image-placeholder').style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+function clearFeaturedImage() {
+    document.getElementById('featured-image-preview').style.display = 'none';
+    document.getElementById('featured-image-placeholder').style.display = 'flex';
+    document.getElementById('image-input').value = '';
+}
+</script>
+</script>
 @endsection

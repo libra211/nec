@@ -15,10 +15,11 @@ class AdminNewsController extends Controller
 
         // Status filter (WordPress-style)
         $status = $request->input('status');
-        if ($status === 'draft') {
+        if ($status === 'trash') {
+            // Bypass SoftDeletes global scope to find trashed items
+            $query = News::onlyTrashed();
+        } elseif ($status === 'draft') {
             $query->where('status', 'draft');
-        } elseif ($status === 'trash') {
-            $query->where('status', 'trash');
         } elseif ($status === 'published') {
             $query->where('status', 'published');
         } else {
@@ -59,7 +60,7 @@ class AdminNewsController extends Controller
             'all' => News::where('status', '!=', 'trash')->count(),
             'published' => News::where('status', 'published')->count(),
             'draft' => News::where('status', 'draft')->count(),
-            'trash' => News::where('status', 'trash')->count(),
+            'trash' => News::onlyTrashed()->where('status', 'trash')->count(),
         ];
 
         return view('admin.news.index', compact('news', 'categories', 'counts', 'status'));
@@ -150,6 +151,10 @@ class AdminNewsController extends Controller
 
         $this->logActivity('news_deleted', "Deleted news: {$news->title}", $news);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'News article moved to trash.']);
+        }
+
         return redirect()->route('admin.news.index')
             ->with('success', 'News article moved to trash.');
     }
@@ -161,6 +166,10 @@ class AdminNewsController extends Controller
 
         if (empty($ids)) {
             return back()->with('error', 'No items selected.');
+        }
+
+        if (empty($action)) {
+            return back()->with('error', 'No action selected.');
         }
 
         $count = match ($action) {
@@ -196,6 +205,10 @@ class AdminNewsController extends Controller
         $news->forceDelete();
 
         $this->logActivity('news_force_deleted', "Permanently deleted news: {$news->title}", $news);
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'News article permanently deleted.']);
+        }
 
         return redirect()->route('admin.news.index')
             ->with('success', 'News article permanently deleted.');

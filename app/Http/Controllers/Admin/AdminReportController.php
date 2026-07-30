@@ -63,6 +63,10 @@ class AdminReportController extends Controller
 
         $this->logActivity('report_deleted', "Deleted report: {$report->title}", $report);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Report deleted.']);
+        }
+
         return back()->with('success', 'Report deleted.');
     }
 

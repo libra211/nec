@@ -11,6 +11,7 @@ use App\Models\Constituency;
 use App\Models\Download;
 use App\Models\ElectionEvent;
 use App\Models\Gallery;
+use App\Models\GalleryAlbum;
 use App\Models\News;
 use App\Models\Observer;
 use App\Models\ObserverApplication;
@@ -58,7 +59,7 @@ class HomeController extends Controller
             'states_with_data' => Voter::whereNotNull('state')->distinct()->count('state'),
             'news' => News::where('status', 'published')->count(),
             'events' => ElectionEvent::where('start_date', '>=', now())->count(),
-            'gallery' => Gallery::count(),
+            'gallery' => GalleryAlbum::count(),
             'downloads' => Download::count(),
             'speeches' => Speech::count(),
             'subscribers' => Subscriber::count(),
@@ -102,6 +103,16 @@ class HomeController extends Controller
         $electionDate = $this->publicStatValue('election_date', \App\Helpers\NecHelper::setting_get('election_date', '2026-12-22'));
         $electionType = $this->publicStatValue('election_type', \App\Helpers\NecHelper::setting_get('election_type', 'General Elections'));
 
+        $galleryAlbums = GalleryAlbum::withCount('images')
+            ->where('status', 'published')
+            ->orderByDesc('created_at')
+            ->limit(6)
+            ->get();
+
+        $commissioners = Commissioner::where('status', 'active')
+            ->orderBy('order_num')
+            ->get();
+
         return view('home', compact(
             'stats',
             'latestNews',
@@ -110,7 +121,9 @@ class HomeController extends Controller
             'upcomingEvents',
             'topDownloads',
             'electionDate',
-            'electionType'
+            'electionType',
+            'galleryAlbums',
+            'commissioners'
         ));
     }
 }

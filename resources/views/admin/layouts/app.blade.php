@@ -460,7 +460,7 @@
                 confirmButtonText: 'Yes, delete it!'
             }).then(function (result) {
                 if (result.isConfirmed) {
-                    $.ajax({ url: url, type: 'DELETE', success: function () { Swal.fire('Deleted!', 'Record has been deleted.', 'success').then(function () { location.reload(); }); } });
+                    $.ajax({ url: url, type: 'DELETE', success: function () { Swal.fire('Deleted!', 'Record has been deleted.', 'success').then(function () { location.reload(); }); }, error: function (xhr) { Swal.fire('Error!', xhr.responseJSON?.message || 'Failed to delete record.', 'error'); } });
                 }
             });
         }

@@ -605,7 +605,7 @@
                             'trained_staff' => \App\Models\PollingStaff::where('trained', true)->count(),
                             'news' => \App\Models\News::where('status', 'published')->count(),
                             'events' => \App\Models\ElectionEvent::where('start_date', '>=', now())->count(),
-                            'gallery' => \App\Models\Gallery::count(),
+                            'gallery' => \App\Models\GalleryAlbum::count(),
                             'downloads' => \App\Models\Download::count(),
                             'speeches' => \App\Models\Speech::count(),
                             'subscribers' => \App\Models\Subscriber::count(),

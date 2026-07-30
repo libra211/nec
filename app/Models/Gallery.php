@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Gallery extends Model
 {
-    public $timestamps = false;
     use HasFactory, SoftDeletes;
 
     protected $table = 'nec_gallery';
@@ -20,5 +19,10 @@ class Gallery extends Model
         return [
             'published_at' => 'datetime',
         ];
+    }
+
+    public function album()
+    {
+        return $this->belongsTo(GalleryAlbum::class, 'gallery_album_id');
     }
 }

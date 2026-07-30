@@ -16,7 +16,7 @@
         </div>
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <div class="hero-slide" style="background:linear-gradient(135deg,#1a3c8f 0%,#2E8B57 100%);">
+                <div class="hero-slide" style="background:linear-gradient(135deg,var(--nec-green-dark) 0%,var(--nec-green) 100%);">
                     <div class="container h-100">
                         <div class="row h-100 align-items-center">
                             <div class="col-lg-7">
@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div class="carousel-item">
-                <div class="hero-slide" style="background:linear-gradient(135deg,#2E8B57 0%,#1a3c8f 100%);">
+                <div class="hero-slide" style="background:linear-gradient(135deg,var(--nec-gray-900) 0%,#1a3a2a 100%);">
                     <div class="container h-100">
                         <div class="row h-100 align-items-center">
                             <div class="col-lg-7">
@@ -68,7 +68,7 @@
                 </div>
             </div>
             <div class="carousel-item">
-                <div class="hero-slide" style="background:linear-gradient(135deg,#8B0000 0%,#2E8B57 100%);">
+                <div class="hero-slide" style="background:linear-gradient(135deg,var(--nec-red-dark) 0%,var(--nec-gray-900) 100%);">
                     <div class="container h-100">
                         <div class="row h-100 align-items-center">
                             <div class="col-lg-7">
@@ -280,7 +280,7 @@
                     @if($n->image)
                     <div class="overflow-hidden" style="height:170px;border-radius:12px 12px 0 0;"><img src="{{ asset($n->image) }}" alt="{{ e($n->title) }}" style="width:100%;height:100%;object-fit:cover;"></div>
                     @else
-                    <div class="d-flex align-items-center justify-content-center" style="height:170px;background:linear-gradient(135deg,#1a3c8f,#2E8B57);border-radius:12px 12px 0 0;"><i class="fas fa-newspaper text-white" style="font-size:3rem;opacity:0.4;"></i></div>
+                    <div class="d-flex align-items-center justify-content-center" style="height:170px;background:var(--nec-gradient-primary);border-radius:12px 12px 0 0;"><i class="fas fa-newspaper text-white" style="font-size:3rem;opacity:0.4;"></i></div>
                     @endif
                     <div class="card-body d-flex flex-column">
                         <span class="badge bg-{{ ($n->category ?? '') === 'press-release' ? 'success' : (($n->category ?? '') === 'news' ? 'info' : 'warning') }} mb-2">{{ e(ucfirst(str_replace('-', ' ', $n->category ?? 'General'))) }}</span>
@@ -347,82 +347,50 @@
     </div>
 </section>
 
-<!-- LIVE RESULTS -->
-<section class="py-5 bg-dark-gradient">
-    <div class="container">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-5 text-center text-lg-start reveal-left">
-                <span class="badge bg-warning text-dark px-3 py-2 mb-3 fw-bold">
-                    <i class="fas fa-broadcast-tower me-1"></i> LIVE
-                </span>
-                <h2 class="text-white fw-bold mb-2">Election Results 2026</h2>
-                <p class="text-white-50 mb-3">Real-time results from polling stations across South Sudan.</p>
-                <a href="{{ route('elections.results') }}" class="btn btn-gold fw-bold px-4">
-                    <i class="fas fa-chart-pie me-2"></i> View Full Results
-                </a>
-            </div>
-            <div class="col-lg-7 reveal-right">
-                <div class="table-wrapper bg-dark border-0">
-                    <table class="table table-dark table-striped table-hover mb-0">
-                        <thead>
-                            <tr><th>Election</th><th>Registered</th><th>Turnout</th><th>Status</th></tr>
-                        </thead>
-                        <tbody>
-                            @forelse($latestResults as $res)
-                            <tr>
-                                <td>{{ e($res->election_name) }}</td>
-                                <td>{{ number_format($res->registered_voters) }}</td>
-                                <td>{{ $res->turnout }}%</td>
-                                <td><span class="badge bg-{{ $res->status === 'active' ? 'success' : 'warning' }}">{{ ucfirst($res->status) }}</span></td>
-                            </tr>
-                            @empty
-                            <tr><td colspan="4" class="text-center text-muted">No results available yet.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- ANNOUNCEMENTS -->
-<section class="py-5">
+<section class="py-5" style="background:#f0f7f4;">
     <div class="container">
         <div class="row g-4">
             <div class="col-lg-8 reveal">
-                <p class="text-uppercase fw-bold mb-1 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Announcements</p>
-                <h2 class="fw-bold mb-4">Public Notices</h2>
-                <div class="section-card p-0">
-                    <div class="list-group list-group-flush">
-                        @forelse($latestAnnouncements as $a)
-                        <div class="list-group-item px-4 py-3 d-flex gap-3 border-bottom">
-                            <div class="text-center flex-shrink-0" style="min-width:60px;">
-                                <div class="fw-bold fs-5 text-green">{{ \Carbon\Carbon::parse($a->created_at)->format('d') }}</div>
-                                <div class="small text-muted">{{ \Carbon\Carbon::parse($a->created_at)->format('M Y') }}</div>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold mb-1">{{ e($a->title) }}</h6>
-                                <p class="text-muted small mb-0">{{ e(Str::limit(strip_tags($a->excerpt ?? $a->title), 150)) }}</p>
-                            </div>
-                        </div>
-                        @empty
-                        <div class="list-group-item px-4 py-3 text-center text-muted">No announcements published yet.</div>
-                        @endforelse
-                    </div>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-dark fw-bold px-3 py-2 rounded-0" style="letter-spacing:2px;font-size:0.7rem;"><i class="fas fa-bullhorn me-1"></i> ANNOUNCEMENTS</span>
                 </div>
-                <a href="{{ route('media.news') }}" class="btn btn-link p-0 mt-3 fw-semibold text-decoration-none text-green">
+                <h2 class="fw-bold mb-4">Public Notices</h2>
+                <div class="d-flex flex-column gap-2">
+                    @forelse($latestAnnouncements as $a)
+                    <div class="d-flex gap-3 align-items-start bg-white px-3 py-3 shadow-sm" style="border-left:3px solid var(--nec-green);">
+                        <div class="text-center flex-shrink-0" style="min-width:55px;">
+                            <div class="fw-bold fs-5" style="color:var(--nec-green);">{{ \Carbon\Carbon::parse($a->created_at)->format('d') }}</div>
+                            <div class="small text-muted" style="font-size:0.6rem;">{{ \Carbon\Carbon::parse($a->created_at)->format('M Y') }}</div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1" style="font-size:0.9rem;">{{ e($a->title) }}</h6>
+                            <p class="text-muted small mb-2">{{ e(Str::limit(strip_tags($a->excerpt ?? $a->title), 120)) }}</p>
+                            <span class="small fw-semibold" style="color:var(--nec-green);cursor:pointer;">
+                                Read More <i class="fas fa-arrow-right ms-1" style="font-size:0.6rem;"></i>
+                            </span>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center text-muted py-4">No announcements published yet.</div>
+                    @endforelse
+                </div>
+                <a href="{{ route('media.news') }}" class="btn fw-bold mt-3 px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
                     View All Notices <i class="fas fa-arrow-right ms-1"></i>
                 </a>
             </div>
             <div class="col-lg-4 reveal reveal-delay-2">
-                <div class="card-elevated text-white h-100 card-border-accent-gold" style="border-top-width:3px;border-top-style:solid;border-top-color:var(--nec-gold);border-radius:12px;">
-                    <div class="card-body p-4 d-flex flex-column" style="background:var(--nec-gradient-dark);border-radius:0 0 12px 12px;">
-                        <h5 class="fw-bold mb-3 text-white"><i class="fas fa-bullhorn me-2" style="color:var(--nec-gold);"></i> Upcoming Events</h5>
+                <div class="card border-0 shadow-sm" style="border-radius:0;">
+                    <div class="card-header fw-bold text-white border-0 rounded-0 py-3" style="background:var(--nec-green);">
+                        <i class="fas fa-calendar-check me-2"></i> Upcoming Events
+                    </div>
+                    <div class="card-body p-3">
                         @forelse($upcomingEvents as $ei => $ev)
-                        <div class="{{ $loop->last ? 'mt-auto' : 'mb-3 pb-3 border-bottom border-secondary' }}">
-                            <small class="text-warning fw-bold">{{ $ev->start_date->format('j M Y') }}{{ $ev->end_date ? ' - ' . $ev->end_date->format('j M Y') : '' }}</small>
-                            <p class="mb-0 mt-1">{{ e($ev->title) }}</p>
+                        <div class="{{ $loop->last ? '' : 'mb-3 pb-3 border-bottom' }}" style="border-color:#eee !important;">
+                            <small class="fw-bold" style="color:var(--nec-gold);font-size:0.75rem;">
+                                <i class="far fa-calendar-alt me-1"></i> {{ $ev->start_date->format('j M Y') }}{{ $ev->end_date ? ' - ' . $ev->end_date->format('j M Y') : '' }}
+                            </small>
+                            <p class="mb-0 mt-1 fw-semibold" style="font-size:0.85rem;">{{ e($ev->title) }}</p>
                         </div>
                         @empty
                         <div class="text-center text-muted small py-3">No upcoming events scheduled.</div>
@@ -435,54 +403,59 @@
 </section>
 
 <!-- CIVIC EDUCATION -->
-<section class="py-5 section-shaded">
+<section class="py-5" style="background:#fff;">
     <div class="container">
-        <div class="row align-items-center g-4">
+        <div class="row align-items-center g-3">
             <div class="col-lg-6 reveal">
-                <p class="text-uppercase fw-bold mb-1 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Know Your Rights</p>
+                <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;"><i class="fas fa-gavel me-1"></i> KNOW YOUR RIGHTS</span>
                 <h2 class="fw-bold mb-3">Civic & Voter Education</h2>
                 <p class="text-muted mb-4">Understanding the electoral process is the foundation of a strong democracy. Explore our civic education materials to learn about your rights and responsibilities as a voter.</p>
-                <div class="row g-3">
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-start gap-3 section-card py-3 px-3 card-accent-bar accent-green rounded-3 position-relative">
-                            <div class="flex-shrink-0" style="width:40px;height:40px;border-radius:10px;background:rgba(var(--nec-green-rgb),0.08);display:flex;align-items:center;justify-content:center;color:var(--nec-green);">
-                                <i class="fas fa-check-double"></i>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-green);">
+                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(0,145,76,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fas fa-check-circle" style="color:var(--nec-green);font-size:0.85rem;"></i>
                             </div>
-                            <div><h6 class="fw-bold mb-1">Voter Checklist</h6><p class="small text-muted mb-0">What you need to bring</p></div>
+                            <span class="small fw-semibold">Voter Checklist</span>
                         </div>
                     </div>
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-start gap-3 section-card py-3 px-3 card-accent-bar accent-blue rounded-3 position-relative">
-                            <div class="flex-shrink-0" style="width:40px;height:40px;border-radius:10px;background:rgba(var(--nec-green-rgb),0.08);display:flex;align-items:center;justify-content:center;color:var(--nec-green);">
-                                <i class="fas fa-gavel"></i>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-gold);">
+                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fas fa-gavel" style="color:var(--nec-gold);font-size:0.85rem;"></i>
                             </div>
-                            <div><h6 class="fw-bold mb-1">Electoral Laws</h6><p class="small text-muted mb-0">Legal framework</p></div>
+                            <span class="small fw-semibold">Electoral Laws</span>
                         </div>
                     </div>
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-start gap-3 section-card py-3 px-3 card-accent-bar accent-teal rounded-3 position-relative">
-                            <div class="flex-shrink-0" style="width:40px;height:40px;border-radius:10px;background:rgba(var(--nec-green-rgb),0.08);display:flex;align-items:center;justify-content:center;color:var(--nec-green);">
-                                <i class="fas fa-eye"></i>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-green);">
+                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(0,145,76,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fas fa-eye" style="color:var(--nec-green);font-size:0.85rem;"></i>
                             </div>
-                            <div><h6 class="fw-bold mb-1">Observer Guide</h6><p class="small text-muted mb-0">Monitor elections</p></div>
+                            <span class="small fw-semibold">Observer Guide</span>
                         </div>
                     </div>
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-start gap-3 section-card py-3 px-3 card-accent-bar accent-purple rounded-3 position-relative">
-                            <div class="flex-shrink-0" style="width:40px;height:40px;border-radius:10px;background:rgba(var(--nec-green-rgb),0.08);display:flex;align-items:center;justify-content:center;color:var(--nec-green);">
-                                <i class="fas fa-question-circle"></i>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-2 section-card px-3 py-3" style="border-left:3px solid var(--nec-gold);">
+                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fas fa-question-circle" style="color:var(--nec-gold);font-size:0.85rem;"></i>
                             </div>
-                            <div><h6 class="fw-bold mb-1">FAQ</h6><p class="small text-muted mb-0">Voting questions answered</p></div>
+                            <span class="small fw-semibold">FAQ</span>
                         </div>
                     </div>
                 </div>
-                <a href="{{ route('voter.education') }}" class="btn btn-nec fw-bold px-4 py-2 mt-4">
+                <a href="{{ route('voter.education') }}" class="btn fw-bold px-4 py-2 mt-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
                     <i class="fas fa-graduation-cap me-2"></i> Explore Resources
                 </a>
             </div>
             <div class="col-lg-6 text-center reveal-right">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-4 section-card border-0" style="width:220px;height:220px;">
-                    <i class="fas fa-chalkboard-teacher" style="font-size:4rem;color:var(--nec-green);opacity:0.5;"></i>
+                <div style="position:relative;display:inline-block;width:100%;">
+                    <div style="width:100%;aspect-ratio:4/3;border-radius:5px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1);">
+                        <img src="{{ asset('assets/images/flag-gu.webp') }}" alt="Flag of South Sudan" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div style="position:absolute;bottom:10px;right:10px;background:var(--nec-gold);color:#fff;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                        <i class="fas fa-book-open"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -490,10 +463,10 @@
 </section>
 
 <!-- DOWNLOADS -->
-<section class="py-5">
+<section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
-            <p class="text-uppercase fw-bold mb-1" style="color:var(--nec-gold);letter-spacing:2px;font-size:0.85rem;">Resources</p>
+            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">RESOURCES</span>
             <h2 class="fw-bold">Downloads & Forms</h2>
             <p class="text-muted mb-0">Access important election documents and forms</p>
         </div>
@@ -517,31 +490,111 @@
     </div>
 </section>
 
-<!-- SOCIAL MEDIA -->
-<section class="py-5 section-shaded">
+<!-- COMMISSIONERS -->
+<section class="py-5" style="background:#fff;">
     <div class="container">
         <div class="text-center mb-5">
-            <p class="text-uppercase fw-bold mb-1 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Connect With Us</p>
-            <h2 class="fw-bold reveal">Follow NEC South Sudan</h2>
-            <p class="text-muted mb-0">Stay connected through our social media channels for real-time updates</p>
+            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">LEADERSHIP</span>
+            <h2 class="fw-bold reveal">NEC Commissioners</h2>
+            <p class="text-muted mb-0">Meet the commissioners steering South Sudan's electoral process</p>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="border-bottom:2px solid var(--nec-green);">
+                <thead style="background:var(--nec-green);color:#fff;">
+                    <tr>
+                        <th style="width:50px;border:0;">#</th>
+                        <th style="border:0;">Name</th>
+                        <th style="border:0;">Position</th>
+                        <th style="border:0;width:140px;">Appointed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($commissioners as $c)
+                    <tr>
+                        <td class="fw-bold" style="color:var(--nec-green);">{{ $loop->iteration }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="width:42px;height:42px;border-radius:50%;background:var(--nec-gray-100);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:2px solid var(--nec-green);">
+                                    @if($c->photo)
+                                    <img src="{{ asset($c->photo) }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                                    @else
+                                    <span class="fw-bold small" style="color:var(--nec-green);">NE</span>
+                                    @endif
+                                </div>
+                                <div>
+                                    <div class="fw-semibold small">{{ $c->name }}</div>
+                                    @if($c->department)<div class="text-muted" style="font-size:0.7rem;">{{ $c->department }}</div>@endif
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-light text-dark border fw-semibold px-3 py-1" style="font-size:0.7rem;border-radius:0;">{{ $c->position }}</span></td>
+                        <td class="small text-muted">{{ $c->appointed_date ? $c->appointed_date->format('d M Y') : '—' }}</td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="4" class="text-center text-muted py-4">No commissioners listed yet.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ route('about.commissioners') }}" class="btn fw-bold px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
+                View All Commissioners <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- PARTNERS & SUPPORT -->
+<section class="py-5" style="background:var(--nec-gray-50);">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">OUR PARTNERS</span>
+            <h2 class="fw-bold reveal">Supported By</h2>
+            <p class="text-muted mb-0">International partners supporting democracy in South Sudan</p>
         </div>
         @php
-        $platforms = [
-            ['class' => 'facebook', 'icon' => 'fab fa-facebook-f', 'label' => 'Facebook', 'color' => '#1877F2'],
-            ['class' => 'twitter', 'icon' => 'fab fa-x-twitter', 'label' => 'X (Twitter)', 'color' => '#000'],
-            ['class' => 'instagram', 'icon' => 'fab fa-instagram', 'label' => 'Instagram', 'color' => '#E4405F'],
-            ['class' => 'youtube', 'icon' => 'fab fa-youtube', 'label' => 'YouTube', 'color' => '#FF0000'],
-            ['class' => 'linkedin', 'icon' => 'fab fa-linkedin-in', 'label' => 'LinkedIn', 'color' => '#0A66C2'],
-            ['class' => 'whatsapp', 'icon' => 'fab fa-whatsapp', 'label' => 'WhatsApp', 'color' => '#25D366'],
+        $partners = [
+            ['name' => 'United Nations', 'url' => 'https://www.un.org', 'color' => '#1a6bb3', 'initials' => 'UN'],
+            ['name' => 'African Union', 'url' => 'https://au.int', 'color' => '#e7a832', 'initials' => 'AU'],
+            ['name' => 'European Union', 'url' => 'https://europa.eu', 'color' => '#003399', 'initials' => 'EU'],
+            ['name' => 'IGAD', 'url' => 'https://igad.int', 'color' => '#2d8c3c', 'initials' => 'IGAD'],
+            ['name' => 'UNDP', 'url' => 'https://www.undp.org', 'color' => '#0073b7', 'initials' => 'UNDP'],
+            ['name' => 'USAID', 'url' => 'https://www.usaid.gov', 'color' => '#ba0c2f', 'initials' => 'USAID'],
+            ['name' => 'International IDEA', 'url' => 'https://www.idea.int', 'color' => '#5a2d82', 'initials' => 'IDEA'],
+            ['name' => 'The Carter Center', 'url' => 'https://www.cartercenter.org', 'color' => '#1a5276', 'initials' => 'TCC'],
+            ['name' => 'NDI', 'url' => 'https://www.ndi.org', 'color' => '#c0392b', 'initials' => 'NDI'],
+            ['name' => 'IFES', 'url' => 'https://www.ifes.org', 'color' => '#1f618d', 'initials' => 'IFES'],
+            ['name' => 'UNMISS', 'url' => 'https://unmiss.unmissions.org', 'color' => '#5b8c5a', 'initials' => 'UNMISS'],
+            ['name' => 'ACME', 'url' => 'https://www.acme-elections.org', 'color' => '#b7950b', 'initials' => 'ACME'],
         ];
         @endphp
-        <div class="d-flex flex-wrap justify-content-center gap-2 px-3">
-            @foreach($platforms as $p)
-            <a href="#" class="social-pill text-decoration-none" style="--social:{{ $p['color'] }};">
-                <span class="social-pill-icon"><i class="{{ $p['icon'] }}"></i></span>
-                <span class="social-pill-label">{{ $p['label'] }}</span>
-            </a>
-            @endforeach
+        <div style="overflow:hidden;position:relative;">
+            <div class="partner-track">
+                @foreach($partners as $pt)
+                <a href="{{ $pt['url'] }}" target="_blank" rel="noopener" class="text-decoration-none flex-shrink-0" style="width:180px;">
+                    <div class="card border-0 shadow-sm overflow-hidden" style="border-radius:8px;">
+                        <div style="height:100px;background:{{ $pt['color'] }};display:flex;align-items:center;justify-content:center;">
+                            <span class="fw-bold text-white" style="font-size:1.6rem;letter-spacing:1px;">{{ $pt['initials'] }}</span>
+                        </div>
+                        <div style="padding:6px 10px;background:#fff;">
+                            <p class="mb-0 text-center text-dark" style="font-size:0.65rem;font-weight:600;line-height:1.2;">{{ $pt['name'] }}</p>
+                        </div>
+                    </div>
+                </a>
+                @endforeach
+                @foreach($partners as $pt)
+                <a href="{{ $pt['url'] }}" target="_blank" rel="noopener" class="text-decoration-none flex-shrink-0" style="width:180px;">
+                    <div class="card border-0 shadow-sm overflow-hidden" style="border-radius:8px;">
+                        <div style="height:100px;background:{{ $pt['color'] }};display:flex;align-items:center;justify-content:center;">
+                            <span class="fw-bold text-white" style="font-size:1.6rem;letter-spacing:1px;">{{ $pt['initials'] }}</span>
+                        </div>
+                        <div style="padding:6px 10px;background:#fff;">
+                            <p class="mb-0 text-center text-dark" style="font-size:0.65rem;font-weight:600;line-height:1.2;">{{ $pt['name'] }}</p>
+                        </div>
+                    </div>
+                </a>
+                @endforeach
+            </div>
         </div>
     </div>
 </section>
@@ -552,6 +605,17 @@
 .stat-grid-6 { grid-template-columns: repeat(6, 1fr); }
 @media (max-width: 992px) { .stat-grid-6 { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 576px) { .stat-grid-6 { grid-template-columns: repeat(2, 1fr); } }
+.partner-track {
+    display: flex;
+    gap: 0.75rem;
+    width: max-content;
+    animation: partnerScroll 40s linear infinite;
+}
+.partner-track:hover { animation-play-state: paused; }
+@keyframes partnerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-180px * 12 - 0.75rem * 11)); }
+}
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', function () {

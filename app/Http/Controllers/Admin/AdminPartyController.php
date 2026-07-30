@@ -151,6 +151,10 @@ class AdminPartyController extends Controller
 
         $this->logActivity('party_deleted', "Deleted party: {$party->name}", $party);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Party deleted.']);
+        }
+
         return redirect()->route('admin.parties.index')->with('success', 'Party deleted.');
     }
 

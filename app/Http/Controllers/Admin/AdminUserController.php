@@ -152,6 +152,10 @@ class AdminUserController extends Controller
 
         $this->logActivity('user_deleted', "Soft deleted user: {$userName}", $user);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
+        }
+
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
     }
 

@@ -26,7 +26,15 @@ class AdminObserverController extends Controller
 
         $observers = $query->orderByDesc('created_at')->paginate(20);
 
-        return view('admin.observers.index', compact('observers'));
+        $stats = [
+            'total' => Observer::count(),
+            'accredited' => Observer::where('status', 'accredited')->count(),
+            'verified' => Observer::where('status', 'verified')->count(),
+            'pending' => Observer::where('status', 'pending')->count(),
+            'rejected' => Observer::where('status', 'rejected')->count(),
+        ];
+
+        return view('admin.observers.index', compact('observers', 'stats'));
     }
 
     public function show($id)

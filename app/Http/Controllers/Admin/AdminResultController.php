@@ -135,6 +135,10 @@ class AdminResultController extends Controller
 
         $this->logActivity('result_deleted', "Deleted result: {$result->election_name}", $result);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Result deleted.']);
+        }
+
         return redirect()->route('admin.results.index')->with('success', 'Result deleted.');
     }
 }

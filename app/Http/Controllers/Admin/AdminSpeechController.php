@@ -14,8 +14,8 @@ class AdminSpeechController extends Controller
         $query = Speech::query();
         $status = $request->input('status');
 
-        if ($status === 'draft') $query->where('status', 'draft');
-        elseif ($status === 'trash') $query->where('status', 'trash');
+        if ($status === 'trash') $query = Speech::onlyTrashed();
+        elseif ($status === 'draft') $query->where('status', 'draft');
         elseif ($status === 'published') $query->where('status', 'published');
         else $query->where('status', '!=', 'trash');
 
@@ -33,7 +33,7 @@ class AdminSpeechController extends Controller
             'all' => Speech::where('status', '!=', 'trash')->count(),
             'published' => Speech::where('status', 'published')->count(),
             'draft' => Speech::where('status', 'draft')->count(),
-            'trash' => Speech::where('status', 'trash')->count(),
+            'trash' => Speech::onlyTrashed()->where('status', 'trash')->count(),
         ];
 
         return view('admin.speeches.index', compact('speeches', 'counts', 'status'));
@@ -109,6 +109,10 @@ class AdminSpeechController extends Controller
 
         $this->logActivity('speech_deleted', "Deleted speech: {$speech->title}", $speech);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Speech moved to trash.']);
+        }
+
         return redirect()->route('admin.speeches.index')->with('success', 'Speech moved to trash.');
     }
 
@@ -162,6 +166,10 @@ class AdminSpeechController extends Controller
         $speech->forceDelete();
 
         $this->logActivity('speech_force_deleted', "Permanently deleted speech: {$speech->title}", $speech);
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Speech permanently deleted.']);
+        }
 
         return redirect()->route('admin.speeches.index')->with('success', 'Speech permanently deleted.');
     }

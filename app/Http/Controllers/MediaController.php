@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Download;
 use App\Models\Gallery;
+use App\Models\GalleryAlbum;
 use App\Models\Media;
 use App\Models\News;
 use App\Models\Speech;
@@ -33,9 +34,13 @@ class MediaController extends Controller
     public function gallery()
     {
         abort_unless(feature_enabled('public_feature_gallery'), 404);
-        $photos = Gallery::orderByDesc('created_at')->paginate(24);
+        $albums = GalleryAlbum::with(['images' => function ($q) {
+            $q->orderBy('sort_order');
+        }])->where('status', 'published')
+          ->orderByDesc('created_at')
+          ->paginate(12);
 
-        return view('media.gallery', compact('photos'));
+        return view('media.gallery', compact('albums'));
     }
 
     public function videos()

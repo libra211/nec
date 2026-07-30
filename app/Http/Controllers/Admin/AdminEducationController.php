@@ -109,6 +109,10 @@ class AdminEducationController extends Controller
 
         $this->logActivity('education_deleted', "Deleted education material: {$material->title}", $material);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Material moved to trash.']);
+        }
+
         return redirect()->route('admin.education.index')->with('success', 'Education material moved to trash.');
     }
 
@@ -162,6 +166,10 @@ class AdminEducationController extends Controller
         $material->forceDelete();
 
         $this->logActivity('education_force_deleted', "Permanently deleted education material: {$material->title}", $material);
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Material permanently deleted.']);
+        }
 
         return redirect()->route('admin.education.index')->with('success', 'Material permanently deleted.');
     }

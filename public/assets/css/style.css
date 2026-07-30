@@ -1139,21 +1139,40 @@ a.stat-slim:hover { color: inherit; }
 /* ---------- Footer ---------- */
 .nec-footer { background: var(--nec-gray-900); color: rgba(255,255,255,0.6); }
 .footer-newsletter {
-    background: var(--nec-green);
+    background: linear-gradient(135deg, #1a6b3a, var(--nec-green));
     padding: 2rem 0;
     color: rgba(255,255,255,0.9);
 }
-.newsletter-title { font-weight: 800; font-size: 1.1rem; color: #fff; margin-bottom: 0.2rem; }
+.newsletter-title { font-weight: 800; font-size: 1.2rem; color: #fff; margin-bottom: 0.2rem; }
 .newsletter-text { font-size: 0.85rem; opacity: 0.85; margin-bottom: 0; }
 .footer-main { padding: 3rem 0 2rem; }
-.footer-widget h5 { color: #fff; font-size: 0.9rem; font-weight: 700; margin-bottom: 1.2rem; }
-.footer-links li { margin-bottom: 0.4rem; }
+.footer-widget h5 {
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    position: relative;
+    padding-bottom: 0.6rem;
+}
+.footer-widget h5::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 28px;
+    height: 2px;
+    background: var(--nec-gold);
+    border-radius: 1px;
+}
+.footer-links li { margin-bottom: 0.5rem; }
 .footer-links a {
     color: rgba(255,255,255,0.5);
     font-size: 0.82rem;
     text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-block;
 }
-.footer-links a:hover { color: var(--nec-gold); }
+.footer-links a:hover { color: var(--nec-gold); transform: translateX(3px); }
 .footer-social { display: flex; gap: 8px; }
 .social-icon {
     width: 34px; height: 34px;
@@ -1162,8 +1181,10 @@ a.stat-slim:hover { color: inherit; }
     background: rgba(255,255,255,0.06);
     color: rgba(255,255,255,0.5) !important;
     font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
 }
-.social-icon:hover { background: var(--nec-gold); color: #000 !important; }
+.social-icon:hover { background: var(--nec-gold); color: #000 !important; transform: scale(1.12); }
 .footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.06);
     padding: 1rem 0;
@@ -1171,7 +1192,7 @@ a.stat-slim:hover { color: inherit; }
 }
 .footer-bottom-links { list-style: none; padding: 0; margin: 0; text-align: right; }
 .footer-bottom-links li { display: inline; margin-left: 1rem; }
-.footer-bottom-links a { color: rgba(255,255,255,0.4); text-decoration: none; }
+.footer-bottom-links a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
 .footer-bottom-links a:hover { color: var(--nec-gold); }
 .copyright { color: rgba(255,255,255,0.35); }
 

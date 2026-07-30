@@ -65,6 +65,10 @@ class AdminSubscriberController extends Controller
 
         $this->logActivity('subscriber_deleted', "Deleted subscriber: {$subscriber->email}", $subscriber);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Subscriber deleted.']);
+        }
+
         return redirect()->route('admin.subscribers.index')->with('success', 'Subscriber deleted.');
     }
 }

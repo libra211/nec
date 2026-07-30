@@ -2,75 +2,211 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">Create Polling Station</h2>
-    <a href="{{ route('admin.polling-stations.index') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i> Back</a>
+    <div>
+        <h2 class="mb-1" style="font-weight:700;"><i class="fas fa-map-marker-alt" style="color:#2E8B57;margin-right:10px;"></i> Create Polling Station</h2>
+        <p class="text-muted mb-0 small">Add a new polling station with geographic hierarchy and unique code</p>
+    </div>
+    <a href="{{ route('admin.polling-stations.index') }}" class="btn btn-outline-secondary rounded-3 px-3"><i class="fas fa-arrow-left me-1"></i> Back</a>
 </div>
 
-<div class="card">
-    <div class="card-body">
+<div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+    <div class="card-body p-4">
         @if($errors->any())
-        <div class="alert alert-danger">
+        <div class="alert alert-danger rounded-3 border-0">
             <ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
         </div>
         @endif
 
         <form action="{{ route('admin.polling-stations.store') }}" method="POST">
             @csrf
-            <div class="row g-3">
+            <div class="row g-4">
+                <div class="col-12"><h6 class="fw-semibold text-muted" style="font-size:0.8rem;letter-spacing:0.5px;text-transform:uppercase;">Basic Information</h6></div>
+
                 <div class="col-md-6">
-                    <label class="form-label">Name *</label>
-                    <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                    <label class="form-label fw-medium">Polling Station Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="form-control rounded-3" value="{{ old('name') }}" placeholder="e.g. Juba City Central Primary School" required>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label">Code</label>
-                    <input type="text" name="code" class="form-control" value="{{ old('code') }}">
-                </div>
+
                 <div class="col-md-4">
-                    <label class="form-label">State</label>
-                    <input type="text" name="state" class="form-control" value="{{ old('state') }}">
+                    <label class="form-label fw-medium">Unique Code</label>
+                    <div class="input-group">
+                        <input type="text" name="code" id="code" class="form-control rounded-3" value="{{ old('code') }}" placeholder="Auto-generated" readonly style="background:#f8fafc;">
+                        <button type="button" class="btn btn-outline-success rounded-3" onclick="generateCode()" title="Generate new code"><i class="fas fa-sync-alt me-1"></i> Generate</button>
+                    </div>
+                    <div class="form-text">Click "Generate" to create a unique polling station code.</div>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">County</label>
-                    <input type="text" name="county" class="form-control" value="{{ old('county') }}">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Payam</label>
-                    <input type="text" name="payam" class="form-control" value="{{ old('payam') }}">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Constituency</label>
-                    <select name="constituency" class="form-select">
-                        <option value="">-- Select Constituency --</option>
-                        @foreach($constituencies as $c)
-                            <option value="{{ $c->name }}" {{ old('constituency') === $c->name ? 'selected' : '' }}>{{ $c->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Registered Voters</label>
-                    <input type="number" name="registered_voters" class="form-control" value="{{ old('registered_voters', 0) }}" min="0">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Latitude</label>
-                    <input type="number" name="latitude" class="form-control" value="{{ old('latitude') }}" step="0.0000001">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Longitude</label>
-                    <input type="number" name="longitude" class="form-control" value="{{ old('longitude') }}" step="0.0000001">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Status *</label>
-                    <select name="status" class="form-select" required>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-medium">Status <span class="text-danger">*</span></label>
+                    <select name="status" class="form-select rounded-3" required>
                         <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                         <option value="trash" {{ old('status') === 'trash' ? 'selected' : '' }}>Trash</option>
                     </select>
                 </div>
+
+                <div class="col-12"><hr style="opacity:0.08;"><h6 class="fw-semibold text-muted" style="font-size:0.8rem;letter-spacing:0.5px;text-transform:uppercase;">Geographic Location</h6></div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Region</label>
+                    <select name="region" class="form-select rounded-3" onchange="filterStates(this.value)">
+                        <option value="">-- Select Region --</option>
+                        @foreach($regions as $r)
+                            <option value="{{ $r->name }}" data-id="{{ $r->id }}" {{ old('region') === $r->name ? 'selected' : '' }}>{{ $r->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">State <span class="text-danger">*</span></label>
+                    <select name="state" id="state" class="form-select rounded-3" onchange="filterCounties()" required>
+                        <option value="">-- Select State --</option>
+                        @foreach($states as $s)
+                            <option value="{{ $s->name }}" data-region="{{ $s->region_id }}" {{ old('state') === $s->name ? 'selected' : '' }}>{{ $s->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">County</label>
+                    <select name="county" id="county" class="form-select rounded-3" onchange="filterConstituencies()">
+                        <option value="">-- Select County --</option>
+                        @foreach($counties as $c)
+                            <option value="{{ $c->name }}" data-state="{{ $c->state_id }}" {{ old('county') === $c->name ? 'selected' : '' }}>{{ $c->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Constituency</label>
+                    <select name="constituency" id="constituency" class="form-select rounded-3">
+                        <option value="">-- Select Constituency --</option>
+                        @foreach($constituencies as $c)
+                            <option value="{{ $c->name }}" data-county="{{ $c->county_id }}" {{ old('constituency') === $c->name ? 'selected' : '' }}>{{ $c->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Payam</label>
+                    <input type="text" name="payam" class="form-control rounded-3" value="{{ old('payam') }}" placeholder="e.g. Juba Central Payam">
+                </div>
+
+                <div class="col-12"><hr style="opacity:0.08;"><h6 class="fw-semibold text-muted" style="font-size:0.8rem;letter-spacing:0.5px;text-transform:uppercase;">Additional Details</h6></div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Registered Voters</label>
+                    <input type="number" name="registered_voters" class="form-control rounded-3" value="{{ old('registered_voters', 0) }}" min="0" placeholder="0">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Latitude</label>
+                    <input type="number" name="latitude" class="form-control rounded-3" value="{{ old('latitude') }}" step="0.0000001" placeholder="e.g. 4.851650">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Longitude</label>
+                    <input type="number" name="longitude" class="form-control rounded-3" value="{{ old('longitude') }}" step="0.0000001" placeholder="e.g. 31.582470">
+                </div>
             </div>
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save me-1"></i> Save Polling Station</button>
+
+            <div class="mt-4 pt-3 border-top">
+                <button type="submit" class="btn btn-primary btn-lg px-4 rounded-3"><i class="fas fa-save me-2"></i> Save Polling Station</button>
+                <a href="{{ route('admin.polling-stations.index') }}" class="btn btn-outline-secondary rounded-3 px-4 ms-2">Cancel</a>
             </div>
         </form>
     </div>
 </div>
+@endsection
+
+@section('extra_scripts')
+<script>
+function generateCode() {
+    fetch('{{ route('admin.polling-stations.generate-code') }}')
+        .then(r => r.json())
+        .then(d => document.getElementById('code').value = d.code);
+}
+
+var regionStateMap = {}, stateCountyMap = {}, countyConstituencyMap = {};
+
+@foreach($states as $s)
+    regionStateMap[{{ $s->region_id ?? 'null' }}] = regionStateMap[{{ $s->region_id ?? 'null' }}] || [];
+    regionStateMap[{{ $s->region_id ?? 'null' }}].push('{{ $s->name }}');
+@endforeach
+
+@foreach($counties as $c)
+    @if($c->state_id)
+    stateCountyMap[{{ $c->state_id }}] = stateCountyMap[{{ $c->state_id }}] || [];
+    stateCountyMap[{{ $c->state_id }}].push('{{ $c->name }}');
+    @endif
+@endforeach
+
+@foreach($constituencies as $c)
+    @if($c->county_id)
+    countyConstituencyMap[{{ $c->county_id }}] = countyConstituencyMap[{{ $c->county_id }}] || [];
+    countyConstituencyMap[{{ $c->county_id }}].push('{{ $c->name }}');
+    @endif
+@endforeach
+
+var allStates = document.querySelectorAll('#state option');
+var allCounties = document.querySelectorAll('#county option');
+var allConstituencies = document.querySelectorAll('#constituency option');
+
+function filterStates(regionName) {
+    var regionId = null;
+    document.querySelector('select[name="region"] option').forEach(function(o) {
+        if (o.value === regionName) regionId = o.getAttribute('data-id');
+    });
+    var validStates = regionStateMap[regionId] || [];
+    resetSelect('state', '-- Select State --');
+    resetSelect('county', '-- Select County --');
+    resetSelect('constituency', '-- Select Constituency --');
+    allStates.forEach(function(o) {
+        if (!o.value || validStates.includes(o.value)) o.style.display = '';
+        else o.style.display = 'none';
+    });
+}
+
+function filterCounties() {
+    var stateName = document.getElementById('state').value;
+    var stateId = null;
+    allStates.forEach(function(o) {
+        if (o.value === stateName) stateId = o.getAttribute('data-id');
+    });
+    if (!stateId) { resetSelect('county', '-- Select County --'); resetSelect('constituency', '-- Select Constituency --'); return; }
+    var validCounties = stateCountyMap[stateId] || [];
+    resetSelect('county', '-- Select County --');
+    resetSelect('constituency', '-- Select Constituency --');
+    allCounties.forEach(function(o) {
+        if (!o.value || validCounties.includes(o.value)) o.style.display = '';
+        else o.style.display = 'none';
+    });
+}
+
+function filterConstituencies() {
+    var countyName = document.getElementById('county').value;
+    var countyId = null;
+    allCounties.forEach(function(o) {
+        if (o.value === countyName) countyId = o.getAttribute('data-id');
+    });
+    if (!countyId) { resetSelect('constituency', '-- Select Constituency --'); return; }
+    var validConstituencies = countyConstituencyMap[countyId] || [];
+    resetSelect('constituency', '-- Select Constituency --');
+    allConstituencies.forEach(function(o) {
+        if (!o.value || validConstituencies.includes(o.value)) o.style.display = '';
+        else o.style.display = 'none';
+    });
+}
+
+function resetSelect(id, placeholder) {
+    var sel = document.getElementById(id);
+    sel.value = '';
+    sel.innerHTML = '<option value="">' + placeholder + '</option>';
+    var map = id === 'state' ? regionStateMap : (id === 'county' ? stateCountyMap : countyConstituencyMap);
+    var src = id === 'state' ? allStates : (id === 'county' ? allCounties : allConstituencies);
+    src.forEach(function(o) {
+        if (o.value) sel.add(o.cloneNode(true));
+    });
+}
+</script>
 @endsection

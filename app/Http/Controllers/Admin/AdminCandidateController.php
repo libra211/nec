@@ -182,6 +182,10 @@ class AdminCandidateController extends Controller
 
         $this->logActivity('candidate_deleted', "Deleted candidate: {$candidate->name}", $candidate);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Candidate deleted.']);
+        }
+
         return redirect()->route('admin.candidates.index')->with('success', 'Candidate deleted.');
     }
 

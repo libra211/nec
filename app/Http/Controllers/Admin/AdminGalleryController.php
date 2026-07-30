@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Gallery;
+use App\Models\GalleryAlbum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -11,38 +12,31 @@ class AdminGalleryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Gallery::query();
+        $query = GalleryAlbum::query();
         $status = $request->input('status');
 
-        if ($status === 'draft') $query->where('status', 'draft');
-        elseif ($status === 'trash') $query->where('status', 'trash');
+        if ($status === 'trash') $query = GalleryAlbum::onlyTrashed();
+        elseif ($status === 'draft') $query->where('status', 'draft');
         elseif ($status === 'published') $query->where('status', 'published');
         else $query->where('status', '!=', 'trash');
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'LIKE', "%{$search}%")
-                  ->orWhere('album', 'LIKE', "%{$search}%")
                   ->orWhere('description', 'LIKE', "%{$search}%");
             });
         }
 
-        if ($album = $request->input('album')) {
-            $query->where('album', $album);
-        }
-
-        $galleries = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+        $albums = $query->withCount('images')->orderByDesc('created_at')->paginate(20)->withQueryString();
 
         $counts = [
-            'all' => Gallery::where('status', '!=', 'trash')->count(),
-            'published' => Gallery::where('status', 'published')->count(),
-            'draft' => Gallery::where('status', 'draft')->count(),
-            'trash' => Gallery::where('status', 'trash')->count(),
+            'all' => GalleryAlbum::where('status', '!=', 'trash')->count(),
+            'published' => GalleryAlbum::where('status', 'published')->count(),
+            'draft' => GalleryAlbum::where('status', 'draft')->count(),
+            'trash' => GalleryAlbum::onlyTrashed()->count(),
         ];
 
-        $albums = Gallery::whereNotNull('album')->distinct()->pluck('album')->sort()->values();
-
-        return view('admin.gallery.index', compact('galleries', 'albums', 'counts', 'status'));
+        return view('admin.gallery.index', compact('albums', 'counts', 'status'));
     }
 
     public function create()
@@ -54,64 +48,139 @@ class AdminGalleryController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:gallery_albums,slug',
             'description' => 'nullable|string',
-            'image_path' => 'required|string|max:500',
-            'album' => 'nullable|string|max:100',
-            'featured_image' => 'nullable|string|max:500',
+            'featured_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'meta_description' => 'nullable|string|max:500',
             'status' => 'required|in:published,draft,trash',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp,gif|max:5120',
         ]);
 
-        $validated['slug'] = $validated['slug'] ?: Str::slug($validated['title']);
+        $albumData = array_filter($validated, fn($key) => !in_array($key, ['images', 'existing_images', 'sort_order']), ARRAY_FILTER_USE_KEY);
+        $albumData['slug'] = $albumData['slug'] ?: Str::slug($albumData['title']);
 
-        $gallery = Gallery::create($validated);
+        if ($request->hasFile('featured_image')) {
+            $path = $request->file('featured_image')->store('gallery/featured', 'public');
+            $albumData['featured_image'] = 'storage/' . $path;
+        }
 
-        $this->logActivity('gallery_created', "Created gallery: {$gallery->title}", $gallery);
+        $album = GalleryAlbum::create($albumData);
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Gallery image created.');
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $i => $file) {
+                $path = $file->store('gallery', 'public');
+                $album->images()->create([
+                    'title' => $file->getClientOriginalName(),
+                    'image_path' => 'storage/' . $path,
+                    'alt_text' => $file->getClientOriginalName(),
+                    'sort_order' => $i,
+                    'status' => $albumData['status'],
+                ]);
+            }
+        }
+
+        // If no featured image set, use first uploaded image
+        if (!$album->featured_image && $album->images()->exists()) {
+            $album->featured_image = $album->images()->value('image_path');
+            $album->save();
+        }
+
+        $this->logActivity('gallery_created', "Created gallery album: {$album->title}", $album);
+
+        return redirect()->route('admin.gallery.index')->with('success', 'Gallery album created.');
     }
 
     public function edit($id)
     {
-        $gallery = Gallery::findOrFail($id);
-        return view('admin.gallery.edit', compact('gallery'));
+        $album = GalleryAlbum::withTrashed()->findOrFail($id);
+        $album->load('images');
+        return view('admin.gallery.edit', compact('album'));
     }
 
     public function update(Request $request, $id)
     {
-        $gallery = Gallery::findOrFail($id);
+        $album = GalleryAlbum::withTrashed()->findOrFail($id);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:gallery_albums,slug,' . $id,
             'description' => 'nullable|string',
-            'image_path' => 'required|string|max:500',
-            'album' => 'nullable|string|max:100',
-            'featured_image' => 'nullable|string|max:500',
+            'featured_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'meta_description' => 'nullable|string|max:500',
             'status' => 'required|in:published,draft,trash',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp,gif|max:5120',
+            'existing_images' => 'nullable|array',
+            'sort_order' => 'nullable|array',
         ]);
 
-        $validated['slug'] = $validated['slug'] ?: Str::slug($validated['title']);
+        $albumData = array_filter($validated, fn($key) => !in_array($key, ['images', 'existing_images', 'sort_order']), ARRAY_FILTER_USE_KEY);
+        $albumData['slug'] = $albumData['slug'] ?: Str::slug($albumData['title']);
 
-        $gallery->update($validated);
+        if ($request->hasFile('featured_image')) {
+            $path = $request->file('featured_image')->store('gallery/featured', 'public');
+            $albumData['featured_image'] = 'storage/' . $path;
+        } elseif ($request->input('remove_featured') === '1') {
+            $albumData['featured_image'] = null;
+        }
 
-        $this->logActivity('gallery_updated', "Updated gallery: {$gallery->title}", $gallery);
+        $album->update($albumData);
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Gallery image updated.');
+        // Handle existing images (reorder + delete removed ones)
+        $existingIds = $request->input('existing_images', []);
+        $sortOrder = $request->input('sort_order', []);
+
+        // Delete images not in the existing list
+        if ($existingIds) {
+            $album->images()->whereNotIn('id', $existingIds)->delete();
+        }
+
+        // Update sort order for kept images
+        foreach ($sortOrder as $imgId => $order) {
+            Gallery::where('id', $imgId)->where('gallery_album_id', $album->id)->update(['sort_order' => $order]);
+        }
+
+        // Upload new images
+        if ($request->hasFile('images')) {
+            $maxSort = $album->images()->max('sort_order') ?? -1;
+            foreach ($request->file('images') as $i => $file) {
+                $path = $file->store('gallery', 'public');
+                $album->images()->create([
+                    'title' => $file->getClientOriginalName(),
+                    'image_path' => 'storage/' . $path,
+                    'alt_text' => $file->getClientOriginalName(),
+                    'sort_order' => $maxSort + 1 + $i,
+                    'status' => $album->status,
+                ]);
+            }
+        }
+
+        // Ensure featured image is set
+        if (!$album->featured_image && $album->images()->exists()) {
+            $album->featured_image = $album->images()->value('image_path');
+            $album->save();
+        }
+
+        $this->logActivity('gallery_updated', "Updated gallery album: {$album->title}", $album);
+
+        return redirect()->route('admin.gallery.index')->with('success', 'Gallery album updated.');
     }
 
     public function destroy($id)
     {
-        $gallery = Gallery::findOrFail($id);
-        $gallery->status = 'trash';
-        $gallery->save();
-        $gallery->delete();
+        $album = GalleryAlbum::findOrFail($id);
+        $album->status = 'trash';
+        $album->save();
+        $album->delete();
 
-        $this->logActivity('gallery_deleted', "Deleted gallery: {$gallery->title}", $gallery);
+        $this->logActivity('gallery_deleted', "Deleted gallery album: {$album->title}", $album);
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Gallery image moved to trash.');
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Album moved to trash.']);
+        }
+
+        return redirect()->route('admin.gallery.index')->with('success', 'Gallery album moved to trash.');
     }
 
     public function bulkAction(Request $request)
@@ -122,49 +191,54 @@ class AdminGalleryController extends Controller
         if (empty($ids)) return back()->with('error', 'No items selected.');
 
         $count = match ($action) {
-            'publish' => Gallery::whereIn('id', $ids)->update(['status' => 'published']),
-            'draft' => Gallery::whereIn('id', $ids)->update(['status' => 'draft']),
-            'trash' => Gallery::whereIn('id', $ids)->update(['status' => 'trash']),
-            'restore' => Gallery::onlyTrashed()->whereIn('id', $ids)->restore(),
-            'delete' => Gallery::onlyTrashed()->whereIn('id', $ids)->forceDelete(),
+            'publish' => GalleryAlbum::whereIn('id', $ids)->update(['status' => 'published']),
+            'draft' => GalleryAlbum::whereIn('id', $ids)->update(['status' => 'draft']),
+            'trash' => GalleryAlbum::whereIn('id', $ids)->update(['status' => 'trash']),
+            'restore' => GalleryAlbum::onlyTrashed()->whereIn('id', $ids)->restore(),
+            'delete' => GalleryAlbum::onlyTrashed()->whereIn('id', $ids)->forceDelete(),
             default => throw new \InvalidArgumentException("Unknown action: {$action}"),
         };
 
-        $this->logActivity('gallery_bulk_action', "Bulk {$action} on {$count} gallery items");
+        $this->logActivity('gallery_bulk_action', "Bulk {$action} on {$count} gallery albums");
 
-        return back()->with('success', "{$count} image(s) updated.");
+        return back()->with('success', "{$count} album(s) updated.");
     }
 
     public function toggleStatus($id)
     {
-        $gallery = Gallery::findOrFail($id);
-        $gallery->status = $gallery->status === 'published' ? 'draft' : 'published';
-        $gallery->save();
+        $album = GalleryAlbum::withTrashed()->findOrFail($id);
+        $album->status = $album->status === 'published' ? 'draft' : 'published';
+        $album->save();
 
-        $this->logActivity('gallery_status_changed', "Changed gallery {$gallery->title} status to {$gallery->status}", $gallery);
+        $this->logActivity('gallery_status_changed', "Changed gallery album {$album->title} status to {$album->status}", $album);
 
-        return back()->with('success', 'Image status toggled.');
+        return back()->with('success', 'Album status toggled.');
     }
 
     public function restore($id)
     {
-        $gallery = Gallery::onlyTrashed()->findOrFail($id);
-        $gallery->status = 'draft';
-        $gallery->save();
-        $gallery->restore();
+        $album = GalleryAlbum::onlyTrashed()->findOrFail($id);
+        $album->status = 'draft';
+        $album->save();
+        $album->restore();
 
-        $this->logActivity('gallery_restored', "Restored gallery: {$gallery->title}", $gallery);
+        $this->logActivity('gallery_restored', "Restored gallery album: {$album->title}", $album);
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Image restored.');
+        return redirect()->route('admin.gallery.index')->with('success', 'Album restored.');
     }
 
     public function forceDelete($id)
     {
-        $gallery = Gallery::onlyTrashed()->findOrFail($id);
-        $gallery->forceDelete();
+        $album = GalleryAlbum::onlyTrashed()->findOrFail($id);
+        $album->images()->forceDelete();
+        $album->forceDelete();
 
-        $this->logActivity('gallery_force_deleted', "Permanently deleted gallery: {$gallery->title}", $gallery);
+        $this->logActivity('gallery_force_deleted', "Permanently deleted gallery album: {$album->title}", $album);
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Image permanently deleted.');
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Album permanently deleted.']);
+        }
+
+        return redirect()->route('admin.gallery.index')->with('success', 'Album permanently deleted.');
     }
 }

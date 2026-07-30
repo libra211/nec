@@ -111,6 +111,10 @@ class AgentController extends Controller
         $agent->delete();
         $this->logActivity('agent_deleted', "Deleted registration agent: {$agent->full_name}", $agent);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Agent deleted.']);
+        }
+
         return redirect()->route('admin.agents.index')->with('success', 'Agent deleted.');
     }
 

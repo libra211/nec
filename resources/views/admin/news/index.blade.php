@@ -125,10 +125,10 @@
                             @if($item->status !== 'trash')
                             <a href="{{ route('admin.news.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
                             <a href="{{ route('admin.news.toggle-status', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba({{ $item->status === 'published' ? '234,179,8' : '46,139,87' }},0.08);color:{{ $item->status === 'published' ? '#ca8a04' : '#2E8B57' }};border:none;" title="{{ $item->status === 'published' ? 'Move to Draft' : 'Publish' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
-                            <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmTrash('{{ route('admin.news.destroy', $item->id) }}')" title="Trash"><i class="fas fa-trash"></i></button>
+                            <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmTrash('{{ route('admin.news.destroy', $item->id) }}')" title="Trash"><i class="fas fa-trash"></i></button>
                             @else
                             <a href="{{ route('admin.news.restore', $item->id) }}" class="btn btn-sm" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;border-radius:8px;" title="Restore"><i class="fas fa-undo"></i></a>
-                            <button class="btn btn-sm" style="padding:3px 8px;background:rgba(220,38,38,0.08);color:#dc2626;border:none;border-radius:8px;" onclick="confirmForceDelete('{{ route('admin.news.force-delete', $item->id) }}')" title="Delete Permanently"><i class="fas fa-times"></i></button>
+                            <button type="button" class="btn btn-sm" style="padding:3px 8px;background:rgba(220,38,38,0.08);color:#dc2626;border:none;border-radius:8px;" onclick="confirmForceDelete('{{ route('admin.news.force-delete', $item->id) }}')" title="Delete Permanently"><i class="fas fa-times"></i></button>
                             @endif
                         </td>
                     </tr>
@@ -203,7 +203,7 @@ function confirmTrash(url) {
         confirmButtonText: 'Yes, trash it'
     }).then(function (result) {
         if (result.isConfirmed) {
-            $.ajax({ url: url, type: 'DELETE', success: function () { Swal.fire('Trashed!', 'Article moved to trash.', 'success').then(function () { location.reload(); }); } });
+            $.ajax({ url: url, type: 'DELETE', success: function () { Swal.fire('Trashed!', 'Article moved to trash.', 'success').then(function () { location.reload(); }); }, error: function (xhr) { Swal.fire('Error!', xhr.responseJSON?.message || 'Failed to trash article.', 'error'); } });
         }
     });
 }
@@ -217,7 +217,7 @@ function confirmForceDelete(url) {
         confirmButtonText: 'Delete permanently'
     }).then(function (result) {
         if (result.isConfirmed) {
-            $.ajax({ url: url, type: 'DELETE', success: function () { Swal.fire('Deleted!', 'Article permanently deleted.', 'success').then(function () { location.reload(); }); } });
+            $.ajax({ url: url, type: 'DELETE', success: function () { Swal.fire('Deleted!', 'Article permanently deleted.', 'success').then(function () { location.reload(); }); }, error: function (xhr) { Swal.fire('Error!', xhr.responseJSON?.message || 'Failed to delete article.', 'error'); } });
         }
     });
 }

@@ -87,6 +87,10 @@ class AdminVideoController extends Controller
 
         $this->logActivity('video_deleted', "Deleted video: {$video->title}", $video);
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Video deleted.']);
+        }
+
         return redirect()->route('admin.videos.index')->with('success', 'Video deleted.');
     }
 }

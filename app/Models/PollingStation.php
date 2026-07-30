@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class PollingStation extends Model
 {
-    public $timestamps = false;
     use HasFactory;
 
     protected $table = 'nec_polling_stations';
