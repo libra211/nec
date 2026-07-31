@@ -468,7 +468,7 @@
         @endphp
         <div class="row g-4" id="teamGrid">
             @foreach($commissioners as $c)
-                <div class="col-md-6 col-lg-4 team-col" data-position="{{ $c->position }}" data-gender="{{ $c->gender }}" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 3) * 100 }}">
+                <div class="col-md-6 col-lg-3 team-col" data-position="{{ $c->position }}" data-gender="{{ $c->gender }}" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 4) * 100 }}">
                     <div class="member-card team-card h-100" onclick="openProfileModal({{ $c->id }})">
                         <div class="member-photo-wrapper" style="background:{{ $member_bgs[$loop->index % 4] }};">
                             @if($c->photo)
