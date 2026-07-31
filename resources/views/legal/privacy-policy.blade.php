@@ -115,7 +115,7 @@ try {
                                 <div class="accordion-body text-muted">
                                     <p>If you have any questions about this Privacy Policy or wish to exercise your data protection rights, please contact us:</p>
                                     <p><strong>National Elections Commission</strong><br>
-                                    Juba, South Sudan<br>
+                                    NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba<br>
                                     Email: info@nec.gov.ss<br>
                                     Phone: +211 (0) 912 345 678</p>
                                 </div>

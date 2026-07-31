@@ -11,6 +11,7 @@
         'email' => ['icon' => 'fa-envelope', 'label' => 'Email', 'desc' => 'SMTP & mail settings'],
         'social' => ['icon' => 'fa-share-alt', 'label' => 'Social Media', 'desc' => 'Social links & sharing'],
         'elections' => ['icon' => 'fa-vote-yea', 'label' => 'Elections', 'desc' => 'Dates, types & deadlines'],
+        'voter-education' => ['icon' => 'fa-graduation-cap', 'label' => 'Voter Education', 'desc' => 'Civic education resource cards'],
         'public-display' => ['icon' => 'fa-globe', 'label' => 'Public Display', 'desc' => 'Stats visibility & features'],
         'profile' => ['icon' => 'fa-user-circle', 'label' => 'Profile', 'desc' => 'Name, email & password'],
         'login-logs' => ['icon' => 'fa-history', 'label' => 'Login Logs', 'desc' => 'Recent login activity'],
@@ -60,6 +61,9 @@
             @method('PUT')
 
             @foreach($tabs as $key => $tab)
+            @if($key === 'voter-education')
+            @continue
+            @endif
             <div class="settings-tab-pane" id="pane-{{ $key }}" style="display:{{ $activeTab === $key ? 'block' : 'none' }};">
                 <div class="settings-content-header">
                     <h3><i class="fas {{ $tab['icon'] }} me-2 text-primary"></i>{{ $tab['label'] }}</h3>
@@ -129,7 +133,7 @@
                         <div class="col-md-6">
                             <div class="settings-field">
                                 <label class="settings-field-label">Contact Email</label>
-                                <input type="email" name="contact_email" class="form-control setting-input" value="{{ $settings['contact_email']->value ?? 'info@necss.org.ss' }}">
+                                <input type="email" name="contact_email" class="form-control setting-input" value="{{ $settings['contact_email']->value ?? 'info@nec.gov.ss' }}">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -229,6 +233,35 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="settings-block">
+                    <div class="settings-block-title">Core Values</div>
+                    <div class="settings-block-desc">Shown in the "Who We Are / Our Vision &amp; Mission" section on the homepage. Leave a field blank to use its default.</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="settings-field">
+                                <label class="settings-field-label">Section Title</label>
+                                <input type="text" name="core_values_title" class="form-control setting-input" value="{{ $settings['core_values_title']->value ?? 'Core Values' }}" maxlength="100">
+                            </div>
+                        </div>
+                    </div>
+                    @for($i = 1; $i <= 6; $i++)
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-4">
+                            <div class="settings-field">
+                                <label class="settings-field-label">Value {{ $i }} Name</label>
+                                <input type="text" name="core_value_{{ $i }}_name" class="form-control setting-input" value="{{ $settings['core_value_'.$i.'_name']->value ?? '' }}" maxlength="100" placeholder="e.g. Integrity">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="settings-field">
+                                <label class="settings-field-label">Value {{ $i }} Description</label>
+                                <input type="text" name="core_value_{{ $i }}_desc" class="form-control setting-input" value="{{ $settings['core_value_'.$i.'_desc']->value ?? '' }}" maxlength="200" placeholder="Short description">
+                            </div>
+                        </div>
+                    </div>
+                    @endfor
                 </div>
 
                 <div class="settings-block">
@@ -1116,7 +1149,7 @@
             <input type="hidden" name="_tab" id="activeTabInput" value="{{ $activeTab }}">
 
             <hr class="my-3">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center" id="mainSaveBar" style="{{ $activeTab === 'voter-education' ? 'display:none;' : '' }}">
                 <div>
                     <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-1"></i> Save Changes</button>
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary ms-2"><i class="fas fa-arrow-left me-1"></i> Back</a>
@@ -1126,6 +1159,19 @@
                 </div>
             </div>
         </form>
+
+        {{-- ===== VOTER EDUCATION (independent per-section forms) ===== --}}
+        <div class="settings-tab-pane" id="pane-voter-education" style="display:{{ $activeTab === 'voter-education' ? 'block' : 'none' }};">
+            <div class="settings-content-header">
+                <h3><i class="fas fa-graduation-cap me-2 text-primary"></i>Voter Education</h3>
+                <p>Edit each civic voter education resource below.</p>
+            </div>
+            <div class="alert alert-info d-flex align-items-center gap-2 py-2 px-3 mb-3" style="font-size:12px;border:none;background:rgba(59,130,246,0.06);">
+                <i class="fas fa-info-circle text-primary"></i>
+                <span>Each section saves independently. Uploaded images are displayed on the public Voter Education page with download links.</span>
+            </div>
+            @include('admin.settings.partials.voter-education-resources')
+        </div>
     </div>
 </div>
 @endsection
@@ -1143,6 +1189,8 @@ $(document).ready(function () {
         });
         $('#activeTabInput').val(tab);
         history.replaceState(null, null, '?tab=' + tab);
+        // Voter Education tab uses independent per-section forms; hide the main save bar
+        $('#mainSaveBar').toggle(tab !== 'voter-education');
         // Scroll content to top
         $('#settingsContent').scrollTop(0);
     });

@@ -26,26 +26,19 @@
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-8">
-                <h2 class="fw-bold mb-3" style="color: var(--nec-black);">Who We Are</h2>
-                <p class="lead text-muted">The National Elections Commission (NEC) is the independent constitutional body responsible for organizing, supervising, and conducting all elections and referenda in the Republic of South Sudan.</p>
-                <p class="text-muted">Established under the Transitional Constitution of the Republic of South Sudan, 2011 (as amended), the NEC operates with full independence and impartiality. The Commission is committed to ensuring that elections are free, fair, credible, and transparent, reflecting the true will of the South Sudanese people.</p>
-                <p class="text-muted">The NEC is composed of a Chairperson, Deputy Chairperson, and Commissioners appointed by the President with the approval of the Transitional National Legislative Assembly. The Commission is supported by a professional secretariat comprising various departments responsible for the technical and administrative aspects of electoral operations.</p>
+                <h2 class="fw-bold mb-3" style="color: var(--nec-black);">Welcome to the National Elections Commission – South Sudan</h2>
+                <p class="text-muted">In 2011, the National Elections Commission (NEC) was formally established by the Transitional Constitution of the Republic of South Sudan (as amended) (Art.197). The National Elections Act, 2012 (as amended) sets out the independence of the NEC by requiring that it be administratively and financially independent, and perform its functions with integrity, transparency, and impartiality without interference from any person or authority. The Act requires that members (herein referred to as Commissioners) and staff of the NEC perform their functions in accordance with the law, be independent, and not be influenced by Government, state, public officers, political parties, candidates, or any other person or body. As required by the 2018 Revitalized Agreement on the Resolution of Conflict in the Republic of South Sudan (R-ARCSS) and the National Elections Act, 2012 (as amended), the NEC was reconstituted into a competent and impartial body to conduct elections and the Commissioners sworn in January 2024.</p>
 
-                <h3 class="fw-bold mt-4 mb-3" style="color: var(--nec-black);">Our Mission</h3>
-                <p class="text-muted">To organize and conduct free, fair, and credible elections that reflect the will of the people of South Sudan, thereby contributing to the consolidation of democracy, peace, and stability in the country.</p>
-
-                <h3 class="fw-bold mt-4 mb-3" style="color: var(--nec-black);">Our Vision</h3>
-                <p class="text-muted">To be a model election management body in Africa, delivering excellence in electoral services and fostering a culture of democratic participation among all South Sudanese citizens.</p>
-
-                <h3 class="fw-bold mt-4 mb-3" style="color: var(--nec-black);">Functions of the NEC</h3>
-                <p class="text-muted">The National Elections Commission is mandated by the Transitional Constitution and the National Elections Act to perform the following functions:</p>
+                <h3 class="fw-bold mt-4 mb-3" style="color: var(--nec-black);">Functions and powers of the NEC</h3>
+                <p class="text-muted">The NEC is responsible for regulating, conducting, and supervising national referenda and elections of the President, Governors, National Legislative Assembly, State Legislative Assemblies, Council of States, Chief Administrators, Administrative Area Legislative Councils, County Commissioners, City Mayors, and Urban and Rural Councils.</p>
+                <p class="text-muted">The NEC's specific responsibilities include the following:</p>
                 <div class="row g-3 mt-2">
                     <div class="col-md-6">
                         <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-3">
                             <i class="fas fa-check-circle fs-5" style="color: var(--nec-green);"></i>
                             <div>
-                                <h6 class="fw-bold mb-1">Organize and Conduct Elections</h6>
-                                <p class="small text-muted mb-0">Organize, supervise, and conduct all elections and referenda in a free, fair, and credible manner.</p>
+                                <h6 class="fw-bold mb-1">Continuous Voter Registration</h6>
+                                <p class="small text-muted mb-0">Conduct continuous registration of voters.</p>
                             </div>
                         </div>
                     </div>
@@ -53,8 +46,8 @@
                         <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-3">
                             <i class="fas fa-check-circle fs-5" style="color: var(--nec-green);"></i>
                             <div>
-                                <h6 class="fw-bold mb-1">Voter Registration</h6>
-                                <p class="small text-muted mb-0">Compile, maintain, and update a comprehensive National Voters Register through continuous voter registration.</p>
+                                <h6 class="fw-bold mb-1">Civic and Voter Education</h6>
+                                <p class="small text-muted mb-0">Conduct comprehensive civic and voter education in collaboration with other agencies and non-state actors.</p>
                             </div>
                         </div>
                     </div>
@@ -62,8 +55,8 @@
                         <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-3">
                             <i class="fas fa-check-circle fs-5" style="color: var(--nec-green);"></i>
                             <div>
-                                <h6 class="fw-bold mb-1">Candidate and Party Regulation</h6>
-                                <p class="small text-muted mb-0">Register and regulate political parties, receive and vet candidate nominations, and oversee campaign activities.</p>
+                                <h6 class="fw-bold mb-1">Constituency Determination</h6>
+                                <p class="small text-muted mb-0">Determine the geographic constituencies for elections.</p>
                             </div>
                         </div>
                     </div>
@@ -71,8 +64,8 @@
                         <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-3">
                             <i class="fas fa-check-circle fs-5" style="color: var(--nec-green);"></i>
                             <div>
-                                <h6 class="fw-bold mb-1">Constituency Delimitation</h6>
-                                <p class="small text-muted mb-0">Determine constituency boundaries and polling station locations in consultation with relevant authorities.</p>
+                                <h6 class="fw-bold mb-1">Campaign Regulation</h6>
+                                <p class="small text-muted mb-0">Regulate election campaigns, prepare electoral symbols and lists, and prescribe procedures for agent and observer accreditation.</p>
                             </div>
                         </div>
                     </div>
@@ -80,8 +73,8 @@
                         <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-3">
                             <i class="fas fa-check-circle fs-5" style="color: var(--nec-green);"></i>
                             <div>
-                                <h6 class="fw-bold mb-1">Voter Education</h6>
-                                <p class="small text-muted mb-0">Design and implement voter and civic education programmes to promote democratic participation.</p>
+                                <h6 class="fw-bold mb-1">Electoral Dispute Settlement</h6>
+                                <p class="small text-muted mb-0">Settle electoral disputes.</p>
                             </div>
                         </div>
                     </div>
@@ -89,8 +82,8 @@
                         <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-3">
                             <i class="fas fa-check-circle fs-5" style="color: var(--nec-green);"></i>
                             <div>
-                                <h6 class="fw-bold mb-1">Observer Accreditation</h6>
-                                <p class="small text-muted mb-0">Accredit domestic and international election observers to ensure transparency and accountability.</p>
+                                <h6 class="fw-bold mb-1">Enforce Electoral Integrity</h6>
+                                <p class="small text-muted mb-0">Take necessary actions against any person or group that engages in corrupt or illegal practices or that participates in election misconduct.</p>
                             </div>
                         </div>
                     </div>
@@ -98,8 +91,8 @@
                         <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-3">
                             <i class="fas fa-check-circle fs-5" style="color: var(--nec-green);"></i>
                             <div>
-                                <h6 class="fw-bold mb-1">Results Management</h6>
-                                <p class="small text-muted mb-0">Collect, tally, verify, and declare election results in a transparent and timely manner.</p>
+                                <h6 class="fw-bold mb-1">Stakeholder Communication</h6>
+                                <p class="small text-muted mb-0">Establish and maintain communication with political parties and other electoral stakeholders.</p>
                             </div>
                         </div>
                     </div>
@@ -107,8 +100,8 @@
                         <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-3">
                             <i class="fas fa-check-circle fs-5" style="color: var(--nec-green);"></i>
                             <div>
-                                <h6 class="fw-bold mb-1">Electoral Dispute Resolution</h6>
-                                <p class="small text-muted mb-0">Hear and determine election petitions and complaints in accordance with the law.</p>
+                                <h6 class="fw-bold mb-1">Electoral Oversight</h6>
+                                <p class="small text-muted mb-0">Provide oversight over all matters and procedures related to voter registration, voting, sorting, counting, tallying, candidate nomination, electoral complaints, and declaration of election results.</p>
                             </div>
                         </div>
                     </div>

@@ -111,7 +111,7 @@
                     <div class="card-body p-4">
                         <h5 class="fw-bold mb-3" style="color: var(--nec-black);"><i class="fas fa-phone-alt me-2" style="color:var(--nec-gold);"></i>Contact NEC</h5>
                         <div class="small text-muted">
-                            <span class="d-block mb-2"><i class="fas fa-map-marker-alt me-2" style="color:var(--nec-green);width:16px;"></i>Juba, South Sudan</span>
+                            <span class="d-block mb-2"><i class="fas fa-map-marker-alt me-2" style="color:var(--nec-green);width:16px;"></i>NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba</span>
                             <span class="d-block mb-2"><i class="fas fa-phone me-2" style="color:var(--nec-green);width:16px;"></i>+211 (0) 912 345 678</span>
                             <span class="d-block mb-2"><i class="fas fa-envelope me-2" style="color:var(--nec-green);width:16px;"></i>info@nec.gov.ss</span>
                             <a href="{{ route('contact.index') }}" class="btn btn-sm btn-outline-success mt-2 w-100">Send a Message</a>

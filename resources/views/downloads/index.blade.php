@@ -26,34 +26,12 @@
 <section class="py-5">
     <div class="container">
         @php
-        $downloads = [];
-        try {
-            $downloads = \App\Models\Download::select('id', 'title', 'description', 'file_url', 'file_size', 'file_type', 'category')
-                ->orderBy('category')
-                ->orderBy('title')
-                ->get()
-                ->toArray();
-        } catch (\Exception $e) {}
-        if (empty($downloads)) {
-            $downloads = [
-                ['category' => 'Voter Forms', 'title' => 'Voter Registration Form', 'description' => 'Form for registering as a voter', 'file_url' => '#', 'file_size' => '245 KB', 'file_type' => 'pdf'],
-                ['category' => 'Voter Forms', 'title' => 'Voter Transfer Application', 'description' => 'Request to transfer voter registration', 'file_url' => '#', 'file_size' => '180 KB', 'file_type' => 'pdf'],
-                ['category' => 'Voter Forms', 'title' => 'Voter Details Correction Form', 'description' => 'Correct errors in voter registration details', 'file_url' => '#', 'file_size' => '210 KB', 'file_type' => 'pdf'],
-                ['category' => 'Candidate Forms', 'title' => 'Nomination Form - President', 'description' => 'Nomination form for presidential candidates', 'file_url' => '#', 'file_size' => '420 KB', 'file_type' => 'pdf'],
-                ['category' => 'Candidate Forms', 'title' => 'Nomination Form - MP', 'description' => 'Nomination form for parliamentary candidates', 'file_url' => '#', 'file_size' => '380 KB', 'file_type' => 'pdf'],
-                ['category' => 'Candidate Forms', 'title' => 'Candidate Code of Conduct', 'description' => 'Code of conduct agreement for all candidates', 'file_url' => '#', 'file_size' => '150 KB', 'file_type' => 'pdf'],
-                ['category' => 'Party Forms', 'title' => 'Political Party Registration Form', 'description' => 'Form for registering a new political party', 'file_url' => '#', 'file_size' => '520 KB', 'file_type' => 'pdf'],
-                ['category' => 'Party Forms', 'title' => 'Party Candidate List Template', 'description' => 'Template for submitting candidate lists', 'file_url' => '#', 'file_size' => '195 KB', 'file_type' => 'xls'],
-                ['category' => 'Party Forms', 'title' => 'Party Financial Disclosure Form', 'description' => 'Annual financial disclosure for political parties', 'file_url' => '#', 'file_size' => '310 KB', 'file_type' => 'doc'],
-                ['category' => 'Observer Forms', 'title' => 'Observer Accreditation Application', 'description' => 'Application form for observer accreditation', 'file_url' => '#', 'file_size' => '280 KB', 'file_type' => 'pdf'],
-                ['category' => 'Observer Forms', 'title' => 'Observer Code of Conduct', 'description' => 'Code of conduct for accredited observers', 'file_url' => '#', 'file_size' => '120 KB', 'file_type' => 'pdf'],
-                ['category' => 'Observer Forms', 'title' => 'Observer Report Template', 'description' => 'Template for submitting observation reports', 'file_url' => '#', 'file_size' => '340 KB', 'file_type' => 'doc'],
-                ['category' => 'Legal Documents', 'title' => 'Electoral Act 2024', 'description' => 'The principal electoral legislation', 'file_url' => '#', 'file_size' => '2.1 MB', 'file_type' => 'pdf'],
-                ['category' => 'Legal Documents', 'title' => 'NEC Regulations 2025', 'description' => 'Regulations governing electoral operations', 'file_url' => '#', 'file_size' => '1.8 MB', 'file_type' => 'pdf'],
-                ['category' => 'Reports', 'title' => 'Annual Report 2024-2025', 'description' => 'Commission annual report', 'file_url' => '#', 'file_size' => '4.2 MB', 'file_type' => 'pdf'],
-                ['category' => 'Reports', 'title' => 'Voter Registration Statistics', 'description' => 'Statistical report on voter registration', 'file_url' => '#', 'file_size' => '980 KB', 'file_type' => 'xls'],
-            ];
-        }
+        $downloads = \App\Models\Download::select('id', 'title', 'description', 'file_path', 'file_size', 'file_type', 'category')
+            ->where('status', 'published')
+            ->orderBy('category')
+            ->orderBy('title')
+            ->get()
+            ->toArray();
         $categories = [];
         foreach ($downloads as $d) {
             $categories[$d['category']][] = $d;
@@ -80,7 +58,7 @@
                                     <h6 class="mb-0 small fw-bold">{{ $file['title'] }}</h6>
                                     <small class="text-muted">{{ $file['file_size'] }} &middot; {{ $file['description'] }}</small>
                                 </div>
-                                <a href="{{ $file['file_url'] }}" class="btn btn-sm btn-outline-success flex-shrink-0" style="border-color: var(--nec-green); color: var(--nec-green);"><i class="fas fa-download"></i></a>
+                                <a href="{{ asset($file['file_path']) }}" class="btn btn-sm btn-outline-success flex-shrink-0" style="border-color: var(--nec-green); color: var(--nec-green);" target="_blank"><i class="fas fa-download"></i></a>
                             </div>
                             @endforeach
                         </div>

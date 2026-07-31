@@ -668,7 +668,7 @@
                                 <i class="fas fa-map-marker-alt" style="color:var(--nec-green);font-size:1.2rem;"></i>
                                 <div>
                                     <small class="text-muted d-block">Office</small>
-                                    <span class="fw-semibold" style="color:var(--nec-black);">National Elections Commission, Juba, South Sudan</span>
+                                    <span class="fw-semibold" style="color:var(--nec-black);">National Elections Commission, NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba</span>
                                 </div>
                             </div>
                         </div>

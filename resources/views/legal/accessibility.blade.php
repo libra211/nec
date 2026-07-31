@@ -164,7 +164,7 @@
                         <p class="mb-2"><strong>National Elections Commission</strong></p>
                         <p class="mb-1"><i class="fas fa-envelope me-2" style="color: var(--nec-gold);"></i> accessibility@nec.gov.ss</p>
                         <p class="mb-1"><i class="fas fa-phone me-2" style="color: var(--nec-gold);"></i> +211 (0) 912 345 678</p>
-                        <p class="mb-0"><i class="fas fa-map-marker-alt me-2" style="color: var(--nec-gold);"></i> Juba, South Sudan</p>
+                        <p class="mb-0"><i class="fas fa-map-marker-alt me-2" style="color: var(--nec-gold);"></i> NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba</p>
                     </div>
                 </div>
             </div>

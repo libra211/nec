@@ -150,6 +150,20 @@
                                         <span class="state-chip"><i class="fas fa-vote-yea"></i> {{ $state->constituency_count }} constituencies</span>
                                         <span class="state-chip"><i class="fas fa-map-pin"></i> {{ $state->polling_station_count }} stations</span>
                                     </div>
+                                    @if($state->shc_chairperson)
+                                    <div class="mt-2 pt-2" style="border-top:1px dashed #e9ecef;">
+                                        <div class="d-flex align-items-center gap-2" style="font-size:0.78rem;">
+                                            <i class="fas fa-user-tie" style="color:var(--nec-gold);"></i>
+                                            <span class="fw-semibold" style="color:var(--nec-black);">{{ $state->shc_chairperson }}</span>
+                                        </div>
+                                        @if($state->shc_email)
+                                        <div class="d-flex align-items-center gap-2 mt-1" style="font-size:0.75rem;">
+                                            <i class="fas fa-envelope" style="color:var(--nec-green);"></i>
+                                            <a href="mailto:{{ $state->shc_email }}" class="text-decoration-none" style="color:#6c757d;">{{ $state->shc_email }}</a>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -182,6 +196,7 @@
                                 </button>
                                 <h4 class="fw-bold mb-0" id="detailStateName"></h4>
                                 <p class="mb-0 opacity-75" style="font-size:0.85rem;" id="detailStateCapital"></p>
+                                <div id="detailStateShc" style="display:none;margin-top:4px;"></div>
                             </div>
                             <div class="text-end" id="detailStatRings"></div>
                         </div>
@@ -301,6 +316,22 @@ function loadState(id, el){
             var s=data.state;
             document.getElementById('detailStateName').textContent=s.name+' ('+s.code+')';
             document.getElementById('detailStateCapital').textContent='Capital: '+s.capital;
+
+            var shcHtml='';
+            if(s.shc_chairperson){
+                shcHtml='<div class="d-flex align-items-center gap-2 mt-1" style="font-size:0.85rem;">'+
+                    '<i class="fas fa-user-tie" style="color:var(--nec-gold);"></i>'+
+                    '<span class="fw-semibold">SHC Chairperson: '+s.shc_chairperson+'</span></div>';
+                if(s.shc_email){
+                    shcHtml+='<div class="d-flex align-items-center gap-2 mt-1" style="font-size:0.85rem;">'+
+                        '<i class="fas fa-envelope" style="color:var(--nec-gold);"></i>'+
+                        '<a href="mailto:'+s.shc_email+'" class="text-white opacity-75 text-decoration-none" style="color:#fff;">'+s.shc_email+'</a></div>';
+                }
+                document.getElementById('detailStateShc').innerHTML=shcHtml;
+                document.getElementById('detailStateShc').style.display='block';
+            } else {
+                document.getElementById('detailStateShc').style.display='none';
+            }
 
             var st=data.stats;
             document.getElementById('detailStatRings').innerHTML=

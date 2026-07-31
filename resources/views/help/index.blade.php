@@ -108,7 +108,7 @@
                                 <div class="text-center p-3">
                                     <i class="fas fa-map-marker-alt fs-3 mb-2" style="color: var(--nec-green);"></i>
                                     <h6 class="fw-bold small mb-1">Visit Us</h6>
-                                    <small class="text-muted">Juba, South Sudan</small>
+                                    <small class="text-muted">NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba</small>
                                 </div>
                             </div>
                             <div class="col-md-3">

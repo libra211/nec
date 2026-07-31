@@ -7,6 +7,16 @@ try {
 } catch (\Exception $e) {}
 
 $categoryMap = [
+    'eligibility' => ['id' => 'faq-eligibility', 'label' => 'Voter Eligibility'],
+    'registration' => ['id' => 'faq-registration', 'label' => 'Voter Registration'],
+    'transfer' => ['id' => 'faq-transfer', 'label' => 'Voter Transfer'],
+    'verification' => ['id' => 'faq-verification', 'label' => 'Verification'],
+    'voting_day' => ['id' => 'faq-voting-day', 'label' => 'Voting Process'],
+    'accessibility' => ['id' => 'faq-accessibility', 'label' => 'Accessibility'],
+    'candidates' => ['id' => 'faq-candidates', 'label' => 'Candidates & Parties'],
+    'reporting' => ['id' => 'faq-reporting', 'label' => 'Fraud & Reporting'],
+    'results' => ['id' => 'faq-results', 'label' => 'Results'],
+    'observation' => ['id' => 'faq-observation', 'label' => 'Election Observation'],
     'voter-registration' => ['id' => 'faq-voter', 'label' => 'Voter Registration'],
     'voting-process' => ['id' => 'faq-voting', 'label' => 'Voting Process'],
     'candidates-parties' => ['id' => 'faq-candidates', 'label' => 'Candidates & Parties'],

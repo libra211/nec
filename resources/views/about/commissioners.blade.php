@@ -52,15 +52,15 @@
             @else
                 @php
                 $commissioners = [
-                    (object)['id' => 1, 'name' => 'Hon. Prof. Abednego A. A. Akok', 'position' => 'Chairperson', 'bio' => 'Professor of Law and distinguished jurist with over 30 years of experience in legal practice, academia, and public service.', 'position_order' => 1],
-                    (object)['id' => 2, 'name' => 'Hon. Sarah N. Wani', 'position' => 'Deputy Chairperson', 'bio' => 'Senior legal practitioner specializing in constitutional law, human rights, and gender equality.', 'position_order' => 2],
-                    (object)['id' => 3, 'name' => 'Hon. James L. Maker', 'position' => 'Commissioner', 'bio' => 'Former Under-Secretary with extensive experience in public administration and electoral logistics.', 'position_order' => 3],
-                    (object)['id' => 4, 'name' => 'Hon. Dr. Mary A. Nyandeng', 'position' => 'Commissioner', 'bio' => 'PhD in Political Science with expertise in civic education, voter engagement, and democratic governance.', 'position_order' => 4],
-                    (object)['id' => 5, 'name' => 'Hon. John M. Deng', 'position' => 'Commissioner', 'bio' => 'Career diplomat who has represented South Sudan in multiple international forums and election observation missions.', 'position_order' => 5],
-                    (object)['id' => 6, 'name' => 'Hon. Rebecca N. Kiden', 'position' => 'Commissioner', 'bio' => 'Human rights lawyer and advocate for inclusive electoral processes and women political participation.', 'position_order' => 6],
-                    (object)['id' => 7, 'name' => 'Hon. David L. Wol', 'position' => 'Commissioner', 'bio' => 'Media and communication expert with experience in public information campaigns and stakeholder engagement.', 'position_order' => 7],
-                    (object)['id' => 8, 'name' => 'Hon. Grace A. Nyok', 'position' => 'Commissioner', 'bio' => 'Civil society leader with extensive grassroots experience in peacebuilding and community mobilization.', 'position_order' => 8],
-                    (object)['id' => 9, 'name' => 'Hon. Peter M. Achier', 'position' => 'Commissioner', 'bio' => 'Finance and administration specialist with a background in public financial management and auditing.', 'position_order' => 9],
+                    (object)['id' => 1, 'name' => 'Hon. Prof. Abednego Akok Kacuol', 'position' => 'Chairperson', 'bio' => 'Honorable Professor Abednego Akok Kacuol is the Honorable Chairperson of the National Elections Commission. First appointed as Chairman in August 2012.', 'position_order' => 1],
+                    (object)['id' => 2, 'name' => 'Hon. Dr. Francis Luigi Adwok', 'position' => 'Deputy Chairperson', 'bio' => 'Honorable Dr. Francis Luigi Adwok is the Deputy Chairperson of the National Elections Commission, sworn in on July 3, 2026.', 'position_order' => 2],
+                    (object)['id' => 3, 'name' => 'Hon. Mach Maika Deng', 'position' => 'Chief Electoral Officer', 'bio' => 'Honorable Mach Maika Deng is a NEC Commissioner and Chief Electoral Officer, supervising all electoral-related activities since August 2012.', 'position_order' => 3],
+                    (object)['id' => 4, 'name' => 'Hon. George Lemi Yata', 'position' => 'Spokesperson – Commissioner', 'bio' => 'Honorable George Lemi Yata is the Spokesperson of the NEC, with an academic background in IT, graphic design, and human resources.', 'position_order' => 4],
+                    (object)['id' => 5, 'name' => 'Hon. Thabo Abosuh Ajang', 'position' => 'Commissioner', 'bio' => 'Honorable Thabo Abosuh Ajang, NEC Commissioner since April 2014, responsible for gender issues and civic and voter education.', 'position_order' => 5],
+                    (object)['id' => 6, 'name' => 'Hon. Josephine Achiro Forteio', 'position' => 'Commissioner', 'bio' => 'Honorable Josephine Achiro Forteio is a NEC Commissioner sworn in on July 13, 2026, a veteran journalist and Palm Prize recipient.', 'position_order' => 6],
+                    (object)['id' => 7, 'name' => 'Hon. Sarah Daniel Gatluak', 'position' => 'Commissioner', 'bio' => 'Honorable Sarah Daniel Gatluak, NEC Commissioner since January 8, 2024, responsible for procurement and logistical coordination.', 'position_order' => 7],
+                    (object)['id' => 8, 'name' => 'Hon. Manuel Makum Matuop', 'position' => 'Commissioner', 'bio' => 'Honorable Manuel Makum Matuop, NEC Commissioner responsible for governmental relations, strategic planning, and general implementation.', 'position_order' => 8],
+                    (object)['id' => 9, 'name' => 'Hon. William Kolyin Deng', 'position' => 'Commissioner', 'bio' => 'Honorable William Kolyin Deng, NEC Commissioner since January 3, 2023, responsible for coordination with international communities and NGOs.', 'position_order' => 9],
                 ];
                 @endphp
                 @foreach($commissioners as $c)
@@ -75,7 +75,7 @@
                             <div class="col-8 p-3">
                                 <span class="badge bg-success mb-1" style="background: var(--nec-green) !important; font-size: 0.7rem;">{{ $c->position }}</span>
                                 <h6 class="fw-bold mb-1" style="font-size: 0.9rem; color: var(--nec-black);">{{ $c->name }}</h6>
-                                <p class="text-muted small mb-0" style="font-size: 0.8rem;">{{ $c->bio ?? '' }}</p>
+                                <p class="text-muted small mb-0" style="font-size: 0.8rem;">{{ $c->about ?? $c->bio }}</p>
                             </div>
                         </div>
                     </div>

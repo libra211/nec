@@ -36,6 +36,10 @@ class AdminSettingController extends Controller
             return $this->updatePublicDisplay($request);
         }
 
+        if ($tab === 'voter-education') {
+            return $this->updateVoterEducation($request);
+        }
+
         $rules = match ($tab) {
             'general' => [
                 'site_name' => 'nullable|string|max:255',
@@ -57,6 +61,19 @@ class AdminSettingController extends Controller
                 'about_content' => 'nullable|string|max:2000',
                 'mission_text' => 'nullable|string|max:1000',
                 'vision_text' => 'nullable|string|max:1000',
+                'core_values_title' => 'nullable|string|max:100',
+                'core_value_1_name' => 'nullable|string|max:100',
+                'core_value_1_desc' => 'nullable|string|max:200',
+                'core_value_2_name' => 'nullable|string|max:100',
+                'core_value_2_desc' => 'nullable|string|max:200',
+                'core_value_3_name' => 'nullable|string|max:100',
+                'core_value_3_desc' => 'nullable|string|max:200',
+                'core_value_4_name' => 'nullable|string|max:100',
+                'core_value_4_desc' => 'nullable|string|max:200',
+                'core_value_5_name' => 'nullable|string|max:100',
+                'core_value_5_desc' => 'nullable|string|max:200',
+                'core_value_6_name' => 'nullable|string|max:100',
+                'core_value_6_desc' => 'nullable|string|max:200',
                 'footer_about' => 'nullable|string|max:500',
                 'footer_copyright' => 'nullable|string|max:200',
             ],
@@ -277,6 +294,42 @@ class AdminSettingController extends Controller
         $this->logActivity('profile_updated', "Updated profile: {$user->name}", $user);
 
         return back()->with('success', 'Profile updated successfully.')->with('active_tab', 'profile');
+    }
+
+    private function updateVoterEducation(Request $request)
+    {
+        $section = $request->input('_section');
+
+        $allowed = [
+            'baseline_en', 'baseline_ar', 'strategy', 'curriculum',
+            'manual_en', 'manual_ar', 'booklet_en', 'booklet_ar',
+        ];
+
+        if (!in_array($section, $allowed, true)) {
+            return back()->with('error', 'Unknown voter education section.')->with('active_tab', 'voter-education');
+        }
+
+        $validated = $request->validate([
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'title' => 'nullable|string|max:200',
+            'desc' => 'nullable|string|max:500',
+        ]);
+
+        $prefix = "cve_{$section}";
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('voter-education', 'public');
+            \App\Helpers\NecHelper::setting_set("{$prefix}_image", Storage::url($path));
+        } elseif ($request->boolean('remove_image')) {
+            \App\Helpers\NecHelper::setting_set("{$prefix}_image", '');
+        }
+
+        \App\Helpers\NecHelper::setting_set("{$prefix}_title", $validated['title'] ?? '');
+        \App\Helpers\NecHelper::setting_set("{$prefix}_desc", $validated['desc'] ?? '');
+
+        $this->logActivity('voter_education_updated', "Updated voter education resource: {$section}");
+
+        return back()->with('success', 'Voter education section saved successfully.')->with('active_tab', 'voter-education');
     }
 
     private function updatePublicDisplay(Request $request)

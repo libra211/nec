@@ -315,12 +315,12 @@
         <div class="row align-items-center g-5">
             <div class="col-lg-5 text-center reveal-left">
                 <div class="section-card border-0 d-inline-flex align-items-center justify-content-center overflow-hidden" style="width:360px;height:360px;border-radius:50%;border:4px solid var(--nec-gold);box-shadow:0 0 30px rgba(212,175,55,0.3);">
-                    <img src="{{ asset('assets/images/chairperson.webp') }}" alt="Prof. Abednego A. A. Akok" style="width:100%;height:100%;object-fit:cover;transform:scale(1.3);">
+                    <img src="{{ asset('assets/images/chairperson.webp') }}" alt="Prof. Abednego Akok Kacuol" style="width:100%;height:100%;object-fit:cover;transform:scale(1.3);">
                 </div>
             </div>
             <div class="col-lg-7 reveal-right">
                 @include('partials.section-heading', ['icon' => 'fa-user-tie', 'label' => 'Message from the Chairperson'])
-                <h2 class="fw-bold mb-3">Hon. Prof. Abednego A. A. Akok</h2>
+                <h2 class="fw-bold mb-3">Hon. Prof. Abednego Akok Kacuol</h2>
                 <div class="section-card border-left-4 ps-4" style="border-left:4px solid var(--nec-gold);">
                     <p class="mb-2 fst-italic" style="font-size:1.05rem;color:var(--nec-gray-600);line-height:1.8;">
                     Our commitment is to deliver elections that reflect the true will of the South Sudanese people.
@@ -328,7 +328,7 @@
                     I call upon all citizens to actively participate in shaping the future of our great nation.
                     </p>
                     <footer class="mt-2">
-                        <strong class="d-block">Hon. Prof. Abednego A. A. Akok</strong>
+                        <strong class="d-block">Hon. Prof. Abednego Akok Kacuol</strong>
                         <span style="font-size:0.85rem;color:var(--nec-gray-500);">Chairperson, National Elections Commission</span>
                     </footer>
                 </div>
@@ -379,6 +379,45 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- CORE VALUES -->
+        <div class="mt-5 reveal">
+            <div class="text-center mb-4">
+                @include('partials.section-heading', ['icon' => 'fa-star', 'label' => \App\Helpers\NecHelper::setting_get('core_values_title', 'Core Values'), 'align' => 'center', 'line' => false])
+            </div>
+            @php
+            $cvDefaults = [
+                ['icon' => 'fa-balance-scale', 'name' => 'Independence', 'desc' => 'Free from external interference in decision-making'],
+                ['icon' => 'fa-eye', 'name' => 'Transparency', 'desc' => 'Open processes accessible to all stakeholders'],
+                ['icon' => 'fa-handshake', 'name' => 'Impartiality', 'desc' => 'Neutral and unbiased service to all citizens'],
+                ['icon' => 'fa-users', 'name' => 'Inclusivity', 'desc' => 'Equal participation opportunities for all'],
+                ['icon' => 'fa-shield-alt', 'name' => 'Integrity', 'desc' => 'Highest ethical standards in all operations'],
+                ['icon' => 'fa-star', 'name' => 'Excellence', 'desc' => 'Continuous improvement in service delivery'],
+            ];
+            $coreValues = [];
+            foreach ($cvDefaults as $i => $d) {
+                $n = $i + 1;
+                $coreValues[] = [
+                    'icon' => $d['icon'],
+                    'name' => \App\Helpers\NecHelper::setting_get("core_value_{$n}_name", $d['name']),
+                    'desc' => \App\Helpers\NecHelper::setting_get("core_value_{$n}_desc", $d['desc']),
+                ];
+            }
+            @endphp
+            <div class="row g-3 justify-content-center">
+                @foreach($coreValues as $i => $cv)
+                <div class="col-sm-6 col-lg-4 reveal reveal-delay-{{ ($i % 4) + 1 }}">
+                    <div class="card h-100 border-0 text-center p-4" style="border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,0.06);">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:60px;height:60px;border-radius:50%;background:rgba(212,175,55,0.12);">
+                            <i class="fas {{ $cv['icon'] }}" style="color:var(--nec-gold);font-size:1.3rem;"></i>
+                        </div>
+                        <h6 class="fw-bold mb-2">{{ $cv['name'] }}</h6>
+                        <p class="text-muted small mb-0">{{ $cv['desc'] }}</p>
+                    </div>
+                </div>
+                @endforeach
             </div>
         </div>
     </div>

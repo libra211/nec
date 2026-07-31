@@ -16,11 +16,49 @@
 @endsection
 
 @section('content')
+@php
+$langLabel = ['English' => 'English', 'Arabic' => 'العربية'];
+@endphp
+
 <section class="section-padding">
     <div class="container">
         <div class="text-center mb-5" data-aos="fade-up">
             <h2 class="section-title">Civic Education Resources</h2>
             <p>Empowering citizens with knowledge about democracy and the electoral process</p>
+        </div>
+
+        <div class="row g-4 mb-5" id="civic-resources">
+            @foreach($resources as $res)
+            @php
+                $img = $res['image'];
+                $pdf = $res['material']->file_path ?? null;
+                $desc = $res['desc'] ?: ($res['material']->description ?? 'Download the ' . $res['title'] . ' to learn more about civic and voter education in South Sudan.');
+            @endphp
+            <div class="col-lg-3 col-md-6" data-aos="fade-up">
+                <div class="civic-resource-card h-100 text-center p-0 overflow-hidden">
+                    <div class="civic-resource-img position-relative" style="height:170px;background:linear-gradient(135deg, var(--nec-green) 0%, var(--nec-green-dark) 100%);overflow:hidden;">
+                        @if($img)
+                        <img src="{{ $img }}" alt="{{ $res['title'] }}" class="w-100 h-100" style="object-fit:cover;">
+                        @else
+                        <i class="fas {{ $res['icon'] }} text-white-50" style="font-size:3.5rem;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"></i>
+                        @endif
+                        <span class="badge position-absolute top-0 end-0 m-2" style="background:rgba(0,0,0,0.45);color:#fff;">{{ $res['lang'] }}</span>
+                    </div>
+                    <div class="p-4">
+                        <h5 class="fw-bold">{{ $res['title'] }}</h5>
+                        <p class="text-muted small mb-3">{{ $desc }}</p>
+                        @if($pdf)
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="{{ asset($pdf) }}" target="_blank" rel="noopener" class="btn btn-outline-nec btn-sm"><i class="fas fa-eye me-1"></i> View</a>
+                            <a href="{{ asset($pdf) }}" target="_blank" rel="noopener" class="btn btn-nec btn-sm" download><i class="fas fa-download me-1"></i> Download</a>
+                        </div>
+                        @else
+                        <span class="text-muted small">Coming soon</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endforeach
         </div>
 
         <div class="row g-4">

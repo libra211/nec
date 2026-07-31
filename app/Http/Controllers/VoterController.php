@@ -365,7 +365,49 @@ class VoterController extends Controller
 
     public function education()
     {
-        return view('voter.education');
+        $materials = \App\Models\EducationMaterial::where('status', 'published')->orderBy('title')->get();
+
+        $sections = [
+            'baseline_en' => ['title' => 'Baseline Survey', 'lang' => 'English', 'icon' => 'fa-chart-bar'],
+            'baseline_ar' => ['title' => 'Baseline Survey', 'lang' => 'Arabic', 'icon' => 'fa-chart-bar'],
+            'strategy' => ['title' => 'Civic Voter Education Strategy', 'lang' => 'English', 'icon' => 'fa-route'],
+            'curriculum' => ['title' => 'Civic Voter Education Curriculum', 'lang' => 'English', 'icon' => 'fa-book-open'],
+            'manual_en' => ['title' => 'Training Manual', 'lang' => 'English', 'icon' => 'fa-chalkboard-teacher'],
+            'manual_ar' => ['title' => 'Training Manual', 'lang' => 'Arabic', 'icon' => 'fa-chalkboard-teacher'],
+            'booklet_en' => ['title' => 'Civic Education Booklet', 'lang' => 'English', 'icon' => 'fa-book'],
+            'booklet_ar' => ['title' => 'Civic Education Booklet', 'lang' => 'Arabic', 'icon' => 'fa-book'],
+        ];
+
+        $keywords = [
+            'baseline_en' => ['Baseline Survey', 'English'],
+            'baseline_ar' => ['Baseline Survey', 'Arabic'],
+            'strategy' => ['Civic Voter Education Strategy'],
+            'curriculum' => ['Civic Voter Education Curriculum'],
+            'manual_en' => ['Training Manual', 'English'],
+            'manual_ar' => ['Training Manual', 'Arabic'],
+            'booklet_en' => ['Booklet', 'English'],
+            'booklet_ar' => ['Booklet', 'Arabic'],
+        ];
+
+        $resources = [];
+        foreach ($sections as $key => $info) {
+            $material = $materials->first(function ($m) use ($keywords, $key) {
+                $need = $keywords[$key];
+                return collect($need)->every(fn($w) => str_contains(strtolower($m->title), strtolower($w)));
+            });
+
+            $resources[] = [
+                'key' => $key,
+                'icon' => $info['icon'],
+                'lang' => $info['lang'],
+                'title' => \App\Helpers\NecHelper::setting_get("cve_{$key}_title") ?: $info['title'],
+                'desc' => \App\Helpers\NecHelper::setting_get("cve_{$key}_desc"),
+                'image' => \App\Helpers\NecHelper::setting_get("cve_{$key}_image"),
+                'material' => $material,
+            ];
+        }
+
+        return view('voter.education', compact('resources'));
     }
 
     public function howToVote()
