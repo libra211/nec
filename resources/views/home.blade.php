@@ -505,7 +505,7 @@
                 </a>
             </div>
             <div class="col-lg-4 reveal reveal-delay-2">
-                <div class="card border-0 shadow-sm" style="border-radius:0;">
+                <div class="card border-0 shadow-sm" style="border-radius:12px;overflow:hidden;">
                     <div class="card-header fw-bold text-white border-0 rounded-0 py-3" style="background:var(--nec-green);">
                         <i class="fas fa-calendar-check me-2"></i> Upcoming Events
                     </div>
@@ -520,11 +520,11 @@
                         @empty
                         <div class="text-center text-muted small py-3">No upcoming events scheduled.</div>
                         @endforelse
-                        <a href="{{ route('events.index') }}" class="btn fw-bold mt-3 px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
-                            View All Events <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
                     </div>
                 </div>
+                <a href="{{ route('events.index') }}" class="btn fw-bold mt-3 px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
+                    View All Events <i class="fas fa-arrow-right ms-1"></i>
+                </a>
             </div>
         </div>
     </div>
