@@ -302,7 +302,12 @@ a:hover { color: var(--nec-green-dark); }
     color: var(--nec-gold);
 }
 .page-header-section .breadcrumb-item + .breadcrumb-item::before {
-    color: rgba(255,255,255,0.3);
+    content: ">>";
+    padding: 0 0.65rem;
+    color: rgba(255,255,255,0.35);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
 }
 
 /* ---------- Navbar ---------- */
@@ -1216,6 +1221,37 @@ a.stat-slim:hover { color: inherit; }
     box-shadow: 0 8px 18px rgba(0,0,0,0.2);
     text-decoration: none !important;
 }
+.team-hover-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(26,60,143,0.05) 0%, rgba(26,60,143,0.35) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.team-hover-overlay .team-hover-btn {
+    transform: translateY(10px);
+    transition: transform 0.3s ease;
+    background: #fff;
+    color: #1a3c8f;
+    border: none;
+    font-weight: 700;
+    padding: 0.6rem 1.4rem;
+    border-radius: 50rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    text-decoration: none;
+    cursor: pointer;
+}
+.team-hover-overlay .team-hover-btn:hover {
+    background: var(--nec-green);
+    color: #fff;
+}
+.team-card:hover .team-hover-overlay { opacity: 1; }
+.team-card:hover .team-hover-overlay .team-hover-btn { transform: translateY(0); }
+
 .footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.06);
     padding: 1rem 0;

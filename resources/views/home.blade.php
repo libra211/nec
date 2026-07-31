@@ -4,6 +4,7 @@
     $stats['total_voters'] = $stats['voters'] ?? 12000000;
     $showStat = fn($key) => isset($stats[$key]) && $stats[$key] !== null;
     $showStats = \App\Helpers\NecHelper::setting_get('public_show_stats', '1') === '1';
+    $showSocials = \App\Helpers\NecHelper::setting_get('public_show_socials', '1') === '1';
 @endphp
 
 @push('styles')
@@ -860,8 +861,8 @@
             @endphp
             @forelse($commissioners as $c)
             <div class="col-6 col-md-4 col-lg-3 reveal reveal-delay-{{ $loop->iteration % 4 }}">
-                <div class="card h-100" style="border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-                    <div style="height:230px;overflow:hidden;background:{{ $comm_bgs[$loop->iteration % 4] }};">
+                <div class="card team-card h-100" style="position:relative;border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+                    <div style="position:relative;height:300px;overflow:hidden;background:{{ $comm_bgs[$loop->iteration % 4] }};">
                         @if($c->photo)
                         <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;">
                         @else
@@ -870,17 +871,20 @@
                             <span style="font-size:1rem;font-weight:700;color:#6c757d;">{{ $c->initials }}</span>
                         </div>
                         @endif
+                        <div class="team-hover-overlay">
+                            <a href="{{ route('about.leadership') }}?member={{ $c->id }}" class="team-hover-btn">View Details <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
                     </div>
                     <div class="p-3 text-center">
                         <h6 class="fw-bold mb-1">{{ $c->name }}</h6>
                         <p style="color:var(--nec-green);font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;">{{ $c->position }}</p>
-                        @if($showStats && ($c->email || $c->phone))
+                        @if($showSocials && ($c->email || $c->phone))
                         <div class="d-flex justify-content-center gap-2 mb-2">
                             @if($c->email)<a href="mailto:{{ $c->email }}" class="comm-social" style="--sc:#6c757d;" aria-label="Email"><i class="far fa-envelope"></i></a>@endif
                             @if($c->phone)<a href="tel:{{ $c->phone }}" class="comm-social" style="--sc:#6c757d;" aria-label="Phone"><i class="fas fa-phone"></i></a>@endif
                         </div>
                         @endif
-                        @if($showStats)
+                        @if($showSocials)
                         <div class="d-flex justify-content-center gap-2">
                             @if($c->facebook_url)<a href="{{ $c->facebook_url }}" class="comm-social" style="--sc:#1877F2;" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>@endif
                             @if($c->twitter_url)<a href="{{ $c->twitter_url }}" class="comm-social" style="--sc:#000;" target="_blank" rel="noopener" aria-label="X"><i class="fab fa-x-twitter"></i></a>@endif

@@ -78,13 +78,13 @@
 <div id="galleryLightbox" class="lightbox-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:9999;justify-content:center;align-items:center;">
     <button type="button" id="lb-close" style="position:fixed;top:20px;right:25px;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;z-index:10000;"><i class="fas fa-times"></i></button>
     <div style="position:relative;max-width:90vw;max-height:90vh;display:flex;align-items:center;justify-content:center;">
-        <button type="button" id="lb-prev" style="position:fixed;left:20px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:1.3rem;cursor:pointer;backdrop-filter:blur(4px);transition:background .2s;"><i class="fas fa-chevron-left"></i></button>
+        <button type="button" id="lb-prev" style="position:fixed;left:20px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:1.3rem;cursor:pointer;transition:background .2s;"><i class="fas fa-chevron-left"></i></button>
         <div style="text-align:center;">
             <img id="lb-img" src="" alt="" style="max-width:90vw;max-height:82vh;border-radius:6px;object-fit:contain;">
             <div id="lb-counter" style="color:rgba(255,255,255,0.6);font-size:0.8rem;margin-top:8px;"></div>
             <div id="lb-title" style="color:#fff;font-size:0.9rem;margin-top:4px;font-weight:500;"></div>
         </div>
-        <button type="button" id="lb-next" style="position:fixed;right:20px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:1.3rem;cursor:pointer;backdrop-filter:blur(4px);transition:background .2s;"><i class="fas fa-chevron-right"></i></button>
+        <button type="button" id="lb-next" style="position:fixed;right:20px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:1.3rem;cursor:pointer;transition:background .2s;"><i class="fas fa-chevron-right"></i></button>
     </div>
 </div>
 @endsection
@@ -124,37 +124,50 @@ function showImage() {
     var counter = document.getElementById('lb-counter');
     var title = document.getElementById('lb-title');
     img.src = currentImages[currentIndex].src;
-    counter.textContent = (currentIndex + 1) + ' / ' + currentImages.length;
-    title.textContent = currentImages[currentIndex].title || '';
+    img.onerror = function () {
+        this.onerror = null;
+        img.style.opacity = '0.25';
+        if (title) title.textContent = (currentImages[currentIndex].title || 'Image') + ' (could not load)';
+    };
+    img.onload = function () { img.style.opacity = '1'; };
+    img.style.opacity = '1';
+    if (counter) counter.textContent = (currentIndex + 1) + ' / ' + currentImages.length;
+    if (title) title.textContent = currentImages[currentIndex].title || '';
 }
 
-document.getElementById('lb-prev').addEventListener('click', function(e) {
+var lbPrev = document.getElementById('lb-prev');
+var lbNext = document.getElementById('lb-next');
+var lbClose = document.getElementById('lb-close');
+var lbBox = document.getElementById('galleryLightbox');
+
+if (lbPrev) lbPrev.addEventListener('click', function(e) {
     e.stopPropagation();
     if (currentImages.length === 0) return;
     currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
     showImage();
 });
 
-document.getElementById('lb-next').addEventListener('click', function(e) {
+if (lbNext) lbNext.addEventListener('click', function(e) {
     e.stopPropagation();
     if (currentImages.length === 0) return;
     currentIndex = (currentIndex + 1) % currentImages.length;
     showImage();
 });
 
-document.getElementById('lb-close').addEventListener('click', function() {
+if (lbClose) lbClose.addEventListener('click', function() {
     closeLightbox();
 });
 
-document.getElementById('galleryLightbox').addEventListener('click', function(e) {
+if (lbBox) lbBox.addEventListener('click', function(e) {
     if (e.target === this) closeLightbox();
 });
 
 document.addEventListener('keydown', function(e) {
-    if (!document.getElementById('galleryLightbox').classList.contains('active')) return;
+    var box = document.getElementById('galleryLightbox');
+    if (!box || !box.classList.contains('active')) return;
     if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') document.getElementById('lb-prev').click();
-    if (e.key === 'ArrowRight') document.getElementById('lb-next').click();
+    if (e.key === 'ArrowLeft' && lbPrev) lbPrev.click();
+    if (e.key === 'ArrowRight' && lbNext) lbNext.click();
 });
 
 function closeLightbox() {

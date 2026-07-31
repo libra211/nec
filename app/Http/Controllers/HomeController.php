@@ -120,6 +120,7 @@ class HomeController extends Controller
 
         $commissioners = Commissioner::where('status', 'active')
             ->orderBy('order_num')
+            ->limit(5)
             ->get();
 
         $politicalParties = PoliticalParty::where('status', 'active')

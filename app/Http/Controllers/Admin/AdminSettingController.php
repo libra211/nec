@@ -365,6 +365,7 @@ class AdminSettingController extends Controller
         }
 
         \App\Helpers\NecHelper::setting_set('public_show_stats', $request->boolean('public_show_stats') ? '1' : '0');
+        \App\Helpers\NecHelper::setting_set('public_show_socials', $request->boolean('public_show_socials') ? '1' : '0');
 
         foreach ($allStats as $stat) {
             \App\Helpers\NecHelper::setting_set("public_show_{$stat}", $request->boolean("public_show_{$stat}") ? '1' : '0');

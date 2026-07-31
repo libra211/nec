@@ -1,6 +1,6 @@
 @extends('layouts.app', ['title' => 'Our Team', 'active_page' => 'about', 'meta_description' => 'Meet the leadership and commissioners of the National Elections Commission of South Sudan.'])
 
-@php $showStats = \App\Helpers\NecHelper::setting_get('public_show_stats', '1') === '1'; @endphp
+@php $showStats = \App\Helpers\NecHelper::setting_get('public_show_stats', '1') === '1'; $showSocials = \App\Helpers\NecHelper::setting_get('public_show_socials', '1') === '1'; @endphp
 
 @push('styles')
 <style>
@@ -76,13 +76,13 @@
     }
     .member-photo-wrapper img {
         width: 100%;
-        height: 320px;
+        height: 380px;
         object-fit: cover;
         object-position: center 20%;
     }
     .member-initials {
         width: 100%;
-        height: 320px;
+        height: 380px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -401,13 +401,13 @@
                             <p class="mb-3" style="color:var(--nec-green);font-weight:600;">{{ $chairperson->position }}, National Elections Commission</p>
                             <p class="text-muted mb-4" style="line-height:1.8;">{{ $chairperson->about ?? $chairperson->bio }}</p>
 
-                            @if($showStats && $chairperson->email)
+                            @if($showSocials && $chairperson->email)
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <i class="fas fa-envelope" style="color:var(--nec-green);width:20px;"></i>
                                     <a href="mailto:{{ $chairperson->email }}" class="text-decoration-none" style="color:#495057;">{{ $chairperson->email }}</a>
                                 </div>
                             @endif
-                            @if($showStats && $chairperson->phone)
+                            @if($showSocials && $chairperson->phone)
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <i class="fas fa-phone" style="color:var(--nec-green);width:20px;"></i>
                                     <span style="color:#495057;">{{ $chairperson->phone }}</span>
@@ -418,7 +418,7 @@
                                 <button class="btn btn-sm px-3 py-2 fw-semibold" style="background:var(--nec-green);color:#fff;border-radius:8px;" onclick="openProfileModal({{ $chairperson->id }})">
                                     <i class="fas fa-user me-1"></i> View Full Profile
                                 </button>
-                                @if($showStats)
+                                @if($showSocials)
                                 <div class="profile-social-links ms-2">
                                     @if($chairperson->facebook_url)
                                         <a href="{{ $chairperson->facebook_url }}" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
@@ -469,7 +469,7 @@
         <div class="row g-4" id="teamGrid">
             @foreach($commissioners as $c)
                 <div class="col-md-6 col-lg-4 team-col" data-position="{{ $c->position }}" data-gender="{{ $c->gender }}" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 3) * 100 }}">
-                    <div class="member-card h-100" onclick="openProfileModal({{ $c->id }})">
+                    <div class="member-card team-card h-100" onclick="openProfileModal({{ $c->id }})">
                         <div class="member-photo-wrapper" style="background:{{ $member_bgs[$loop->index % 4] }};">
                             @if($c->photo)
                                 <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}">
@@ -479,6 +479,9 @@
                             @if($c->years_of_service)
                                 <span class="member-years"><i class="fas fa-clock me-1"></i>{{ $c->years_of_service }}y</span>
                             @endif
+                            <div class="team-hover-overlay">
+                                <button type="button" class="team-hover-btn" onclick="event.stopPropagation();openProfileModal({{ $c->id }})">View Details <i class="fas fa-arrow-right ms-1"></i></button>
+                            </div>
                         </div>
                         <div class="member-info">
                             @php
@@ -492,7 +495,7 @@
                                 <p class="member-dept mb-0"><i class="fas fa-building me-1"></i>{{ $c->department }}</p>
                             @endif
                             @php $hasSocial = $c->facebook_url || $c->twitter_url || $c->linkedin_url || $c->website_url || $c->email || $c->phone; @endphp
-                            @if($showStats && $hasSocial)
+                            @if($showSocials && $hasSocial)
                                 <hr class="member-divider">
                                 <div class="member-social">
                                     @if($c->email)
@@ -552,7 +555,7 @@
                             @endif
                         </div>
                         <div class="profile-social-links">
-                            @if($showStats)
+                            @if($showSocials)
                             @if($c->facebook_url)
                                 <a href="{{ $c->facebook_url }}" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
                             @endif
@@ -674,7 +677,7 @@
                 <div class="tab-pane fade" id="contact-{{ $c->id }}" role="tabpanel">
                     <h6 class="fw-bold mb-3" style="color:var(--nec-green);">Contact Information</h6>
                     <div class="row g-3">
-                        @if($showStats && $c->email)
+                        @if($showSocials && $c->email)
                             <div class="col-md-6">
                                 <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background:#f0f7f4;">
                                     <i class="fas fa-envelope" style="color:var(--nec-green);font-size:1.2rem;"></i>
@@ -685,7 +688,7 @@
                                 </div>
                             </div>
                         @endif
-                        @if($showStats && $c->phone)
+                        @if($showSocials && $c->phone)
                             <div class="col-md-6">
                                 <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background:#f0f7f4;">
                                     <i class="fas fa-phone" style="color:var(--nec-green);font-size:1.2rem;"></i>
@@ -758,5 +761,13 @@ function openProfileModal(id) {
     const modal = new bootstrap.Modal(document.getElementById('profileModal' + id));
     modal.show();
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+    const memberId = params.get('member');
+    if (memberId && document.getElementById('profileModal' + memberId)) {
+        setTimeout(() => openProfileModal(memberId), 350);
+    }
+});
 </script>
 @endpush

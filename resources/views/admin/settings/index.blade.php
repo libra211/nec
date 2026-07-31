@@ -626,11 +626,29 @@
                     </div>
                     <div class="settings-block-desc">
                         When <strong>on</strong>, the "South Sudan at a Glance" numbers are visible on the public homepage and you can set the values below.
-                        When <strong>off</strong>, the numbers, phone number, email, and social media icons are hidden across the public site.
+                        When <strong>off</strong>, the numbers are hidden. Contact &amp; social icons are controlled separately below.
                     </div>
                     <div class="form-check form-switch form-switch-lg">
                         <input class="form-check-input setting-input" type="checkbox" name="public_show_stats" role="switch" id="public_show_stats" value="1" {{ $statsEnabled ? 'checked' : '' }}>
                         <label class="form-check-label fw-semibold" for="public_show_stats">Show public statistics dashboard (numbers)</label>
+                    </div>
+                </div>
+
+                @php
+                    $socialsEnabled = ($settings['public_show_socials']->value ?? '1') === '1';
+                @endphp
+                <div class="settings-block">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="settings-block-title mb-0"><i class="fas fa-share-alt text-primary me-1"></i>Contact &amp; Social Icons</div>
+                        <span class="badge bg-{{ $socialsEnabled ? 'success' : 'secondary' }} rounded-pill" style="font-size:10px">{{ $socialsEnabled ? 'On' : 'Off' }}</span>
+                    </div>
+                    <div class="settings-block-desc">
+                        When <strong>on</strong>, the contact phone/email and social media icons appear on the public site (footer, team pages, commissioner cards).
+                        When <strong>off</strong>, they are hidden while the statistics numbers stay visible.
+                    </div>
+                    <div class="form-check form-switch form-switch-lg">
+                        <input class="form-check-input setting-input" type="checkbox" name="public_show_socials" role="switch" id="public_show_socials" value="1" {{ $socialsEnabled ? 'checked' : '' }}>
+                        <label class="form-check-label fw-semibold" for="public_show_socials">Show contact phone/email and social media icons</label>
                     </div>
                 </div>
 
