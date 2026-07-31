@@ -118,7 +118,7 @@
 <section class="py-5 section-shaded">
     <div class="container">
         <div class="text-center mb-5">
-            <p class="text-uppercase fw-bold mb-1 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Election Snapshot</p>
+            @include('partials.section-heading', ['icon' => 'fa-chart-line', 'label' => 'Election Snapshot', 'align' => 'center'])
             <h2 class="fw-bold">South Sudan at a Glance</h2>
             <p class="text-muted mb-0">Key statistics for the 2026 General Elections</p>
         </div>
@@ -234,7 +234,7 @@
 <section class="py-5 bg-white">
     <div class="container">
         <div class="text-center mb-5">
-            <p class="text-uppercase fw-bold mb-1 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Road to 2026</p>
+            @include('partials.section-heading', ['icon' => 'fa-road', 'label' => 'Road to 2026', 'align' => 'center'])
             <h2 class="fw-bold reveal">Election Timeline</h2>
             <p class="text-muted mb-0">Key milestones on the path to the 2026 General Elections</p>
         </div>
@@ -303,7 +303,7 @@
                 </div>
             </div>
             <div class="col-lg-7 reveal-right">
-                <p class="text-uppercase fw-bold mb-1 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Message from the Chairperson</p>
+                @include('partials.section-heading', ['icon' => 'fa-user-tie', 'label' => 'Message from the Chairperson'])
                 <h2 class="fw-bold mb-3">Hon. Prof. Abednego A. A. Akok</h2>
                 <div class="section-card border-left-4 ps-4" style="border-left:4px solid var(--nec-gold);">
                     <p class="mb-2 fst-italic" style="font-size:1.05rem;color:var(--nec-gray-600);line-height:1.8;">
@@ -328,7 +328,7 @@
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
-            <p class="text-uppercase fw-bold mb-1 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Who We Are</p>
+            @include('partials.section-heading', ['icon' => 'fa-eye', 'label' => 'Who We Are', 'align' => 'center'])
             <h2 class="fw-bold reveal">Our Vision & Mission</h2>
         </div>
         <div class="row g-4 justify-content-center">
@@ -363,7 +363,7 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <p class="text-uppercase fw-bold mb-0 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Stay Informed</p>
+                @include('partials.section-heading', ['icon' => 'fa-newspaper', 'label' => 'Stay Informed'])
                 <h2 class="fw-bold reveal">Latest News & Updates</h2>
             </div>
             <a href="{{ route('media.news') }}" class="btn btn-nec d-none d-md-inline-block fw-bold">
@@ -404,7 +404,7 @@
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <p class="text-uppercase fw-bold mb-1" style="color:var(--nec-gold);letter-spacing:2px;font-size:0.85rem;">Quick Services</p>
+            @include('partials.section-heading', ['icon' => 'fa-bolt', 'label' => 'Quick Services', 'align' => 'center'])
             <h2 class="fw-bold">How Can We Help You?</h2>
             <p class="text-muted mb-0">Access NEC services quickly and easily</p>
         </div>
@@ -445,17 +445,19 @@
 </section>
 
 <!-- ANNOUNCEMENTS -->
-<section class="py-5" style="background:#f0f7f4;">
-    <div class="container">
+<section class="py-5 position-relative overflow-hidden" style="background:linear-gradient(160deg,#e9f6ef 0%,#f7fbf9 45%,#f0f7f4 100%);">
+    <div style="position:absolute;top:-80px;right:-60px;width:260px;height:260px;border-radius:50%;background:rgba(212,175,55,0.10);"></div>
+    <div style="position:absolute;bottom:-100px;left:-80px;width:300px;height:300px;border-radius:50%;background:rgba(0,145,76,0.07);"></div>
+    <i class="fas fa-bullhorn" style="position:absolute;top:40px;left:30px;font-size:6rem;color:rgba(0,145,76,0.05);"></i>
+    <i class="far fa-calendar-check" style="position:absolute;bottom:30px;right:40px;font-size:6rem;color:rgba(212,175,55,0.07);"></i>
+    <div class="container position-relative">
         <div class="row g-4">
             <div class="col-lg-8 reveal">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <span class="badge bg-dark fw-bold px-3 py-2 rounded-0" style="letter-spacing:2px;font-size:0.7rem;"><i class="fas fa-bullhorn me-1"></i> ANNOUNCEMENTS</span>
-                </div>
+                @include('partials.section-heading', ['icon' => 'fa-bullhorn', 'label' => 'Announcements'])
                 <h2 class="fw-bold mb-4">Public Notices</h2>
                 <div class="d-flex flex-column gap-2">
                     @forelse($latestAnnouncements as $a)
-                    <div class="d-flex gap-3 align-items-start bg-white px-3 py-3 shadow-sm" style="border-left:3px solid var(--nec-green);">
+                    <div class="d-flex gap-3 align-items-start bg-white px-3 py-3 shadow-sm" style="border-left:3px solid var(--nec-green);border-radius:8px;transition:transform 0.2s ease,box-shadow 0.2s ease;" onmouseover="this.style.transform='translateX(4px)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.10)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
                         <div class="text-center flex-shrink-0" style="min-width:55px;">
                             <div class="fw-bold fs-5" style="color:var(--nec-green);">{{ \Carbon\Carbon::parse($a->created_at)->format('d') }}</div>
                             <div class="small text-muted" style="font-size:0.6rem;">{{ \Carbon\Carbon::parse($a->created_at)->format('M Y') }}</div>
@@ -505,7 +507,7 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <p class="text-uppercase fw-bold mb-0 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Photo Gallery</p>
+                @include('partials.section-heading', ['icon' => 'fa-images', 'label' => 'Photo Gallery'])
                 <h2 class="fw-bold reveal">Moments in Pictures</h2>
             </div>
             <a href="{{ route('media.gallery') }}" class="btn btn-nec d-none d-md-inline-block fw-bold">
@@ -538,7 +540,7 @@
         <div class="row g-3">
             <div class="col-lg-6 d-flex reveal">
                 <div class="d-flex flex-column justify-content-center">
-                    <span class="badge bg-dark fw-bold px-4 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;"><i class="fas fa-gavel me-1"></i> KNOW YOUR RIGHTS</span>
+                    @include('partials.section-heading', ['icon' => 'fa-gavel', 'label' => 'Know Your Rights'])
                     <h2 class="fw-bold mb-3">Civic & Voter Education</h2>
                     <p class="text-muted mb-3">Understanding the electoral process is the foundation of a strong democracy. Explore our civic education materials to learn about your rights and responsibilities as a voter.</p>
                     <div class="row g-2 mb-3">
@@ -599,7 +601,7 @@
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
-            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">RESOURCES</span>
+            @include('partials.section-heading', ['icon' => 'fa-download', 'label' => 'Resources', 'align' => 'center'])
             <h2 class="fw-bold">Downloads & Forms</h2>
             <p class="text-muted mb-0">Access important election documents and forms</p>
         </div>
@@ -630,7 +632,7 @@
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
-            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">COMMISSIONERS</span>
+            @include('partials.section-heading', ['icon' => 'fa-users', 'label' => 'Commissioners', 'align' => 'center'])
             <h2 class="fw-bold reveal">NEC Commissioners</h2>
             <p class="text-muted mb-0">Meet the commissioners steering South Sudan's electoral process</p>
         </div>
@@ -681,7 +683,7 @@
 <section class="py-5 bg-white">
     <div class="container">
         <div class="text-center mb-4">
-            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">POLITICAL PARTIES</span>
+            @include('partials.section-heading', ['icon' => 'fa-flag', 'label' => 'Political Parties', 'align' => 'center'])
             <h2 class="fw-bold reveal">Registered Political Parties</h2>
             <p class="text-muted mb-0">Contesting parties in the 2026 General Elections</p>
         </div>
@@ -715,7 +717,7 @@
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-4">
-            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">OUR PARTNERS</span>
+            @include('partials.section-heading', ['icon' => 'fa-handshake', 'label' => 'Our Partners', 'align' => 'center'])
             <h2 class="fw-bold reveal">Supported By</h2>
             <p class="text-muted mb-0">International partners supporting democracy in South Sudan</p>
         </div>
