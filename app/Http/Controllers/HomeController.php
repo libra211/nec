@@ -113,6 +113,11 @@ class HomeController extends Controller
             ->orderBy('order_num')
             ->get();
 
+        $politicalParties = PoliticalParty::where('status', 'active')
+            ->orderBy('name')
+            ->limit(8)
+            ->get();
+
         return view('home', compact(
             'stats',
             'latestNews',
@@ -123,7 +128,8 @@ class HomeController extends Controller
             'electionDate',
             'electionType',
             'galleryAlbums',
-            'commissioners'
+            'commissioners',
+            'politicalParties'
         ));
     }
 }

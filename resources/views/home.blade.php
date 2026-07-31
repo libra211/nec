@@ -230,6 +230,69 @@
     </div>
 </section>
 
+<!-- ELECTION TIMELINE -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="text-uppercase fw-bold mb-1 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Road to 2026</p>
+            <h2 class="fw-bold reveal">Election Timeline</h2>
+            <p class="text-muted mb-0">Key milestones on the path to the 2026 General Elections</p>
+        </div>
+        <div class="row g-3">
+            @php
+            $timeline = [
+                ['icon' => 'fa-user-plus', 'title' => 'Voter Registration', 'desc' => 'Citizens register to vote nationwide', 'status' => 'completed'],
+                ['icon' => 'fa-clipboard-check', 'title' => 'Voter Verification', 'desc' => 'Confirm your registration details', 'status' => 'completed'],
+                ['icon' => 'fa-file-signature', 'title' => 'Candidacy', 'desc' => 'Candidates submit nominations', 'status' => 'active'],
+                ['icon' => 'fa-campground', 'title' => 'Campaigns', 'desc' => 'Political campaigns take place', 'status' => 'upcoming'],
+                ['icon' => 'fa-vote-yea', 'title' => 'Election Day', 'desc' => '22 December 2026 — polling', 'status' => 'upcoming'],
+                ['icon' => 'fa-chart-bar', 'title' => 'Results', 'desc' => 'Tallying and announcement', 'status' => 'upcoming'],
+            ];
+            @endphp
+            <div class="col-lg-10 mx-auto">
+                <div class="row g-3">
+                    @foreach($timeline as $ti => $step)
+                    <div class="col-6 col-md-4 col-lg-2 reveal reveal-delay-{{ ($ti % 4) + 1 }}">
+                        <div class="text-center px-1">
+                            <div class="mx-auto d-flex align-items-center justify-content-center mb-2" style="width:56px;height:56px;border-radius:50%;{{ $step['status'] === 'completed' ? 'background:var(--nec-green);' : ($step['status'] === 'active' ? 'background:var(--nec-gold);' : 'background:#e9ecef;') }}">
+                                <i class="fas {{ $step['icon'] }} {{ $step['status'] === 'completed' ? 'text-white' : ($step['status'] === 'active' ? 'text-dark' : 'text-muted') }}" style="font-size:1.1rem;"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1" style="font-size:0.8rem;">{{ $step['title'] }}</h6>
+                            <p class="text-muted mb-0" style="font-size:0.68rem;line-height:1.3;">{{ $step['desc'] }}</p>
+                            @if($step['status'] === 'active')
+                            <span class="badge mt-1" style="background:var(--nec-gold);color:#000;font-size:0.55rem;">CURRENT</span>
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="py-5" style="background:linear-gradient(135deg,var(--nec-green-dark) 0%,var(--nec-green) 60%,var(--nec-gold) 160%);">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8 reveal-left">
+                <h2 class="fw-bold text-white mb-2">Your Voice. Your Vote. Your Future.</h2>
+                <p class="text-white-50 mb-0" style="color:rgba(255,255,255,0.7) !important;">Register to vote, verify your registration, or get accredited as an observer for the 2026 General Elections.</p>
+            </div>
+            <div class="col-lg-4 reveal-right">
+                <div class="d-flex flex-wrap gap-3 justify-content-lg-end">
+                    <a href="{{ route('voter.register') }}" class="btn btn-lg fw-bold px-4" style="background:var(--nec-gold);border-color:var(--nec-gold);color:var(--nec-black);">
+                        <i class="fas fa-vote-yea me-2"></i> Register to Vote
+                    </a>
+                    <a href="{{ route('observers.accredit') }}" class="btn btn-lg btn-outline-light fw-bold px-4">
+                        <i class="fas fa-binoculars me-2"></i> Observer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CHAIRPERSON -->
 <section class="py-5 bg-white">
     <div class="container">
@@ -256,6 +319,40 @@
                 <a href="{{ route('about.leadership') }}" class="btn btn-nec fw-bold px-4 mt-3">
                     Meet the Leadership <i class="fas fa-arrow-right ms-2"></i>
                 </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- VISION & MISSION -->
+<section class="py-5" style="background:var(--nec-gray-50);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="text-uppercase fw-bold mb-1 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Who We Are</p>
+            <h2 class="fw-bold reveal">Our Vision & Mission</h2>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-5 reveal">
+                <div class="card h-100 border-0 shadow-sm p-4" style="border-radius:12px;border-left:4px solid var(--nec-green) !important;">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div style="width:52px;height:52px;border-radius:12px;background:rgba(0,145,76,0.1);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-eye" style="color:var(--nec-green);font-size:1.2rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0">Our Vision</h4>
+                    </div>
+                    <p class="text-muted mb-0" style="line-height:1.8;">A peaceful, prosperous, and democratic South Sudan where free, fair, and credible elections uphold the will of the people and strengthen national unity.</p>
+                </div>
+            </div>
+            <div class="col-lg-5 reveal reveal-delay-2">
+                <div class="card h-100 border-0 shadow-sm p-4" style="border-radius:12px;border-left:4px solid var(--nec-gold) !important;">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div style="width:52px;height:52px;border-radius:12px;background:rgba(212,175,55,0.12);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-bullseye" style="color:var(--nec-gold);font-size:1.2rem;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0">Our Mission</h4>
+                    </div>
+                    <p class="text-muted mb-0" style="line-height:1.8;">To organize, conduct, and supervise elections with transparency, inclusivity, and integrity — ensuring every eligible citizen can freely exercise their democratic right to vote.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -402,6 +499,39 @@
     </div>
 </section>
 
+<!-- PHOTO GALLERY -->
+@if(($galleryAlbums ?? collect())->isNotEmpty())
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <p class="text-uppercase fw-bold mb-0 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Photo Gallery</p>
+                <h2 class="fw-bold reveal">Moments in Pictures</h2>
+            </div>
+            <a href="{{ route('gallery') }}" class="btn btn-nec d-none d-md-inline-block fw-bold">
+                View Gallery <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+        <div class="row g-3">
+            @foreach($galleryAlbums->take(4) as $album)
+            <div class="col-6 col-lg-3 reveal reveal-delay-{{ $loop->iteration }}">
+                <a href="{{ route('gallery') }}" class="text-decoration-none d-block position-relative overflow-hidden" style="border-radius:12px;height:200px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+                    <img src="{{ asset($album->featured_image ?: ($album->images()->first()->image_path ?? 'assets/images/flag-gu.webp')) }}" alt="{{ e($album->title) }}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;">
+                    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.65) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:14px;">
+                        <h6 class="text-white fw-bold mb-1" style="font-size:0.85rem;">{{ e($album->title) }}</h6>
+                        <small style="color:rgba(255,255,255,0.8);font-size:0.7rem;"><i class="far fa-images me-1"></i>{{ $album->images_count }} photo{{ $album->images_count !== 1 ? 's' : '' }}</small>
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
+        <div class="text-center mt-4 d-md-none">
+            <a href="{{ route('gallery') }}" class="btn btn-nec fw-bold">View Gallery <i class="fas fa-arrow-right ms-2"></i></a>
+        </div>
+    </div>
+</section>
+@endif
+
 <!-- CIVIC EDUCATION -->
 <section class="py-5" style="background:#fff;">
     <div class="container">
@@ -545,6 +675,41 @@
         </div>
     </div>
 </section>
+
+<!-- POLITICAL PARTIES -->
+@if(($politicalParties ?? collect())->isNotEmpty())
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">POLITICAL PARTIES</span>
+            <h2 class="fw-bold reveal">Registered Political Parties</h2>
+            <p class="text-muted mb-0">Contesting parties in the 2026 General Elections</p>
+        </div>
+        <div class="row g-3 justify-content-center">
+            @foreach($politicalParties as $p)
+            <div class="col-4 col-md-3 col-lg-2 reveal reveal-delay-{{ $loop->iteration % 4 }}">
+                <a href="{{ route('parties.index') }}" class="text-decoration-none d-block p-3 text-center" style="background:#fff;border:1px solid #e0e0e0;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                    <div class="mx-auto mb-2 d-flex align-items-center justify-content-center overflow-hidden" style="width:56px;height:56px;border-radius:50%;background:{{ $p->color ?? '#f0f0f0' }};">
+                        @if($p->logo)
+                        <img src="{{ asset($p->logo) }}" alt="{{ e($p->name) }}" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                        <span class="fw-bold text-white" style="font-size:0.9rem;">{{ $p->acronym ?: Str::upper(Str::substr($p->name, 0, 3)) }}</span>
+                        @endif
+                    </div>
+                    <div class="fw-bold" style="font-size:0.75rem;line-height:1.2;">{{ e($p->acronym ?: $p->name) }}</div>
+                    @if($p->acronym)<div class="text-muted" style="font-size:0.6rem;">{{ e($p->name) }}</div>@endif
+                </a>
+            </div>
+            @endforeach
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ route('parties.index') }}" class="btn fw-bold px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
+                View All Parties <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+@endif
 
 <!-- PARTNERS & SUPPORT -->
 <section class="py-5" style="background:var(--nec-gray-50);">
