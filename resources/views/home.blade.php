@@ -479,21 +479,28 @@
                 </a>
             </div>
             <div class="col-lg-4 reveal reveal-delay-2">
-                <div class="card border-0 shadow-sm" style="border-radius:0;">
-                    <div class="card-header fw-bold text-white border-0 rounded-0 py-3" style="background:var(--nec-green);">
-                        <i class="fas fa-calendar-check me-2"></i> Upcoming Events
-                    </div>
-                    <div class="card-body p-3">
-                        @forelse($upcomingEvents as $ei => $ev)
-                        <div class="{{ $loop->last ? '' : 'mb-3 pb-3 border-bottom' }}" style="border-color:#eee !important;">
-                            <small class="fw-bold" style="color:var(--nec-gold);font-size:0.75rem;">
-                                <i class="far fa-calendar-alt me-1"></i> {{ $ev->start_date->format('j M Y') }}{{ $ev->end_date ? ' - ' . $ev->end_date->format('j M Y') : '' }}
-                            </small>
-                            <p class="mb-0 mt-1 fw-semibold" style="font-size:0.85rem;">{{ e($ev->title) }}</p>
+                <div class="card border-0 shadow-sm h-100" style="border-radius:12px;border:1px solid #e0e0e0;">
+                    <div class="card-body p-0">
+                        <div class="p-3 pb-2">
+                            @include('partials.section-heading', ['icon' => 'fa-calendar-check', 'label' => 'Upcoming Events'])
                         </div>
-                        @empty
-                        <div class="text-center text-muted small py-3">No upcoming events scheduled.</div>
-                        @endforelse
+                        <div class="px-3 pb-3">
+                            @forelse($upcomingEvents as $ei => $ev)
+                            <div class="{{ $loop->last ? '' : 'mb-3 pb-3 border-bottom' }}" style="border-color:#eee !important;">
+                                <small class="fw-bold" style="color:var(--nec-gold);font-size:0.75rem;">
+                                    <i class="far fa-calendar-alt me-1"></i> {{ $ev->start_date->format('j M Y') }}{{ $ev->end_date ? ' - ' . $ev->end_date->format('j M Y') : '' }}
+                                </small>
+                                <p class="mb-0 mt-1 fw-semibold" style="font-size:0.85rem;">{{ e($ev->title) }}</p>
+                            </div>
+                            @empty
+                            <div class="text-center text-muted small py-3">No upcoming events scheduled.</div>
+                            @endforelse
+                            <div class="d-grid mt-3">
+                                <a href="{{ route('events.index') }}" class="btn fw-bold" style="background:var(--nec-green);color:#fff;border-radius:6px;">
+                                    View All Events <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
