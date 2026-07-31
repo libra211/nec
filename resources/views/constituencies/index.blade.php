@@ -41,7 +41,7 @@ foreach ($states as $st) {
     ];
 }
 
-$logo_base = asset('assets/images/logos/');
+$logo_base = asset('assets/images/logos') . '/';
 $totalStates = $states->where('type', 'state')->count();
 $totalAdminAreas = $states->where('type', 'admin_area')->count();
 
