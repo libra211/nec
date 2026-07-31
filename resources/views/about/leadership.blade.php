@@ -457,11 +457,19 @@
         </div>
 
         {{-- Team Grid --}}
+        @php
+            $member_bgs = [
+                'linear-gradient(180deg,#ffffff 0%,#ffffff 28%,#eef7f0 55%,#bfe0cd 100%)',
+                'linear-gradient(180deg,#ffffff 0%,#ffffff 28%,#eef4fb 55%,#b6cdec 100%)',
+                'linear-gradient(180deg,#ffffff 0%,#ffffff 28%,#fdf6e6 55%,#ecd9a8 100%)',
+                'linear-gradient(180deg,#ffffff 0%,#ffffff 28%,#ecf9f7 55%,#b2e0da 100%)',
+            ];
+        @endphp
         <div class="row g-4" id="teamGrid">
             @foreach($commissioners as $c)
                 <div class="col-md-6 col-lg-4 team-col" data-position="{{ $c->position }}" data-gender="{{ $c->gender }}" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 3) * 100 }}">
                     <div class="member-card h-100" onclick="openProfileModal({{ $c->id }})">
-                        <div class="member-photo-wrapper">
+                        <div class="member-photo-wrapper" style="background:{{ $member_bgs[$loop->index % 4] }};">
                             @if($c->photo)
                                 <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}">
                             @else

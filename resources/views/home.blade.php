@@ -850,10 +850,18 @@
             <p class="text-muted mb-0">Meet the commissioners steering South Sudan's electoral process</p>
         </div>
         <div class="row g-4 justify-content-center">
+            @php
+                $comm_bgs = [
+                    'linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#eef7f0 60%,#bfe0cd 100%)',
+                    'linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#eef4fb 60%,#b6cdec 100%)',
+                    'linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#fdf6e6 60%,#ecd9a8 100%)',
+                    'linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#ecf9f7 60%,#b2e0da 100%)',
+                ];
+            @endphp
             @forelse($commissioners as $c)
             <div class="col-6 col-md-4 col-lg-3 reveal reveal-delay-{{ $loop->iteration % 4 }}">
                 <div class="card h-100" style="border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-                    <div style="height:220px;overflow:hidden;background:linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#eef7f0 60%,#bfe0cd 100%);">
+                    <div style="height:220px;overflow:hidden;background:{{ $comm_bgs[$loop->iteration % 4] }};">
                         @if($c->photo)
                         <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:contain;">
                         @else
