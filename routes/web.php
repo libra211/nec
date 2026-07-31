@@ -131,6 +131,7 @@ Route::get('/observers/apply/success/{id}', [ObserverController::class, 'applySu
 Route::post('/observers/accredit', [ObserverController::class, 'accredit'])->name('observers.accredit.submit');
 Route::get('/downloads', [DownloadController::class, 'index'])->name('downloads.index');
 Route::get('/downloads/forms', [DownloadController::class, 'forms'])->name('downloads.forms');
+Route::get('/downloads/serve/{type}/{id}', [DownloadController::class, 'serve'])->name('downloads.serve');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'index'])->name('contact.submit');
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');

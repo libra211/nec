@@ -71,4 +71,12 @@ class Download extends Model
         if ($bytes < 1048576) return round($bytes / 1024, 1) . ' KB';
         return round($bytes / 1048576, 1) . ' MB';
     }
+
+    public function getDownloadsCountLabelAttribute(): string
+    {
+        $n = (int) ($this->downloads_count ?? 0);
+        if ($n < 1000) return (string) $n;
+        if ($n < 1000000) return round($n / 1000, 1) . 'k';
+        return round($n / 1000000, 1) . 'M';
+    }
 }

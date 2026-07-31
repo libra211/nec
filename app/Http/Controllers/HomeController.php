@@ -10,6 +10,7 @@ use App\Models\Commissioner;
 use App\Models\Constituency;
 use App\Models\Download;
 use App\Models\ElectionEvent;
+use App\Models\EducationMaterial;
 use App\Models\Gallery;
 use App\Models\GalleryAlbum;
 use App\Models\News;
@@ -99,6 +100,14 @@ class HomeController extends Controller
             ->orderByDesc('downloads_count')
             ->limit(6)
             ->get();
+
+        $educationResources = EducationMaterial::where('status', 'published')
+            ->whereNotNull('file_path')
+            ->where('file_path', '!=', '')
+            ->orderBy('title')
+            ->get();
+
+        $topDownloads = $educationResources->merge($topDownloads)->take(8);
 
         $electionDate = $this->publicStatValue('election_date', \App\Helpers\NecHelper::setting_get('election_date', '2026-12-22'));
         $electionType = $this->publicStatValue('election_type', \App\Helpers\NecHelper::setting_get('election_type', 'General Elections'));

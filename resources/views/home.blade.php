@@ -3,7 +3,130 @@
 @php
     $stats['total_voters'] = $stats['voters'] ?? 12000000;
     $showStat = fn($key) => isset($stats[$key]) && $stats[$key] !== null;
+    $showStats = \App\Helpers\NecHelper::setting_get('public_show_stats', '1') === '1';
 @endphp
+
+@push('styles')
+<style>
+    .dl-card {
+        display: block;
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        border-radius: 16px;
+        padding: 1.4rem 1.1rem 1rem;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    }
+    .dl-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--ac-g);
+        transition: height 0.3s;
+    }
+    .dl-card:hover {
+        transform: translateY(-8px);
+        border-color: transparent;
+        box-shadow: 0 18px 40px var(--ac-soft);
+    }
+    .dl-card:hover::before { height: 6px; }
+    .dl-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 16px;
+        background: var(--ac-g);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin: 0 auto 0.9rem;
+        box-shadow: 0 8px 20px var(--ac-soft);
+        transition: all 0.4s ease;
+    }
+    .dl-card:hover .dl-icon {
+        transform: rotate(-8deg) scale(1.1);
+    }
+    .dl-card:hover .dl-icon i { animation: dl-bounce 0.6s ease; }
+    @keyframes dl-bounce {
+        0%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-6px); }
+        70% { transform: translateY(2px); }
+    }
+    .dl-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #2b2b2b;
+        text-align: center;
+        line-height: 1.3;
+        min-height: 2.6rem;
+        margin-bottom: 0.6rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .dl-tags {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+    }
+    .dl-type {
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--ac);
+        background: var(--ac-soft);
+        padding: 2px 8px;
+        border-radius: 20px;
+    }
+    .dl-size {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #fff;
+        background: #334155;
+        padding: 2px 8px;
+        border-radius: 20px;
+    }
+    .dl-download {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--ac);
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+        border-top: 1px dashed #e8e8e8;
+        transition: all 0.3s;
+    }
+    .dl-count {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.62rem;
+        color: #64748b;
+        letter-spacing: 0.3px;
+    }
+    .dl-card:hover .dl-download {
+        color: #fff;
+        background: var(--ac-g);
+        border-top-color: transparent;
+    }
+    .dl-card:hover .dl-count { color: rgba(255,255,255,0.9); }
+</style>
+@endpush
 
 @section('hero')
 <!-- HERO CAROUSEL -->
@@ -115,6 +238,7 @@
 </section>
 
 <!-- STATS COUNTERS -->
+@if($showStats)
 <section class="py-5 section-shaded">
     <div class="container">
         <div class="text-center mb-5">
@@ -192,6 +316,7 @@
         </div>
     </div>
 </section>
+@endif
 
 <!-- COUNTDOWN -->
 <section class="py-5 section-gradient">
@@ -408,13 +533,18 @@
             @endphp
             <div class="row g-3 justify-content-center">
                 @foreach($coreValues as $i => $cv)
-                <div class="col-sm-6 col-lg-4 reveal reveal-delay-{{ ($i % 4) + 1 }}">
-                    <div class="card h-100 border-0 text-center p-4" style="border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,0.06);">
-                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:60px;height:60px;border-radius:50%;background:rgba(212,175,55,0.12);">
-                            <i class="fas {{ $cv['icon'] }}" style="color:var(--nec-gold);font-size:1.3rem;"></i>
+                @php $isGreen = ($i % 2 === 0); @endphp
+                <div class="col-6 col-md-4 col-lg-2 reveal reveal-delay-{{ ($i % 4) + 1 }}">
+                    <div class="card h-100 border-0 overflow-hidden text-center" style="border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.08);">
+                        <div class="p-3" style="background:{{ $isGreen ? 'linear-gradient(135deg,rgba(0,145,76,0.10) 0%,rgba(0,145,76,0.03) 100%)' : 'linear-gradient(135deg,rgba(212,175,55,0.14) 0%,rgba(212,175,55,0.04) 100%)' }};">
+                            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width:56px;height:56px;border-radius:50%;background:{{ $isGreen ? 'var(--nec-green)' : 'var(--nec-gold)' }};box-shadow:{{ $isGreen ? '0 6px 18px rgba(0,145,76,0.35)' : '0 6px 18px rgba(212,175,55,0.4)' }};">
+                                <i class="fas {{ $cv['icon'] }} {{ $isGreen ? 'text-white' : '' }}" style="font-size:1.2rem;{{ $isGreen ? '' : 'color:#000;' }}"></i>
+                            </div>
+                            <h6 class="fw-bold mb-0" style="font-size:0.85rem;">{{ $cv['name'] }}</h6>
                         </div>
-                        <h6 class="fw-bold mb-2">{{ $cv['name'] }}</h6>
-                        <p class="text-muted small mb-0">{{ $cv['desc'] }}</p>
+                        <div class="p-3" style="border-top:3px solid {{ $isGreen ? 'var(--nec-green)' : 'var(--nec-gold)' }};">
+                            <p class="text-muted mb-0" style="line-height:1.7;font-size:0.8rem;">{{ $cv['desc'] }}</p>
+                        </div>
                     </div>
                 </div>
                 @endforeach
@@ -674,24 +804,39 @@
             <p class="text-muted mb-0">Access important election documents and forms</p>
         </div>
         @php
-        $stat_colors = ['info','purple','success','warning','teal','primary'];
-        $d_delays = ['reveal-delay-1','reveal-delay-2','reveal-delay-3','reveal-delay-4','reveal-delay-1','reveal-delay-2'];
+        $dl_theme = [
+            ['c' => '#2E8B57', 'g' => 'linear-gradient(135deg,#2E8B57,#4cc07e)', 'soft' => 'rgba(46,139,87,0.18)'],
+            ['c' => '#d4af37', 'g' => 'linear-gradient(135deg,#d4af37,#f0cf68)', 'soft' => 'rgba(212,175,55,0.22)'],
+            ['c' => '#1a3c8f', 'g' => 'linear-gradient(135deg,#1a3c8f,#4a78e0)', 'soft' => 'rgba(26,60,143,0.18)'],
+            ['c' => '#0e7d7d', 'g' => 'linear-gradient(135deg,#0e7d7d,#40c4b6)', 'soft' => 'rgba(14,125,125,0.2)'],
+        ];
         @endphp
-        <div class="row g-3">
+        <div class="row g-4">
             @forelse($topDownloads as $j => $d)
-            <div class="col-md-4 col-lg-2 reveal {{ $d_delays[$j % 4] }}">
-                <a href="{{ asset($d->file_path) }}" class="text-decoration-none d-block p-3" style="background:#fff;border:1px solid #e0e0e0;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);" target="_blank">
-                    <div class="text-center mb-2">
-                        <i class="fas {{ $d->file_icon }}" style="font-size:1.5rem;color:var(--nec-green);"></i>
-                    </div>
-                    <div style="font-size:0.8rem;font-weight:600;color:var(--nec-gray-700);text-align:center;margin-bottom:4px;line-height:1.2;">{{ $d->title }}</div>
-                    <div style="font-size:0.6rem;color:rgba(0,0,0,0.45);text-align:center;margin-bottom:2px;">{{ $d->file_type_label }}</div>
-                    <div style="font-size:0.8rem;font-weight:700;color:var(--nec-green);text-align:center;">{{ $d->formatted_size }}</div>
-                </a>
-            </div>
+                @php $t = $dl_theme[$j % 4]; @endphp
+                <div class="col-6 col-md-4 col-lg-3 reveal reveal-delay-{{ ($j % 4) + 1 }}">
+                    @php $dlType = $d instanceof \App\Models\Download ? 'file' : 'resource'; @endphp
+                    <a href="{{ route('downloads.serve', ['type' => $dlType, 'id' => $d->id]) }}" class="dl-card text-decoration-none" style="--ac:{{ $t['c'] }};--ac-g:{{ $t['g'] }};--ac-soft:{{ $t['soft'] }};">
+                        <div class="dl-icon"><i class="fas {{ $d->file_icon }}"></i></div>
+                        <div class="dl-title">{{ $d->title }}</div>
+                        <div class="dl-tags">
+                            <span class="dl-type">{{ $d->file_type_label }}</span>
+                            <span class="dl-size">{{ $d->formatted_size }}</span>
+                        </div>
+                        <div class="dl-download">
+                            <span class="dl-count"><i class="fas fa-download me-1"></i>{{ $d->downloads_count_label }}</span>
+                            <span class="dl-dl">Download<i class="fas fa-arrow-right ms-1"></i></span>
+                        </div>
+                    </a>
+                </div>
             @empty
             <div class="col-12 text-center text-muted py-3"><p>No downloads available yet.</p></div>
             @endforelse
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ route('downloads.index') }}" class="btn fw-bold px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
+                View All Documents <i class="fas fa-arrow-right ms-2"></i>
+            </a>
         </div>
     </div>
 </section>
@@ -708,29 +853,32 @@
             @forelse($commissioners as $c)
             <div class="col-6 col-md-4 col-lg-3 reveal reveal-delay-{{ $loop->iteration % 4 }}">
                 <div class="card h-100" style="border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-                    <div style="height:220px;overflow:hidden;background:#f8f9fa;">
+                    <div style="height:220px;overflow:hidden;background:linear-gradient(135deg,var(--nec-green),#1a3c8f);">
                         @if($c->photo)
-                        <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:cover;">
+                        <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:contain;">
                         @else
-                        <div style="width:100%;height:100%;background:linear-gradient(135deg,#e9ecef,#dee2e6);display:flex;align-items:center;justify-content:center;">
-                            <span style="font-size:2.5rem;font-weight:bold;color:#adb5bd;">{{ $c->initials }}</span>
+                        <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
+                            <i class="fas fa-user" style="font-size:2.6rem;color:rgba(255,255,255,0.9);"></i>
+                            <span style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.85);">{{ $c->initials }}</span>
                         </div>
                         @endif
                     </div>
                     <div class="p-3 text-center">
                         <h6 class="fw-bold mb-1">{{ $c->name }}</h6>
                         <p style="color:var(--nec-green);font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;">{{ $c->position }}</p>
-                        @if($c->email || $c->phone)
-                        <div class="d-flex justify-content-center gap-2 mb-2" style="font-size:0.75rem;">
-                            @if($c->email)<a href="mailto:{{ $c->email }}" style="color:#6c757d;text-decoration:none;"><i class="far fa-envelope me-1"></i></a>@endif
-                            @if($c->phone)<a href="tel:{{ $c->phone }}" style="color:#6c757d;text-decoration:none;"><i class="fas fa-phone me-1"></i></a>@endif
+                        @if($showStats && ($c->email || $c->phone))
+                        <div class="d-flex justify-content-center gap-2 mb-2">
+                            @if($c->email)<a href="mailto:{{ $c->email }}" class="comm-social" style="--sc:#6c757d;" aria-label="Email"><i class="far fa-envelope"></i></a>@endif
+                            @if($c->phone)<a href="tel:{{ $c->phone }}" class="comm-social" style="--sc:#6c757d;" aria-label="Phone"><i class="fas fa-phone"></i></a>@endif
                         </div>
                         @endif
+                        @if($showStats)
                         <div class="d-flex justify-content-center gap-2">
-                            @if($c->facebook_url)<a href="{{ $c->facebook_url }}" style="color:#1877F2;font-size:0.8rem;" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>@endif
-                            @if($c->twitter_url)<a href="{{ $c->twitter_url }}" style="color:#000;font-size:0.8rem;" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>@endif
-                            @if($c->linkedin_url)<a href="{{ $c->linkedin_url }}" style="color:#0A66C2;font-size:0.8rem;" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a>@endif
+                            @if($c->facebook_url)<a href="{{ $c->facebook_url }}" class="comm-social" style="--sc:#1877F2;" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>@endif
+                            @if($c->twitter_url)<a href="{{ $c->twitter_url }}" class="comm-social" style="--sc:#000;" target="_blank" rel="noopener" aria-label="X"><i class="fab fa-x-twitter"></i></a>@endif
+                            @if($c->linkedin_url)<a href="{{ $c->linkedin_url }}" class="comm-social" style="--sc:#0A66C2;" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>@endif
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>

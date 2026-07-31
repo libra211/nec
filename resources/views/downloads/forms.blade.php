@@ -32,9 +32,12 @@
                     <div class="form-details">
                         <h5>{{ $form->title }}</h5>
                         <p>{{ $form->description ?? 'Official NEC form' }}</p>
-                        <a href="{{ asset($form->file_path) }}" class="btn btn-sm btn-primary" download>
-                            <i class="fas fa-download me-1"></i> Download
-                        </a>
+                        <div class="d-flex align-items-center gap-3">
+                            <a href="{{ route('downloads.serve', ['type' => 'file', 'id' => $form->id]) }}" class="btn btn-sm btn-primary" download>
+                                <i class="fas fa-download me-1"></i> Download
+                            </a>
+                            <small class="text-muted" style="font-size:0.72rem;"><i class="fas fa-download me-1"></i>{{ number_format($form->downloads_count ?? 0) }} downloads</small>
+                        </div>
                     </div>
                 </div>
             </div>

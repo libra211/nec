@@ -49,9 +49,10 @@ $langLabel = ['English' => 'English', 'Arabic' => 'العربية'];
                         <p class="text-muted small mb-3">{{ $desc }}</p>
                         @if($pdf)
                         <div class="d-flex justify-content-center gap-2">
-                            <a href="{{ asset($pdf) }}" target="_blank" rel="noopener" class="btn btn-outline-nec btn-sm"><i class="fas fa-eye me-1"></i> View</a>
-                            <a href="{{ asset($pdf) }}" target="_blank" rel="noopener" class="btn btn-nec btn-sm" download><i class="fas fa-download me-1"></i> Download</a>
+                            <a href="{{ route('downloads.serve', ['type' => 'resource', 'id' => $res['material']->id]) }}" target="_blank" rel="noopener" class="btn btn-outline-nec btn-sm"><i class="fas fa-eye me-1"></i> View</a>
+                            <a href="{{ route('downloads.serve', ['type' => 'resource', 'id' => $res['material']->id]) }}" target="_blank" rel="noopener" class="btn btn-nec btn-sm" download><i class="fas fa-download me-1"></i> Download</a>
                         </div>
+                        <small class="text-muted d-block mt-2" style="font-size:0.7rem;"><i class="fas fa-download me-1" style="color:var(--nec-green);"></i>{{ number_format($res['material']->downloads_count ?? 0) }} downloads</small>
                         @else
                         <span class="text-muted small">Coming soon</span>
                         @endif

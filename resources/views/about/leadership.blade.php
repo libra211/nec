@@ -1,5 +1,7 @@
 @extends('layouts.app', ['title' => 'Our Team', 'active_page' => 'about', 'meta_description' => 'Meet the leadership and commissioners of the National Elections Commission of South Sudan.'])
 
+@php $showStats = \App\Helpers\NecHelper::setting_get('public_show_stats', '1') === '1'; @endphp
+
 @push('styles')
 <style>
     .team-hero {
@@ -56,82 +58,81 @@
     }
     .member-card {
         background: #fff;
-        border-radius: 16px;
+        border-radius: 12px;
         overflow: hidden;
-        border: 1px solid #eee;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid #e5e5e5;
+        transition: all 0.3s ease;
         cursor: pointer;
         position: relative;
     }
     .member-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.12);
-        border-color: var(--nec-gold);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.08);
     }
     .member-photo-wrapper {
         position: relative;
         overflow: hidden;
-        background: linear-gradient(135deg, #1a3c8f, #2E8B57);
+        background: #f5f6f8;
     }
     .member-photo-wrapper img {
         width: 100%;
-        height: 300px;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-    .member-card:hover .member-photo-wrapper img {
-        transform: scale(1.05);
+        height: 280px;
+        object-fit: contain;
     }
     .member-initials {
         width: 100%;
-        height: 300px;
+        height: 280px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 4rem;
-        font-weight: 800;
-        color: rgba(255,255,255,0.9);
-        text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        gap: 10px;
+        color: #adb5bd;
     }
-    .member-social-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 12px;
+    .member-initials i {
+        font-size: 4rem;
+    }
+    .member-initials span {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    .member-social {
         display: flex;
         justify-content: center;
+        flex-wrap: wrap;
         gap: 8px;
-        background: linear-gradient(transparent, rgba(0,0,0,0.7));
-        opacity: 0;
-        transform: translateY(10px);
-        transition: all 0.3s ease;
     }
-    .member-card:hover .member-social-overlay {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    .member-social-overlay a {
+    .member-social a {
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(10px);
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        color: #fff;
-        font-size: 0.85rem;
-        transition: all 0.3s;
-        text-decoration: none;
+        background: #f1f3f5;
+        color: #495057 !important;
+        font-size: 0.9rem;
+        border: none;
+        text-decoration: none !important;
+        transition: all 0.25s ease;
     }
-    .member-social-overlay a:hover {
-        background: var(--nec-gold);
-        color: #000;
-        transform: scale(1.1);
+    .member-social a:hover {
+        background: var(--nec-green);
+        color: #fff !important;
+        transform: translateY(-2px);
+        text-decoration: none !important;
+    }
+    .member-divider {
+        border: none;
+        border-top: 1px solid #f0f0f0;
+        margin: 0.9rem 0 0.8rem;
+        opacity: 1;
     }
     .member-info {
         padding: 1.25rem;
+    }
+    .member-info a {
+        text-decoration: none !important;
     }
     .member-position-badge {
         display: inline-block;
@@ -143,9 +144,9 @@
         letter-spacing: 0.5px;
         margin-bottom: 8px;
     }
-    .badge-chairperson { background: linear-gradient(135deg, #d4af37, #c5a028); color: #1a1a1a; }
-    .badge-deputy { background: linear-gradient(135deg, #1a3c8f, #2558b8); color: #fff; }
-    .badge-commissioner { background: linear-gradient(135deg, #2E8B57, #248a4c); color: #fff; }
+    .badge-chairperson { background: #d4af37; color: #1a1a1a; }
+    .badge-deputy { background: #1a3c8f; color: #fff; }
+    .badge-commissioner { background: #2E8B57; color: #fff; }
     .member-name {
         font-size: 1.1rem;
         font-weight: 700;
@@ -197,31 +198,40 @@
         height: 140px;
         border-radius: 50%;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 3rem;
-        font-weight: 800;
+        gap: 6px;
         color: rgba(255,255,255,0.9);
         border: 4px solid var(--nec-gold);
         box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         background: linear-gradient(135deg, #1a3c8f, #2E8B57);
     }
+    .profile-initials-lg i {
+        font-size: 3rem;
+    }
+    .profile-initials-lg span {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
     .profile-social-links a {
         width: 38px;
         height: 38px;
         border-radius: 50%;
-        background: rgba(255,255,255,0.15);
+        background: rgba(46,139,87,0.85);
         display: inline-flex;
         align-items: center;
         justify-content: center;
         color: #fff;
         font-size: 0.9rem;
         transition: all 0.3s;
-        text-decoration: none;
+        text-decoration: none !important;
+        border: 1px solid rgba(255,255,255,0.15);
     }
     .profile-social-links a:hover {
         background: var(--nec-gold);
         color: #1a1a1a;
+        transform: translateY(-2px);
     }
     .profile-tabs .nav-link {
         border: none;
@@ -371,11 +381,11 @@
                 <div class="card border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <div class="member-photo-wrapper h-100" style="min-height:350px;">
+                            <div class="member-photo-wrapper h-100" style="min-height:350px;background:#f5f6f8;">
                                 @if($chairperson->photo)
-                                    <img src="{{ asset($chairperson->photo) }}" alt="{{ $chairperson->name }}" class="h-100" style="object-fit:cover;width:100%;">
+                                    <img src="{{ asset($chairperson->photo) }}" alt="{{ $chairperson->name }}" class="h-100" style="object-fit:contain;width:100%;">
                                 @else
-                                    <div class="member-initials h-100" style="font-size:5rem;">{{ $chairperson->initials }}</div>
+                                    <div class="member-initials h-100" style="height:100%;min-height:350px;"><i class="fas fa-user" style="font-size:5rem;"></i><span>{{ $chairperson->initials }}</span></div>
                                 @endif
                             </div>
                         </div>
@@ -390,13 +400,13 @@
                             <p class="mb-3" style="color:var(--nec-green);font-weight:600;">{{ $chairperson->position }}, National Elections Commission</p>
                             <p class="text-muted mb-4" style="line-height:1.8;">{{ $chairperson->about ?? $chairperson->bio }}</p>
 
-                            @if($chairperson->email)
+                            @if($showStats && $chairperson->email)
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <i class="fas fa-envelope" style="color:var(--nec-green);width:20px;"></i>
                                     <a href="mailto:{{ $chairperson->email }}" class="text-decoration-none" style="color:#495057;">{{ $chairperson->email }}</a>
                                 </div>
                             @endif
-                            @if($chairperson->phone)
+                            @if($showStats && $chairperson->phone)
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <i class="fas fa-phone" style="color:var(--nec-green);width:20px;"></i>
                                     <span style="color:#495057;">{{ $chairperson->phone }}</span>
@@ -407,6 +417,7 @@
                                 <button class="btn btn-sm px-3 py-2 fw-semibold" style="background:var(--nec-green);color:#fff;border-radius:8px;" onclick="openProfileModal({{ $chairperson->id }})">
                                     <i class="fas fa-user me-1"></i> View Full Profile
                                 </button>
+                                @if($showStats)
                                 <div class="profile-social-links ms-2">
                                     @if($chairperson->facebook_url)
                                         <a href="{{ $chairperson->facebook_url }}" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
@@ -421,6 +432,7 @@
                                         <a href="{{ $chairperson->website_url }}" target="_blank" rel="noopener"><i class="fas fa-globe"></i></a>
                                     @endif
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -453,25 +465,11 @@
                             @if($c->photo)
                                 <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}">
                             @else
-                                <div class="member-initials">{{ $c->initials }}</div>
+                                <div class="member-initials"><i class="fas fa-user"></i><span>{{ $c->initials }}</span></div>
                             @endif
                             @if($c->years_of_service)
                                 <span class="member-years"><i class="fas fa-clock me-1"></i>{{ $c->years_of_service }}y</span>
                             @endif
-                            <div class="member-social-overlay">
-                                @if($c->facebook_url)
-                                    <a href="{{ $c->facebook_url }}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i class="fab fa-facebook-f"></i></a>
-                                @endif
-                                @if($c->twitter_url)
-                                    <a href="{{ $c->twitter_url }}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i class="fab fa-x-twitter"></i></a>
-                                @endif
-                                @if($c->linkedin_url)
-                                    <a href="{{ $c->linkedin_url }}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i class="fab fa-linkedin-in"></i></a>
-                                @endif
-                                @if($c->website_url)
-                                    <a href="{{ $c->website_url }}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i class="fas fa-globe"></i></a>
-                                @endif
-                            </div>
                         </div>
                         <div class="member-info">
                             @php
@@ -483,6 +481,30 @@
                             <h5 class="member-name">{{ $c->name }}</h5>
                             @if($c->department)
                                 <p class="member-dept mb-0"><i class="fas fa-building me-1"></i>{{ $c->department }}</p>
+                            @endif
+                            @php $hasSocial = $c->facebook_url || $c->twitter_url || $c->linkedin_url || $c->website_url || $c->email || $c->phone; @endphp
+                            @if($showStats && $hasSocial)
+                                <hr class="member-divider">
+                                <div class="member-social">
+                                    @if($c->email)
+                                        <a href="mailto:{{ $c->email }}" aria-label="Email" onclick="event.stopPropagation()"><i class="fas fa-envelope"></i></a>
+                                    @endif
+                                    @if($c->phone)
+                                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $c->phone) }}" aria-label="Phone" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>
+                                    @endif
+                                    @if($c->facebook_url)
+                                        <a href="{{ $c->facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook" onclick="event.stopPropagation()"><i class="fab fa-facebook-f"></i></a>
+                                    @endif
+                                    @if($c->twitter_url)
+                                        <a href="{{ $c->twitter_url }}" target="_blank" rel="noopener" aria-label="X (Twitter)" onclick="event.stopPropagation()"><i class="fab fa-x-twitter"></i></a>
+                                    @endif
+                                    @if($c->linkedin_url)
+                                        <a href="{{ $c->linkedin_url }}" target="_blank" rel="noopener" aria-label="LinkedIn" onclick="event.stopPropagation()"><i class="fab fa-linkedin-in"></i></a>
+                                    @endif
+                                    @if($c->website_url)
+                                        <a href="{{ $c->website_url }}" target="_blank" rel="noopener" aria-label="Website" onclick="event.stopPropagation()"><i class="fas fa-globe"></i></a>
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -504,7 +526,7 @@
                     @if($c->photo)
                         <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" class="profile-photo-lg">
                     @else
-                        <div class="profile-initials-lg">{{ $c->initials }}</div>
+                        <div class="profile-initials-lg"><i class="fas fa-user"></i><span>{{ $c->initials }}</span></div>
                     @endif
                     <div class="flex-grow-1">
                         <h3 class="fw-bold mb-1">{{ $c->name }}</h3>
@@ -521,6 +543,7 @@
                             @endif
                         </div>
                         <div class="profile-social-links">
+                            @if($showStats)
                             @if($c->facebook_url)
                                 <a href="{{ $c->facebook_url }}" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
                             @endif
@@ -535,6 +558,7 @@
                             @endif
                             @if($c->email)
                                 <a href="mailto:{{ $c->email }}"><i class="fas fa-envelope"></i></a>
+                            @endif
                             @endif
                         </div>
                     </div>
@@ -641,7 +665,7 @@
                 <div class="tab-pane fade" id="contact-{{ $c->id }}" role="tabpanel">
                     <h6 class="fw-bold mb-3" style="color:var(--nec-green);">Contact Information</h6>
                     <div class="row g-3">
-                        @if($c->email)
+                        @if($showStats && $c->email)
                             <div class="col-md-6">
                                 <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background:#f0f7f4;">
                                     <i class="fas fa-envelope" style="color:var(--nec-green);font-size:1.2rem;"></i>
@@ -652,7 +676,7 @@
                                 </div>
                             </div>
                         @endif
-                        @if($c->phone)
+                        @if($showStats && $c->phone)
                             <div class="col-md-6">
                                 <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background:#f0f7f4;">
                                     <i class="fas fa-phone" style="color:var(--nec-green);font-size:1.2rem;"></i>

@@ -617,6 +617,26 @@
                 </div>
 
                 @php
+                    $statsEnabled = ($settings['public_show_stats']->value ?? '1') === '1';
+                @endphp
+                <div class="settings-block {{ !$statsEnabled ? 'opacity-50' : '' }}" id="statsMasterBlock">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="settings-block-title mb-0"><i class="fas fa-chart-line text-success me-1"></i>Dashboard Numbers (Public Statistics)</div>
+                        <span class="badge bg-{{ $statsEnabled ? 'success' : 'secondary' }} rounded-pill" style="font-size:10px">{{ $statsEnabled ? 'On' : 'Off' }}</span>
+                    </div>
+                    <div class="settings-block-desc">
+                        When <strong>on</strong>, the "South Sudan at a Glance" numbers are visible on the public homepage and you can set the values below.
+                        When <strong>off</strong>, the numbers, phone number, email, and social media icons are hidden across the public site.
+                    </div>
+                    <div class="form-check form-switch form-switch-lg">
+                        <input class="form-check-input setting-input" type="checkbox" name="public_show_stats" role="switch" id="public_show_stats" value="1" {{ $statsEnabled ? 'checked' : '' }}>
+                        <label class="form-check-label fw-semibold" for="public_show_stats">Show public statistics dashboard (numbers)</label>
+                    </div>
+                </div>
+
+                @if($statsEnabled)
+                <div id="statGroupsWrap">
+                @php
                     $autoV = function($stat) {
                         return match($stat) {
                             'election_date' => \App\Helpers\NecHelper::setting_get('election_date', '2026-12-22'),
@@ -748,6 +768,8 @@
                     @endforeach
                 </div>
                 @endforeach
+                </div>
+                @endif
 
                 {{-- Feature Toggles --}}
                 @php
@@ -1200,6 +1222,19 @@ $(document).ready(function () {
         var name = $(this).attr('name');
         var stat = name.replace('public_stat_', '').replace('_source', '');
         $('.manual-input-' + stat).toggle($(this).val() === 'manual');
+    });
+
+    // Master stats toggle: hide number-editing rows when dashboard numbers are off
+    var $statsWrap = $('#statGroupsWrap');
+    function toggleStatsRows() {
+        var on = $('#public_show_stats').is(':checked');
+        if ($statsWrap.length) $statsWrap.toggle(on);
+        $('#statsMasterBlock').toggleClass('opacity-50', !on);
+    }
+    toggleStatsRows();
+    $('#public_show_stats').on('change', function () {
+        toggleStatsRows();
+        $('.settings-tab-pane #saveIndicator').css('opacity', '1');
     });
 
     // SMS provider toggle

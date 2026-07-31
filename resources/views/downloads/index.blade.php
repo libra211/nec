@@ -26,7 +26,7 @@
 <section class="py-5">
     <div class="container">
         @php
-        $downloads = \App\Models\Download::select('id', 'title', 'description', 'file_path', 'file_size', 'file_type', 'category')
+        $downloads = \App\Models\Download::select('id', 'title', 'description', 'file_path', 'file_size', 'file_type', 'category', 'downloads_count')
             ->where('status', 'published')
             ->orderBy('category')
             ->orderBy('title')
@@ -57,8 +57,9 @@
                                 <div class="flex-grow-1">
                                     <h6 class="mb-0 small fw-bold">{{ $file['title'] }}</h6>
                                     <small class="text-muted">{{ $file['file_size'] }} &middot; {{ $file['description'] }}</small>
+                                    <div class="small text-muted mt-1" style="font-size:0.7rem;"><i class="fas fa-download me-1" style="color:var(--nec-green);"></i>{{ number_format($file['downloads_count'] ?? 0) }} downloads</div>
                                 </div>
-                                <a href="{{ asset($file['file_path']) }}" class="btn btn-sm btn-outline-success flex-shrink-0" style="border-color: var(--nec-green); color: var(--nec-green);" target="_blank"><i class="fas fa-download"></i></a>
+                                <a href="{{ route('downloads.serve', ['type' => 'file', 'id' => $file['id']]) }}" class="btn btn-sm btn-outline-success flex-shrink-0" style="border-color: var(--nec-green); color: var(--nec-green);" target="_blank"><i class="fas fa-download"></i></a>
                             </div>
                             @endforeach
                         </div>

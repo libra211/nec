@@ -40,20 +40,32 @@
                         <h5 style="color:var(--nec-gold);font-size:0.85rem;font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Contact Us</h5>
                         <div class="footer-contact mb-3">
                             <p class="mb-1"><i class="fas fa-map-marker-alt me-2" style="color:var(--nec-gold);"></i>{{ \App\Helpers\NecHelper::setting_get('contact_address', 'NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba') }}</p>
+                            @if(\App\Helpers\NecHelper::setting_get('public_show_stats', '1') === '1')
                             <p class="mb-1"><i class="fas fa-phone me-2" style="color:var(--nec-gold);"></i>{{ \App\Helpers\NecHelper::setting_get('contact_phone', '+211 (0) 912 345 678') }}</p>
                             <p class="mb-1"><i class="fas fa-envelope me-2" style="color:var(--nec-gold);"></i>{{ \App\Helpers\NecHelper::setting_get('contact_email', 'info@nec.gov.ss') }}</p>
+                            @endif
                         </div>
                         <div class="mb-3">
                             <p class="mb-1"><i class="fas fa-clock me-2" style="color:var(--nec-gold);"></i>{{ \App\Helpers\NecHelper::setting_get('office_hours', 'Mon – Fri: 8:00 AM – 5:00 PM') }}</p>
                             <p class="mb-1" style="padding-left:28px;color:rgba(255,255,255,.5);font-size:0.85rem;">Sat – Sun: Closed</p>
                         </div>
+                        @if(\App\Helpers\NecHelper::setting_get('public_show_stats', '1') === '1')
                         <div class="footer-social">
-                            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-x-twitter"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                            @php
+                            $socialLinks = [
+                                ['icon' => 'fa-facebook-f', 'label' => 'Facebook', 'url' => \App\Helpers\NecHelper::setting_get('facebook_url')],
+                                ['icon' => 'fa-x-twitter', 'label' => 'Twitter / X', 'url' => \App\Helpers\NecHelper::setting_get('twitter_url')],
+                                ['icon' => 'fa-youtube', 'label' => 'YouTube', 'url' => \App\Helpers\NecHelper::setting_get('youtube_url')],
+                                ['icon' => 'fa-instagram', 'label' => 'Instagram', 'url' => \App\Helpers\NecHelper::setting_get('instagram_url')],
+                                ['icon' => 'fa-linkedin-in', 'label' => 'LinkedIn', 'url' => \App\Helpers\NecHelper::setting_get('linkedin_url')],
+                                ['icon' => 'fa-whatsapp', 'label' => 'WhatsApp', 'url' => \App\Helpers\NecHelper::setting_get('whatsapp_number') ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', \App\Helpers\NecHelper::setting_get('whatsapp_number')) : ''],
+                            ];
+                            @endphp
+                            @foreach($socialLinks as $sl)
+                            <a href="{{ $sl['url'] ?: '#' }}" class="social-icon" target="_blank" rel="noopener" aria-label="{{ $sl['label'] }}"><i class="fab {{ $sl['icon'] }}"></i></a>
+                            @endforeach
                         </div>
+                        @endif
                     </div>
                 </div>
                 <div class="col-md-6 col-lg d-flex">
