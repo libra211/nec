@@ -478,10 +478,10 @@
     <i class="far fa-calendar-check" style="position:absolute;bottom:30px;right:40px;font-size:6rem;color:rgba(212,175,55,0.07);"></i>
     <div class="container position-relative">
         <div class="row g-4">
-            <div class="col-lg-8 reveal">
+            <div class="col-lg-8 reveal d-flex flex-column">
                 @include('partials.section-heading', ['icon' => 'fa-bullhorn', 'label' => 'Announcements'])
                 <h2 class="fw-bold mb-4">Public Notices</h2>
-                <div class="d-flex flex-column gap-2">
+                <div class="d-flex flex-column gap-2 flex-grow-1">
                     @forelse($latestAnnouncements as $a)
                     <div class="d-flex gap-3 align-items-start bg-white px-3 py-3 shadow-sm" style="border-left:3px solid var(--nec-green);border-radius:8px;transition:transform 0.2s ease,box-shadow 0.2s ease;" onmouseover="this.style.transform='translateX(4px)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.10)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
                         <div class="text-center flex-shrink-0" style="min-width:55px;">
@@ -500,12 +500,12 @@
                     <div class="text-center text-muted py-4">No announcements published yet.</div>
                     @endforelse
                 </div>
-                <a href="{{ route('media.news') }}" class="btn fw-bold mt-3 px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
+                <a href="{{ route('media.news') }}" class="btn fw-bold mt-3 px-4 align-self-start" style="background:var(--nec-green);color:#fff;border-radius:6px;">
                     View All Notices <i class="fas fa-arrow-right ms-1"></i>
                 </a>
             </div>
-            <div class="col-lg-4 reveal reveal-delay-2">
-                <div class="card border-0 shadow-sm" style="border-radius:12px;overflow:hidden;">
+            <div class="col-lg-4 reveal reveal-delay-2 d-flex flex-column">
+                <div class="card border-0 shadow-sm flex-grow-1" style="border-radius:12px;overflow:hidden;">
                     <div class="card-header fw-bold text-white border-0 rounded-0 py-3" style="background:var(--nec-green);">
                         <i class="fas fa-calendar-check me-2"></i> Upcoming Events
                     </div>
@@ -522,7 +522,7 @@
                         @endforelse
                     </div>
                 </div>
-                <a href="{{ route('events.index') }}" class="btn fw-bold mt-3 px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
+                <a href="{{ route('events.index') }}" class="btn fw-bold mt-3 px-4 align-self-start" style="background:var(--nec-green);color:#fff;border-radius:6px;">
                     View All Events <i class="fas fa-arrow-right ms-1"></i>
                 </a>
             </div>
