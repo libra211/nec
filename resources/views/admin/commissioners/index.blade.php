@@ -29,9 +29,9 @@
                                 <img src="{{ asset($c->photo ?? 'assets/images/default-avatar.png') }}" alt="" style="width:100%;height:100%;object-fit:cover;">
                             </div>
                         </td>
-                        <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ e($c->name) }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($c->position) }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($c->state ?? 'N/A') }}</td>
+                        <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $c->name }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $c->position }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $c->state ?? 'N/A' }}</td>
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
                             <a href="{{ route('admin.commissioners.edit', $c->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
                             <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.commissioners.destroy', $c->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>

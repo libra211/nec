@@ -24,9 +24,9 @@
                     @forelse($voters as $voter)
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#64748b;">{{ $loop->iteration }}</td>
-                        <td style="padding:10px 12px;color:#475569;"><code>{{ e($voter->voter_id) }}</code></td>
-                        <td style="padding:10px 12px;color:#1e293b;">{{ e($voter->full_name) }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($voter->state ?? 'N/A') }}</td>
+                        <td style="padding:10px 12px;color:#475569;"><code>{{ $voter->voter_id }}</code></td>
+                        <td style="padding:10px 12px;color:#1e293b;">{{ $voter->full_name }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $voter->state ?? 'N/A' }}</td>
                         <td style="padding:10px 12px;color:#64748b;">{{ $voter->deleted_at ? $voter->deleted_at->format('d M Y H:i') : 'N/A' }}</td>
                         <td style="padding:10px 16px 10px 12px;text-align:right;">
                             <form action="{{ route('admin.voters.restore', $voter->id) }}" method="POST" class="d-inline">

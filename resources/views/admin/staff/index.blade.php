@@ -119,9 +119,9 @@
                     @forelse($staff as $member)
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#475569;">{{ $loop->iteration }}</td>
-                        <td style="padding:10px 12px;color:#1e293b;"><strong>{{ e($member->name) }}</strong></td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($member->email) }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($member->phone ?? '-') }}</td>
+                        <td style="padding:10px 12px;color:#1e293b;"><strong>{{ $member->name }}</strong></td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $member->email }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $member->phone ?? '-' }}</td>
                         <td style="padding:10px 12px;">
                             @php
                                 $roleBadges = [
@@ -134,9 +134,9 @@
                             @endphp
                             <span class="badge bg-{{ $roleBadges[$member->role] ?? 'secondary' }}">{{ ucwords(str_replace('_', ' ', $member->role)) }}</span>
                         </td>
-                        <td style="padding:10px 12px;color:#475569;"><code>{{ e($member->employee_id ?? '-') }}</code></td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($member->department ?? '-') }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($member->state ?? '-') }}</td>
+                        <td style="padding:10px 12px;color:#475569;"><code>{{ $member->employee_id ?? '-' }}</code></td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $member->department ?? '-' }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $member->state ?? '-' }}</td>
                         <td style="padding:10px 12px;">
                             @if($member->is_active ?? true)
                                 <span class="badge bg-success">Active</span>

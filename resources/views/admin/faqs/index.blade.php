@@ -71,8 +71,8 @@
                     <tr data-id="{{ $item->id }}" style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#64748b;">{{ $loop->iteration + ($faqs->currentPage() - 1) * $faqs->perPage() }}</td>
                         <td style="padding:10px 12px;"><input type="number" class="form-control form-control-sm faq-order" value="{{ $item->sort_order }}" data-id="{{ $item->id }}" style="width:70px;border-radius:8px;"></td>
-                        <td style="padding:10px 12px;color:#1e293b;">{{ e(Str::limit($item->question, 80)) }}</td>
-                        <td style="padding:10px 12px;"><span class="badge bg-info">{{ e($item->category ?? 'General') }}</span></td>
+                        <td style="padding:10px 12px;color:#1e293b;">{{ Str::limit($item->question, 80) }}</td>
+                        <td style="padding:10px 12px;"><span class="badge bg-info">{{ $item->category ?? 'General' }}</span></td>
                         <td style="padding:10px 12px;">
                             @if($item->status === 'published')
                                 <span class="badge bg-success">Published</span>

@@ -10,7 +10,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">{{ e($contact->subject ?? 'No Subject') }}</h5>
+                <h5 class="mb-0">{{ $contact->subject ?? 'No Subject' }}</h5>
                 @if($contact->status === 'new')
                     <span class="badge bg-warning">New</span>
                 @elseif($contact->status === 'read')
@@ -25,13 +25,13 @@
             </div>
             <div class="card-body">
                 <div class="mb-3 pb-3 border-bottom">
-                    <p><strong>Name:</strong> {{ e($contact->name) }}</p>
-                    <p><strong>Email:</strong> <a href="mailto:{{ e($contact->email) }}">{{ e($contact->email) }}</a></p>
+                    <p><strong>Name:</strong> {{ $contact->name }}</p>
+                    <p><strong>Email:</strong> <a href="mailto:{{ $contact->email }}">{{ $contact->email }}</a></p>
                     @if($contact->phone)
-                        <p><strong>Phone:</strong> {{ e($contact->phone) }}</p>
+                        <p><strong>Phone:</strong> {{ $contact->phone }}</p>
                     @endif
                     @if($contact->topic)
-                        <p><strong>Topic:</strong> {{ e($contact->topic) }}</p>
+                        <p><strong>Topic:</strong> {{ $contact->topic }}</p>
                     @endif
                     <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($contact->created_at)->format('d M Y H:i') }}</p>
                 </div>
@@ -47,7 +47,7 @@
                 <h6 class="mb-0"><i class="fas fa-reply me-1"></i> Admin Reply</h6>
             </div>
             <div class="card-body">
-                <div class="mb-2"><strong>Replied by:</strong> {{ e($contact->replied_by) }} on {{ $contact->replied_at ? \Carbon\Carbon::parse($contact->replied_at)->format('d M Y H:i') : 'N/A' }}</div>
+                <div class="mb-2"><strong>Replied by:</strong> {{ $contact->replied_by }} on {{ $contact->replied_at ? \Carbon\Carbon::parse($contact->replied_at)->format('d M Y H:i') : 'N/A' }}</div>
                 <div>{!! nl2br(e($contact->admin_reply)) !!}</div>
             </div>
         </div>
@@ -69,7 +69,7 @@
                     </select>
                     <button class="btn btn-sm btn-primary w-100"><i class="fas fa-save me-1"></i> Update Status</button>
                 </form>
-                <a href="mailto:{{ e($contact->email) }}?subject=Re: {{ urlencode($contact->subject ?? '') }}" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                <a href="mailto:{{ $contact->email }}?subject=Re: {{ urlencode($contact->subject ?? '') }}" class="btn btn-sm btn-outline-primary w-100 mb-2">
                     <i class="fas fa-reply me-1"></i> Reply via Email
                 </a>
                 <form action="{{ route('admin.contacts.destroy', $contact->id) }}" method="POST" onsubmit="return confirm('Delete this message?')">

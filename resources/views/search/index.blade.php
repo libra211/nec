@@ -29,13 +29,13 @@
                 </div>
 
                 @isset($search_query)
-                <p class="text-muted" data-aos="fade-up">Showing results for "<strong>{{ e($search_query) }}</strong>"</p>
+                <p class="text-muted" data-aos="fade-up">Showing results for "<strong>{{ $search_query }}</strong>"</p>
                 @endisset
 
                 @isset($results)
                     @forelse($results as $result)
                     <div class="search-result-item" data-aos="fade-up">
-                        <h4><a href="{{ $result['url'] ?? '#' }}">{{ e($result['title'] ?? 'Untitled') }}</a></h4>
+                        <h4><a href="{{ $result['url'] ?? '#' }}">{{ $result['title'] ?? 'Untitled' }}</a></h4>
                         <p class="text-muted small">{{ $result['url'] ?? '' }}</p>
                         <p>{{ Str::limit($result['description'] ?? '', 200) }}</p>
                     </div>
@@ -43,7 +43,7 @@
                     <div class="text-center py-5">
                         <i class="fas fa-search fa-3x text-muted mb-3"></i>
                         <h4>No Results Found</h4>
-                        <p class="text-muted">No results found for "{{ e(request('q', '')) }}". Try different keywords.</p>
+                        <p class="text-muted">No results found for "{{ request('q', '') }}". Try different keywords.</p>
                     </div>
                     @endforelse
                 @else

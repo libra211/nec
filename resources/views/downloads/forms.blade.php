@@ -30,8 +30,8 @@
                 <div class="form-download-card h-100">
                     <div class="form-icon"><i class="fas fa-file-alt"></i></div>
                     <div class="form-details">
-                        <h5>{{ e($form->title) }}</h5>
-                        <p>{{ e($form->description ?? 'Official NEC form') }}</p>
+                        <h5>{{ $form->title }}</h5>
+                        <p>{{ $form->description ?? 'Official NEC form' }}</p>
                         <a href="{{ asset($form->file_path) }}" class="btn btn-sm btn-primary" download>
                             <i class="fas fa-download me-1"></i> Download
                         </a>

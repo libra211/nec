@@ -147,13 +147,13 @@
                         <td style="padding:10px 12px;">
                             <div class="d-flex align-items-center">
                                 <img src="{{ asset('assets/images/default-avatar.png') }}" alt="" class="rounded-circle me-2" width="32" height="32">
-                                <strong style="color:#1e293b;">{{ e($agent->first_name) }} {{ e($agent->last_name) }}</strong>
+                                <strong style="color:#1e293b;">{{ $agent->first_name }} {{ $agent->last_name }}</strong>
                             </div>
                         </td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($agent->phone ?? '-') }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($agent->email ?? '-') }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($agent->title ?? '-') }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($agent->assigned_area ?? '-') }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $agent->phone ?? '-' }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $agent->email ?? '-' }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $agent->title ?? '-' }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $agent->assigned_area ?? '-' }}</td>
                         <td style="padding:10px 12px;">
                             @php
                                 $statusClasses = [

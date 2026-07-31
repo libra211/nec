@@ -32,9 +32,9 @@
                 <span style="font-size:28px;font-weight:800;color:#166534;">{{ strtoupper($initials) }}</span>
             </div>
             <div>
-                <h3 class="mb-1">{{ e($voter->full_name) }}</h3>
+                <h3 class="mb-1">{{ $voter->full_name }}</h3>
                 <div class="d-flex align-items-center gap-3">
-                    <code class="fs-6">{{ e($voter->voter_id) }}</code>
+                    <code class="fs-6">{{ $voter->voter_id }}</code>
                     @php $statusColors = ['active' => 'success', 'suspended' => 'danger', 'inactive' => 'secondary']; @endphp
                     <span class="badge bg-{{ $statusColors[$voter->status] ?? 'success' }} fs-6">{{ ucfirst($voter->status ?? 'Active') }}</span>
                     @if($voter->registration_type === 'agent')
@@ -56,12 +56,12 @@
             </div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
-                    <tr><th class="text-muted" style="width:180px">Full Name</th><td>{{ e($voter->full_name) }}</td></tr>
+                    <tr><th class="text-muted" style="width:180px">Full Name</th><td>{{ $voter->full_name }}</td></tr>
                     <tr><th class="text-muted">Date of Birth</th><td>{{ $voter->dob ? date('d M Y', strtotime($voter->dob)) : 'N/A' }}</td></tr>
                     <tr><th class="text-muted">Gender</th><td>{{ ($voter->gender ?? '') === 'M' ? 'Male' : (($voter->gender ?? '') === 'F' ? 'Female' : ($voter->gender ?? 'N/A')) }}</td></tr>
                     <tr><th class="text-muted">National ID</th><td>{{ $voter->national_id ? substr($voter->national_id, 0, 3) . '****' . substr($voter->national_id, -2) : 'N/A' }}</td></tr>
-                    <tr><th class="text-muted">Phone</th><td>{{ e($voter->phone ?? 'N/A') }}</td></tr>
-                    <tr><th class="text-muted">Email</th><td>{{ e($voter->email ?? 'N/A') }}</td></tr>
+                    <tr><th class="text-muted">Phone</th><td>{{ $voter->phone ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Email</th><td>{{ $voter->email ?? 'N/A' }}</td></tr>
                 </table>
             </div>
         </div>
@@ -74,13 +74,13 @@
             </div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
-                    <tr><th class="text-muted" style="width:180px">State</th><td>{{ e($voter->state) }}</td></tr>
-                    <tr><th class="text-muted">County</th><td>{{ e($voter->county ?? 'N/A') }}</td></tr>
-                    <tr><th class="text-muted">Constituency</th><td>{{ e($voter->constituency ?? 'N/A') }}</td></tr>
-                    <tr><th class="text-muted">Payam</th><td>{{ e($voter->payam ?? 'N/A') }}</td></tr>
-                    <tr><th class="text-muted">Boma</th><td>{{ e($voter->boma ?? 'N/A') }}</td></tr>
-                    <tr><th class="text-muted">Polling Station</th><td>{{ e($voter->polling_station ?? 'N/A') }}</td></tr>
-                    <tr><th class="text-muted">Registration Center</th><td>{{ e($voter->registration_center ?? 'N/A') }}</td></tr>
+                    <tr><th class="text-muted" style="width:180px">State</th><td>{{ $voter->state }}</td></tr>
+                    <tr><th class="text-muted">County</th><td>{{ $voter->county ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Constituency</th><td>{{ $voter->constituency ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Payam</th><td>{{ $voter->payam ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Boma</th><td>{{ $voter->boma ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Polling Station</th><td>{{ $voter->polling_station ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Registration Center</th><td>{{ $voter->registration_center ?? 'N/A' }}</td></tr>
                 </table>
             </div>
         </div>
@@ -94,9 +94,9 @@
             <div class="card-body">
                 <table class="table table-borderless mb-0">
                     <tr><th class="text-muted" style="width:180px">Registration Type</th><td>{{ $voter->registration_type === 'agent' ? 'Agent-Assisted' : 'Self-Registration' }}</td></tr>
-                    <tr><th class="text-muted">Registered By</th><td>{{ e($voter->registered_by_name ?? 'System') }}</td></tr>
-                    <tr><th class="text-muted">Title/Role</th><td>{{ e($voter->registered_by_title ?? 'Online Portal') }}</td></tr>
-                    <tr><th class="text-muted">Location</th><td>{{ e($voter->registered_by_location ?? 'NEC Portal') }}</td></tr>
+                    <tr><th class="text-muted">Registered By</th><td>{{ $voter->registered_by_name ?? 'System' }}</td></tr>
+                    <tr><th class="text-muted">Title/Role</th><td>{{ $voter->registered_by_title ?? 'Online Portal' }}</td></tr>
+                    <tr><th class="text-muted">Location</th><td>{{ $voter->registered_by_location ?? 'NEC Portal' }}</td></tr>
                     <tr><th class="text-muted">Registration Date</th><td>{{ $voter->registered_at ? date('d M Y, h:i A', strtotime($voter->registered_at)) : 'N/A' }}</td></tr>
                 </table>
             </div>
@@ -117,8 +117,8 @@
                         <tbody>
                             @foreach($voter->transfers as $transfer)
                             <tr>
-                                <td>{{ e($transfer->from_constituency ?? '-') }}, {{ e($transfer->from_state ?? '-') }}</td>
-                                <td>{{ e($transfer->to_constituency ?? '-') }}, {{ e($transfer->to_state ?? '-') }}</td>
+                                <td>{{ $transfer->from_constituency ?? '-' }}, {{ $transfer->from_state ?? '-' }}</td>
+                                <td>{{ $transfer->to_constituency ?? '-' }}, {{ $transfer->to_state ?? '-' }}</td>
                                 <td>
                                     @php $tColors = ['pending' => 'warning', 'approved' => 'success', 'rejected' => 'danger']; @endphp
                                     <span class="badge bg-{{ $tColors[$transfer->status] ?? 'secondary' }}">{{ ucfirst($transfer->status) }}</span>

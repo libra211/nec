@@ -62,10 +62,10 @@
                 <tr style="border-bottom:1px solid #f1f3f5;">
                     <td style="padding:10px 8px 10px 16px;"><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="row-checkbox"></td>
                     <td style="padding:10px 12px;">
-                        <a href="{{ route('admin.events.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ e($item->title) }}</a>
+                        <a href="{{ route('admin.events.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ $item->title }}</a>
                     </td>
-                    <td style="padding:10px 12px;"><span class="badge bg-info">{{ e($item->event_type ?? 'public') }}</span></td>
-                    <td style="padding:10px 12px;color:#475569;">{{ e($item->location ?? '—') }}</td>
+                    <td style="padding:10px 12px;"><span class="badge bg-info">{{ $item->event_type ?? 'public' }}</span></td>
+                    <td style="padding:10px 12px;color:#475569;">{{ $item->location ?? '—' }}</td>
                     <td style="padding:10px 12px;text-align:center;"><span class="badge bg-secondary"><i class="fas fa-eye me-1"></i>{{ number_format($item->views ?? 0) }}</span></td>
                     <td style="padding:10px 12px;">
                         @if($item->status === 'published') <span class="badge bg-success">Published</span>

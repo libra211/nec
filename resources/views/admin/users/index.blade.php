@@ -100,11 +100,11 @@
                             <td style="padding:10px 12px;color:#1e293b;">
                                 <div class="d-flex align-items-center">
                                     <img src="{{ asset('assets/images/default-avatar.png') }}" alt="" class="rounded-circle me-2" width="32" height="32">
-                                    <strong>{{ e($user->name) }}</strong>
+                                    <strong>{{ $user->name }}</strong>
                                 </div>
                             </td>
-                            <td style="padding:10px 12px;color:#475569;">{{ e($user->email) }}</td>
-                            <td style="padding:10px 12px;color:#475569;">{{ e($user->phone ?? '-') }}</td>
+                            <td style="padding:10px 12px;color:#475569;">{{ $user->email }}</td>
+                            <td style="padding:10px 12px;color:#475569;">{{ $user->phone ?? '-' }}</td>
                             <td style="padding:10px 12px;color:#475569;">
                                 @php
                                     $roleBadges = [
@@ -121,8 +121,8 @@
                                 @endphp
                                 <span class="badge bg-{{ $roleBadges[$user->role] ?? 'secondary' }}">{{ ucwords(str_replace('_', ' ', $user->role)) }}</span>
                             </td>
-                            <td style="padding:10px 12px;color:#475569;">{{ e($user->department ?? '-') }}</td>
-                            <td style="padding:10px 12px;color:#475569;">{{ e($user->state ?? '-') }}</td>
+                            <td style="padding:10px 12px;color:#475569;">{{ $user->department ?? '-' }}</td>
+                            <td style="padding:10px 12px;color:#475569;">{{ $user->state ?? '-' }}</td>
                             <td style="padding:10px 12px;color:#475569;">
                                 @if($user->is_active ?? true)
                                     <span class="badge bg-success">Active</span>

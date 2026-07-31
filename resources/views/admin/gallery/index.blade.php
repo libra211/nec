@@ -67,7 +67,7 @@
                         @endif
                     </td>
                     <td style="padding:10px 12px;color:#1e293b;">
-                        <a href="{{ route('admin.gallery.edit', $album->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ e($album->title) }}</a>
+                        <a href="{{ route('admin.gallery.edit', $album->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ $album->title }}</a>
                         @if($album->description)
                         <div class="small text-muted" style="color:#64748b;">{{ Str::limit(e($album->description), 60) }}</div>
                         @endif

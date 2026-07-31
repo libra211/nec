@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">Voters Registered by {{ e($agent->first_name) }} {{ e($agent->last_name) }}</h2>
+    <h2 class="mb-0">Voters Registered by {{ $agent->first_name }} {{ $agent->last_name }}</h2>
     <a href="{{ route('admin.agents.index') }}" class="btn btn-outline-secondary">
         <i class="fas fa-arrow-left me-1"></i> Back to Agents
     </a>
@@ -13,15 +13,15 @@
         <div class="row g-4">
             <div class="col-md-3">
                 <div class="text-muted small mb-1">Agent Name</div>
-                <div class="fw-bold">{{ e($agent->first_name) }} {{ e($agent->last_name) }}</div>
+                <div class="fw-bold">{{ $agent->first_name }} {{ $agent->last_name }}</div>
             </div>
             <div class="col-md-3">
                 <div class="text-muted small mb-1">Title</div>
-                <div class="fw-bold">{{ e($agent->title ?? '-') }}</div>
+                <div class="fw-bold">{{ $agent->title ?? '-' }}</div>
             </div>
             <div class="col-md-3">
                 <div class="text-muted small mb-1">Assigned Area</div>
-                <div class="fw-bold">{{ e($agent->assigned_area ?? '-') }}</div>
+                <div class="fw-bold">{{ $agent->assigned_area ?? '-' }}</div>
             </div>
             <div class="col-md-3">
                 <div class="text-muted small mb-1">Total Voters Registered</div>
@@ -51,17 +51,17 @@
                     @forelse($voters as $voter)
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#64748b;">{{ $voters->firstItem() + $loop->index }}</td>
-                        <td style="padding:10px 12px;color:#475569;"><code>{{ e($voter->voter_id) }}</code></td>
+                        <td style="padding:10px 12px;color:#475569;"><code>{{ $voter->voter_id }}</code></td>
                         <td style="padding:10px 12px;color:#1e293b;">
                             <div class="d-flex align-items-center">
                                 <img src="{{ asset('assets/images/default-avatar.png') }}" alt="" class="rounded-circle me-2" width="28" height="28">
-                                {{ e($voter->full_name) }}
+                                {{ $voter->full_name }}
                             </div>
                         </td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($voter->gender ?? '-') }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($voter->phone ?? '-') }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($voter->state ?? '-') }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($voter->constituency ?? '-') }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $voter->gender ?? '-' }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $voter->phone ?? '-' }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $voter->state ?? '-' }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $voter->constituency ?? '-' }}</td>
                         <td style="padding:10px 16px 10px 12px;text-align:right;color:#64748b;">{{ $voter->registered_at ? $voter->registered_at->format('M d, Y') : '-' }}</td>
                     </tr>
                     @empty

@@ -401,14 +401,14 @@
             <div class="col-md-4 reveal reveal-delay-{{ $loop->iteration }}">
                 <div class="card card-elevated h-100">
                     @if($n->image)
-                    <div class="overflow-hidden" style="height:170px;border-radius:12px 12px 0 0;"><img src="{{ asset($n->image) }}" alt="{{ e($n->title) }}" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="overflow-hidden" style="height:170px;border-radius:12px 12px 0 0;"><img src="{{ asset($n->image) }}" alt="{{ $n->title }}" style="width:100%;height:100%;object-fit:cover;"></div>
                     @else
                     <div class="d-flex align-items-center justify-content-center" style="height:170px;background:var(--nec-gradient-primary);border-radius:12px 12px 0 0;"><i class="fas fa-newspaper text-white" style="font-size:3rem;opacity:0.4;"></i></div>
                     @endif
                     <div class="card-body d-flex flex-column">
-                        <span class="badge bg-{{ ($n->category ?? '') === 'press-release' ? 'success' : (($n->category ?? '') === 'news' ? 'info' : 'warning') }} mb-2">{{ e(ucfirst(str_replace('-', ' ', $n->category ?? 'General'))) }}</span>
-                        <h5 class="fw-bold mb-2">{{ e($n->title) }}</h5>
-                        <p class="text-muted small mb-3">{{ e(Str::limit(strip_tags($n->excerpt ?? $n->title), 120)) }}...</p>
+                        <span class="badge bg-{{ ($n->category ?? '') === 'press-release' ? 'success' : (($n->category ?? '') === 'news' ? 'info' : 'warning') }} mb-2">{{ ucfirst(str_replace('-', ' ', $n->category ?? 'General')) }}</span>
+                        <h5 class="fw-bold mb-2">{{ $n->title }}</h5>
+                        <p class="text-muted small mb-3">{{ Str::limit(strip_tags($n->excerpt ?? $n->title), 120) }}...</p>
                         <div class="d-flex align-items-center gap-3 text-muted small mb-3 mt-auto">
                             <span><i class="far fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($n->created_at)->format('d M Y') }}</span>
                         </div>
@@ -489,8 +489,8 @@
                             <div class="small text-muted" style="font-size:0.6rem;">{{ \Carbon\Carbon::parse($a->created_at)->format('M Y') }}</div>
                         </div>
                         <div class="flex-grow-1">
-                            <h6 class="fw-bold mb-1" style="font-size:0.9rem;">{{ e($a->title) }}</h6>
-                            <p class="text-muted small mb-2">{{ e(Str::limit(strip_tags($a->excerpt ?? $a->title), 120)) }}</p>
+                            <h6 class="fw-bold mb-1" style="font-size:0.9rem;">{{ $a->title }}</h6>
+                            <p class="text-muted small mb-2">{{ Str::limit(strip_tags($a->excerpt ?? $a->title), 120) }}</p>
                             <span class="small fw-semibold" style="color:var(--nec-green);cursor:pointer;">
                                 Read More <i class="fas fa-arrow-right ms-1" style="font-size:0.6rem;"></i>
                             </span>
@@ -515,7 +515,7 @@
                             <small class="fw-bold" style="color:var(--nec-gold);font-size:0.75rem;">
                                 <i class="far fa-calendar-alt me-1"></i> {{ $ev->start_date->format('j M Y') }}{{ $ev->end_date ? ' - ' . $ev->end_date->format('j M Y') : '' }}
                             </small>
-                            <p class="mb-0 mt-1 fw-semibold" style="font-size:0.85rem;">{{ e($ev->title) }}</p>
+                            <p class="mb-0 mt-1 fw-semibold" style="font-size:0.85rem;">{{ $ev->title }}</p>
                         </div>
                         @empty
                         <div class="text-center text-muted small py-3">No upcoming events scheduled.</div>
@@ -547,9 +547,9 @@
             @foreach($galleryAlbums->take(4) as $album)
             <div class="col-6 col-lg-3 reveal reveal-delay-{{ $loop->iteration }}">
                 <a href="{{ route('media.gallery') }}" class="text-decoration-none d-block position-relative overflow-hidden" style="border-radius:12px;height:200px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
-                    <img src="{{ asset($album->featured_image ?: ($album->images()->first()->image_path ?? 'assets/images/flag-gu.webp')) }}" alt="{{ e($album->title) }}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;">
+                    <img src="{{ asset($album->featured_image ?: ($album->images()->first()->image_path ?? 'assets/images/flag-gu.webp')) }}" alt="{{ $album->title }}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;">
                     <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.65) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:14px;">
-                        <h6 class="text-white fw-bold mb-1" style="font-size:0.85rem;">{{ e($album->title) }}</h6>
+                        <h6 class="text-white fw-bold mb-1" style="font-size:0.85rem;">{{ $album->title }}</h6>
                         <small style="color:rgba(255,255,255,0.8);font-size:0.7rem;"><i class="far fa-images me-1"></i>{{ $album->images_count }} photo{{ $album->images_count !== 1 ? 's' : '' }}</small>
                     </div>
                 </a>
@@ -645,7 +645,7 @@
                     <div class="text-center mb-2">
                         <i class="fas {{ $d->file_icon }}" style="font-size:1.5rem;color:var(--nec-green);"></i>
                     </div>
-                    <div style="font-size:0.8rem;font-weight:600;color:var(--nec-gray-700);text-align:center;margin-bottom:4px;line-height:1.2;">{{ e($d->title) }}</div>
+                    <div style="font-size:0.8rem;font-weight:600;color:var(--nec-gray-700);text-align:center;margin-bottom:4px;line-height:1.2;">{{ $d->title }}</div>
                     <div style="font-size:0.6rem;color:rgba(0,0,0,0.45);text-align:center;margin-bottom:2px;">{{ $d->file_type_label }}</div>
                     <div style="font-size:0.8rem;font-weight:700;color:var(--nec-green);text-align:center;">{{ $d->formatted_size }}</div>
                 </a>
@@ -722,13 +722,13 @@
                 <a href="{{ route('parties.index') }}" class="text-decoration-none d-block p-3 text-center" style="background:#fff;border:1px solid #e0e0e0;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
                     <div class="mx-auto mb-2 d-flex align-items-center justify-content-center overflow-hidden" style="width:56px;height:56px;border-radius:50%;background:{{ $p->color ?? '#f0f0f0' }};">
                         @if($p->logo)
-                        <img src="{{ asset($p->logo) }}" alt="{{ e($p->name) }}" style="width:100%;height:100%;object-fit:cover;">
+                        <img src="{{ asset($p->logo) }}" alt="{{ $p->name }}" style="width:100%;height:100%;object-fit:cover;">
                         @else
                         <span class="fw-bold text-white" style="font-size:0.9rem;">{{ $p->acronym ?: Str::upper(Str::substr($p->name, 0, 3)) }}</span>
                         @endif
                     </div>
-                    <div class="fw-bold" style="font-size:0.75rem;line-height:1.2;">{{ e($p->acronym ?: $p->name) }}</div>
-                    @if($p->acronym)<div class="text-muted" style="font-size:0.6rem;">{{ e($p->name) }}</div>@endif
+                    <div class="fw-bold" style="font-size:0.75rem;line-height:1.2;">{{ $p->acronym ?: $p->name }}</div>
+                    @if($p->acronym)<div class="text-muted" style="font-size:0.6rem;">{{ $p->name }}</div>@endif
                 </a>
             </div>
             @endforeach

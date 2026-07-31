@@ -215,11 +215,11 @@
                             <tr style="transition:background 0.15s;border-bottom:1px solid #f1f3f5;">
                                 <td style="padding:10px 8px 10px 16px;"><input type="checkbox" name="voter_ids[]" value="{{ $voter->id }}" class="bulk-check-voter form-check-input" style="margin:0;"></td>
                                 <td class="text-muted" style="padding:10px 4px;font-size:0.7rem;">{{ $loop->iteration + ($voters->currentPage() - 1) * $voters->perPage() }}</td>
-                                <td style="padding:10px 12px;"><code style="font-size:0.65rem;background:#f1f5f9;padding:3px 8px;border-radius:6px;border:1px solid #e2e8f0;color:#1e293b;">{{ e($voter->voter_id) }}</code></td>
+                                <td style="padding:10px 12px;"><code style="font-size:0.65rem;background:#f1f5f9;padding:3px 8px;border-radius:6px;border:1px solid #e2e8f0;color:#1e293b;">{{ $voter->voter_id }}</code></td>
                                 <td style="padding:10px 12px;">
-                                    <span class="fw-semibold" style="font-size:0.85rem;color:#1e293b;">{{ e($voter->full_name ?? $voter->first_name . ' ' . $voter->last_name) }}</span>
+                                    <span class="fw-semibold" style="font-size:0.85rem;color:#1e293b;">{{ $voter->full_name ?? $voter->first_name . ' ' . $voter->last_name }}</span>
                                     @if(!empty($voter->phone))
-                                    <div class="text-muted" style="font-size:0.6rem;line-height:1.4;margin-top:1px;">{{ e($voter->phone) }}</div>
+                                    <div class="text-muted" style="font-size:0.6rem;line-height:1.4;margin-top:1px;">{{ $voter->phone }}</div>
                                     @endif
                                 </td>
                                 <td style="padding:10px 12px;text-align:center;">
@@ -229,9 +229,9 @@
                                         <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(236,72,153,0.1);color:#ec4899;font-size:0.75rem;font-weight:700;">F</span>
                                     @endif
                                 </td>
-                                <td style="padding:10px 12px;font-size:0.8rem;color:#475569;">{{ e($voter->state) }}</td>
-                                <td style="padding:10px 12px;font-size:0.8rem;color:#475569;">{{ e($voter->county) }}</td>
-                                <td style="padding:10px 12px;font-size:0.8rem;color:#475569;">{{ e($voter->constituency->name ?? $voter->constituency ?? 'N/A') }}</td>
+                                <td style="padding:10px 12px;font-size:0.8rem;color:#475569;">{{ $voter->state }}</td>
+                                <td style="padding:10px 12px;font-size:0.8rem;color:#475569;">{{ $voter->county }}</td>
+                                <td style="padding:10px 12px;font-size:0.8rem;color:#475569;">{{ $voter->constituency->name ?? $voter->constituency ?? 'N/A' }}</td>
                                 <td style="padding:10px 12px;text-align:center;">
                                     @php
                                         $statusColors = ['active' => 'success', 'suspended' => 'danger', 'pending' => 'warning', 'inactive' => 'secondary'];

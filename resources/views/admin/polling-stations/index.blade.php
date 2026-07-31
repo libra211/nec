@@ -107,11 +107,11 @@
                 @forelse($pollingStations as $item)
                 <tr style="border-bottom:1px solid #f1f3f5;">
                     <td style="padding:10px 8px 10px 16px;color:#475569;">{{ $loop->iteration + ($pollingStations->currentPage() - 1) * $pollingStations->perPage() }}</td>
-                    <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ e($item->name) }}</td>
-                    <td style="padding:10px 12px;color:#475569;"><code style="font-size:0.8rem;background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#0F2042;">{{ e($item->code ?? '-') }}</code></td>
-                    <td style="padding:10px 12px;color:#475569;">{{ e($item->state ?? '-') }}</td>
-                    <td style="padding:10px 12px;color:#475569;">{{ e($item->county ?? '-') }}</td>
-                    <td style="padding:10px 12px;color:#475569;">{{ e($item->constituency ?? '-') }}</td>
+                    <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $item->name }}</td>
+                    <td style="padding:10px 12px;color:#475569;"><code style="font-size:0.8rem;background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#0F2042;">{{ $item->code ?? '-' }}</code></td>
+                    <td style="padding:10px 12px;color:#475569;">{{ $item->state ?? '-' }}</td>
+                    <td style="padding:10px 12px;color:#475569;">{{ $item->county ?? '-' }}</td>
+                    <td style="padding:10px 12px;color:#475569;">{{ $item->constituency ?? '-' }}</td>
                     <td style="padding:10px 12px;color:#475569;">{{ number_format($item->registered_voters ?? 0) }}</td>
                     <td style="padding:10px 12px;">
                         @if($item->status === 'active')

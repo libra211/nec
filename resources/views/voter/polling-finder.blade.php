@@ -53,9 +53,9 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5>Your Polling Station</h5>
-                        <p><strong>Station:</strong> {{ e($polling_station->name) }}</p>
-                        <p><strong>Address:</strong> {{ e($polling_station->address) }}</p>
-                        <p><strong>Constituency:</strong> {{ e($polling_station->constituency->name ?? 'N/A') }}</p>
+                        <p><strong>Station:</strong> {{ $polling_station->name }}</p>
+                        <p><strong>Address:</strong> {{ $polling_station->address }}</p>
+                        <p><strong>Constituency:</strong> {{ $polling_station->constituency->name ?? 'N/A' }}</p>
                         <p><strong>Operating Hours:</strong> 6:00 AM - 6:00 PM</p>
                     </div>
                 </div>

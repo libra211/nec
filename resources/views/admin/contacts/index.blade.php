@@ -26,10 +26,10 @@
                     @foreach($contacts as $msg)
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#64748b;">{{ $loop->iteration }}</td>
-                        <td style="padding:10px 12px;color:#1e293b;">{{ e($msg->name) }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($msg->email) }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($msg->phone ?? 'N/A') }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($msg->subject) }}</td>
+                        <td style="padding:10px 12px;color:#1e293b;">{{ $msg->name }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $msg->email }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $msg->phone ?? 'N/A' }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $msg->subject }}</td>
                         <td style="padding:10px 12px;color:#64748b;">{{ \Carbon\Carbon::parse($msg->created_at)->format('d M Y H:i') }}</td>
                         <td style="padding:10px 12px;color:#475569;">
                             @if($msg->status === 'new')

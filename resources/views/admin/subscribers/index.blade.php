@@ -54,9 +54,9 @@
                 @forelse($subscribers as $item)
                 <tr style="border-bottom:1px solid #f1f3f5;">
                     <td style="padding:10px 8px 10px 16px;color:#475569;">{{ $loop->iteration + ($subscribers->currentPage() - 1) * $subscribers->perPage() }}</td>
-                    <td style="padding:10px 12px;color:#1e293b;">{{ e($item->name) }}</td>
-                    <td style="padding:10px 12px;color:#475569;">{{ e($item->email) }}</td>
-                    <td style="padding:10px 12px;"><span class="badge bg-info">{{ e($item->source ?? 'newsletter') }}</span></td>
+                    <td style="padding:10px 12px;color:#1e293b;">{{ $item->name }}</td>
+                    <td style="padding:10px 12px;color:#475569;">{{ $item->email }}</td>
+                    <td style="padding:10px 12px;"><span class="badge bg-info">{{ $item->source ?? 'newsletter' }}</span></td>
                     <td style="padding:10px 12px;">
                         @if($item->status === 'active')
                             <span class="badge bg-success">Active</span>

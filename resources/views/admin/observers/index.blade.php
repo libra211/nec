@@ -62,8 +62,8 @@
                     @foreach($observers as $obs)
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#1e293b;">{{ $loop->iteration }}</td>
-                        <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ e($obs->title) }} {{ e($obs->last_name) }}, {{ e($obs->other_names) }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($obs->email) }}</td>
+                        <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $obs->title }} {{ $obs->last_name }}, {{ $obs->other_names }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $obs->email }}</td>
                         <td style="padding:10px 12px;"><span class="badge bg-info">{{ ucfirst($obs->category) }}</span></td>
                         <td style="padding:10px 12px;color:#475569;">{{ $obs->organisation_name ? e($obs->organisation_name) : '—' }}</td>
                         <td style="padding:10px 12px;">

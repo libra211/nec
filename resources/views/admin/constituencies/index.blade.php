@@ -63,10 +63,10 @@
                 @forelse($constituencies as $item)
                 <tr style="border-bottom:1px solid #f1f3f5;">
                     <td style="padding:10px 12px;color:#475569;">{{ $loop->iteration + ($constituencies->currentPage() - 1) * $constituencies->perPage() }}</td>
-                    <td style="padding:10px 12px;color:#475569;"><code>{{ e($item->code) }}</code></td>
-                    <td style="padding:10px 12px;color:#1e293b;">{{ e($item->name) }}</td>
-                    <td style="padding:10px 12px;color:#475569;">{{ e($item->state ?? '-') }}</td>
-                    <td style="padding:10px 12px;color:#475569;">{{ e($item->county ?? '-') }}</td>
+                    <td style="padding:10px 12px;color:#475569;"><code>{{ $item->code }}</code></td>
+                    <td style="padding:10px 12px;color:#1e293b;">{{ $item->name }}</td>
+                    <td style="padding:10px 12px;color:#475569;">{{ $item->state ?? '-' }}</td>
+                    <td style="padding:10px 12px;color:#475569;">{{ $item->county ?? '-' }}</td>
                     <td style="padding:10px 12px;color:#475569;">
                         @if($item->status === 'active')
                             <span class="badge bg-success">Active</span>

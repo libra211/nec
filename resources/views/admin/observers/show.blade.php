@@ -14,17 +14,17 @@
                 <div class="d-flex align-items-center mb-4">
                     <img src="{{ asset($observer->photo ?? 'assets/images/default-avatar.png') }}" alt="" class="rounded-circle me-3" width="64" height="64">
                     <div>
-                        <h4 class="mb-0">{{ e($observer->title ?? '') }} {{ e($observer->other_names ?? '') }} {{ e($observer->last_name) }}</h4>
+                        <h4 class="mb-0">{{ $observer->title ?? '' }} {{ $observer->other_names ?? '' }} {{ $observer->last_name }}</h4>
                         <span class="badge bg-{{ $observer->status === 'accredited' ? 'success' : ($observer->status === 'pending' ? 'warning' : ($observer->status === 'verified' ? 'info' : 'danger')) }}">{{ ucfirst($observer->status) }}</span>
                     </div>
                 </div>
                 <table class="table table-borderless">
-                    <tr><td class="text-muted" style="width:180px">Email</td><td>{{ e($observer->email) }}</td></tr>
-                    <tr><td class="text-muted">Phone</td><td>{{ e($observer->phone ?? 'N/A') }}</td></tr>
+                    <tr><td class="text-muted" style="width:180px">Email</td><td>{{ $observer->email }}</td></tr>
+                    <tr><td class="text-muted">Phone</td><td>{{ $observer->phone ?? 'N/A' }}</td></tr>
                     <tr><td class="text-muted">Gender</td><td>{{ ucfirst(e($observer->gender ?? 'N/A')) }}</td></tr>
-                    <tr><td class="text-muted">National ID</td><td>{{ e($observer->national_id ?? 'N/A') }}</td></tr>
-                    <tr><td class="text-muted">Nationality</td><td>{{ e($observer->nationality ?? 'N/A') }}</td></tr>
-                    <tr><td class="text-muted">Residential Address</td><td>{{ e($observer->residential_address ?? 'N/A') }}</td></tr>
+                    <tr><td class="text-muted">National ID</td><td>{{ $observer->national_id ?? 'N/A' }}</td></tr>
+                    <tr><td class="text-muted">Nationality</td><td>{{ $observer->nationality ?? 'N/A' }}</td></tr>
+                    <tr><td class="text-muted">Residential Address</td><td>{{ $observer->residential_address ?? 'N/A' }}</td></tr>
                 </table>
             </div>
         </div>
@@ -35,16 +35,16 @@
             <div class="card-header"><h5 class="mb-0">Assignment Details</h5></div>
             <div class="card-body">
                 <table class="table table-borderless">
-                    <tr><td class="text-muted">Organisation</td><td>{{ e($observer->organisation_name ?? 'N/A') }}</td></tr>
-                    <tr><td class="text-muted">Observer Type</td><td><span class="badge bg-info">{{ e($observer->observer_type ?? 'N/A') }}</span></td></tr>
-                    <tr><td class="text-muted">Category</td><td>{{ e($observer->category ?? 'N/A') }}</td></tr>
+                    <tr><td class="text-muted">Organisation</td><td>{{ $observer->organisation_name ?? 'N/A' }}</td></tr>
+                    <tr><td class="text-muted">Observer Type</td><td><span class="badge bg-info">{{ $observer->observer_type ?? 'N/A' }}</span></td></tr>
+                    <tr><td class="text-muted">Category</td><td>{{ $observer->category ?? 'N/A' }}</td></tr>
                     <tr><td class="text-muted">Applied</td><td>{{ $observer->created_at->format('d M Y') }}</td></tr>
                 </table>
 
                 @if($observer->admin_notes)
                     <div class="mt-3 p-3 bg-light rounded">
                         <strong>Admin Notes:</strong>
-                        <p class="mb-0 mt-1">{{ e($observer->admin_notes) }}</p>
+                        <p class="mb-0 mt-1">{{ $observer->admin_notes }}</p>
                     </div>
                 @endif
             </div>

@@ -24,8 +24,8 @@
                     @forelse($users as $user)
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#64748b;">{{ $loop->iteration }}</td>
-                        <td style="padding:10px 12px;color:#1e293b;">{{ e($user->name) }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($user->email) }}</td>
+                        <td style="padding:10px 12px;color:#1e293b;">{{ $user->name }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $user->email }}</td>
                         <td style="padding:10px 12px;color:#475569;"><span class="badge bg-primary">{{ ucwords(str_replace('_', ' ', $user->role)) }}</span></td>
                         <td style="padding:10px 12px;color:#64748b;">{{ $user->deleted_at ? $user->deleted_at->format('d M Y H:i') : 'N/A' }}</td>
                         <td style="padding:10px 16px 10px 12px;text-align:right;">

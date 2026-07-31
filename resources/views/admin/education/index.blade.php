@@ -62,14 +62,14 @@
                 <tr style="border-bottom:1px solid #f1f3f5;">
                     <td style="padding:10px 8px 10px 16px;"><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="row-checkbox"></td>
                     <td style="padding:10px 12px;">
-                        <a href="{{ route('admin.education.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ e($item->title) }}</a>
+                        <a href="{{ route('admin.education.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ $item->title }}</a>
                         @if($item->meta_description)
                         <div class="small text-muted" style="color:#64748b;">{{ Str::limit(e($item->meta_description), 80) }}</div>
                         @endif
                     </td>
-                    <td style="padding:10px 12px;"><span class="badge bg-info">{{ e(ucfirst(str_replace('_', ' ', $item->content_type ?? 'document'))) }}</span></td>
-                    <td style="padding:10px 12px;color:#475569;">{{ e($item->language ?? 'English') }}</td>
-                    <td style="padding:10px 12px;color:#475569;">{{ e($item->target_audience ?? 'general') }}</td>
+                    <td style="padding:10px 12px;"><span class="badge bg-info">{{ ucfirst(str_replace('_', ' ', $item->content_type ?? 'document')) }}</span></td>
+                    <td style="padding:10px 12px;color:#475569;">{{ $item->language ?? 'English' }}</td>
+                    <td style="padding:10px 12px;color:#475569;">{{ $item->target_audience ?? 'general' }}</td>
                     <td style="padding:10px 12px;text-align:center;"><span class="badge bg-secondary"><i class="fas fa-eye me-1"></i>{{ number_format($item->views ?? 0) }}</span></td>
                     <td style="padding:10px 12px;">
                         @if($item->status === 'published') <span class="badge bg-success">Published</span>

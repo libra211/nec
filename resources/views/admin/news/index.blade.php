@@ -80,7 +80,7 @@
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;"><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="row-checkbox"></td>
                         <td style="padding:10px 12px;color:#1e293b;">
-                            <a href="{{ route('admin.news.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ e($item->title) }}</a>
+                            <a href="{{ route('admin.news.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ $item->title }}</a>
                             @if($item->featured_image)
                                 <i class="fas fa-image text-muted ms-1 small" title="Has featured image"></i>
                             @endif
@@ -99,8 +99,8 @@
                                 @endif
                             </div>
                         </td>
-                        <td style="padding:10px 12px;color:#475569;"><span class="badge bg-info">{{ e($item->category ?? 'General') }}</span></td>
-                        <td style="padding:10px 12px;color:#475569;">{{ e($item->author ?? 'Admin') }}</td>
+                        <td style="padding:10px 12px;color:#475569;"><span class="badge bg-info">{{ $item->category ?? 'General' }}</span></td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $item->author ?? 'Admin' }}</td>
                         <td class="text-center" style="padding:10px 12px;color:#475569;">
                             <span class="badge bg-secondary" title="Total views">
                                 <i class="fas fa-eye me-1"></i>{{ number_format($item->views ?? 0) }}

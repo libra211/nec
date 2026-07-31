@@ -62,8 +62,8 @@
                     @forelse($videos as $item)
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#64748b;">{{ $loop->iteration + ($videos->currentPage() - 1) * $videos->perPage() }}</td>
-                        <td style="padding:10px 12px;color:#1e293b;">{{ e($item->title) }}</td>
-                        <td style="padding:10px 12px;"><a href="{{ $item->url }}" target="_blank" class="text-truncate d-inline-block" style="max-width:200px;color:#475569;">{{ e($item->url) }}</a></td>
+                        <td style="padding:10px 12px;color:#1e293b;">{{ $item->title }}</td>
+                        <td style="padding:10px 12px;"><a href="{{ $item->url }}" target="_blank" class="text-truncate d-inline-block" style="max-width:200px;color:#475569;">{{ $item->url }}</a></td>
                         <td style="padding:10px 12px;color:#475569;">{{ number_format($item->views ?? 0) }}</td>
                         <td style="padding:10px 12px;">
                             @if($item->status === 'published')
