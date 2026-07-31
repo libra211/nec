@@ -238,30 +238,46 @@
             <h2 class="fw-bold reveal">Election Timeline</h2>
             <p class="text-muted mb-0">Key milestones on the path to the 2026 General Elections</p>
         </div>
-        <div class="row g-3">
-            @php
-            $timeline = [
-                ['icon' => 'fa-user-plus', 'title' => 'Voter Registration', 'desc' => 'Citizens register to vote nationwide', 'status' => 'completed'],
-                ['icon' => 'fa-clipboard-check', 'title' => 'Voter Verification', 'desc' => 'Confirm your registration details', 'status' => 'completed'],
-                ['icon' => 'fa-file-signature', 'title' => 'Candidacy', 'desc' => 'Candidates submit nominations', 'status' => 'active'],
-                ['icon' => 'fa-campground', 'title' => 'Campaigns', 'desc' => 'Political campaigns take place', 'status' => 'upcoming'],
-                ['icon' => 'fa-vote-yea', 'title' => 'Election Day', 'desc' => '22 December 2026 — polling', 'status' => 'upcoming'],
-                ['icon' => 'fa-chart-bar', 'title' => 'Results', 'desc' => 'Tallying and announcement', 'status' => 'upcoming'],
-            ];
-            @endphp
-            <div class="col-lg-10 mx-auto">
-                <div class="row g-3">
+        @php
+        $timeline = [
+            ['icon' => 'fa-user-plus', 'title' => 'Voter Registration', 'date' => 'Jan – Mar 2026', 'desc' => 'Citizens register to vote nationwide', 'status' => 'completed'],
+            ['icon' => 'fa-clipboard-check', 'title' => 'Voter Verification', 'date' => 'Apr – Jun 2026', 'desc' => 'Confirm your registration details', 'status' => 'completed'],
+            ['icon' => 'fa-file-signature', 'title' => 'Candidacy', 'date' => 'Jul – Sep 2026', 'desc' => 'Candidates submit nominations', 'status' => 'active'],
+            ['icon' => 'fa-campground', 'title' => 'Campaigns', 'date' => 'Oct – Nov 2026', 'desc' => 'Political campaigns take place', 'status' => 'upcoming'],
+            ['icon' => 'fa-vote-yea', 'title' => 'Election Day', 'date' => '22 Dec 2026', 'desc' => 'Polling stations open nationwide', 'status' => 'upcoming'],
+            ['icon' => 'fa-chart-bar', 'title' => 'Results', 'date' => 'Dec 2026 – Jan 2027', 'desc' => 'Tallying and announcement', 'status' => 'upcoming'],
+        ];
+        $doneCount = collect($timeline)->filter(fn($s) => $s['status'] === 'completed')->count();
+        $progress = round($doneCount / count($timeline) * 100);
+        @endphp
+        <div class="col-lg-11 mx-auto">
+            <div class="d-flex align-items-center gap-3 mb-5 reveal">
+                <div class="fw-bold text-uppercase flex-shrink-0" style="font-size:0.7rem;letter-spacing:2px;color:var(--nec-green);"><i class="fas fa-chart-line me-1"></i>Progress</div>
+                <div style="flex:1;height:8px;border-radius:4px;background:#e9ecef;overflow:hidden;">
+                    <div style="height:100%;width:{{ $progress }}%;background:linear-gradient(90deg,var(--nec-green) 0%,var(--nec-gold) 100%);border-radius:4px;transition:width 1.2s ease;"></div>
+                </div>
+                <div class="fw-bold flex-shrink-0" style="font-size:0.9rem;color:var(--nec-green);">{{ $progress }}%</div>
+            </div>
+            <div class="position-relative">
+                <div class="d-none d-lg-block" style="position:absolute;top:30px;left:8.33%;right:8.33%;height:3px;background:linear-gradient(to right,var(--nec-green) {{ $progress }}%,#e9ecef {{ $progress }}%);"></div>
+                <div class="row g-4">
                     @foreach($timeline as $ti => $step)
-                    <div class="col-6 col-md-4 col-lg-2 reveal reveal-delay-{{ ($ti % 4) + 1 }}">
-                        <div class="text-center px-1">
-                            <div class="mx-auto d-flex align-items-center justify-content-center mb-2" style="width:56px;height:56px;border-radius:50%;{{ $step['status'] === 'completed' ? 'background:var(--nec-green);' : ($step['status'] === 'active' ? 'background:var(--nec-gold);' : 'background:#e9ecef;') }}">
-                                <i class="fas {{ $step['icon'] }} {{ $step['status'] === 'completed' ? 'text-white' : ($step['status'] === 'active' ? 'text-dark' : 'text-muted') }}" style="font-size:1.1rem;"></i>
+                    <div class="col-6 col-lg-2 reveal reveal-delay-{{ ($ti % 4) + 1 }}">
+                        <div class="text-center">
+                            <div class="mx-auto position-relative d-flex align-items-center justify-content-center mb-3 {{ $step['status'] === 'active' ? 'timeline-pulse' : '' }}" style="width:60px;height:60px;border-radius:50%;z-index:1;{{ $step['status'] === 'completed' ? 'background:var(--nec-green);' : ($step['status'] === 'active' ? 'background:var(--nec-gold);box-shadow:0 0 0 6px rgba(212,175,55,0.18);' : 'background:#fff;border:2px solid #d4d4d4;') }}">
+                                <i class="fas {{ $step['icon'] }} {{ $step['status'] === 'completed' ? 'text-white' : ($step['status'] === 'active' ? 'text-dark' : 'text-muted') }}" style="font-size:1.2rem;"></i>
+                                @if($step['status'] === 'completed')
+                                <span style="position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:var(--nec-gold);color:#000;display:flex;align-items:center;justify-content:center;font-size:0.6rem;border:2px solid #fff;"><i class="fas fa-check"></i></span>
+                                @endif
                             </div>
-                            <h6 class="fw-bold mb-1" style="font-size:0.8rem;">{{ $step['title'] }}</h6>
-                            <p class="text-muted mb-0" style="font-size:0.68rem;line-height:1.3;">{{ $step['desc'] }}</p>
-                            @if($step['status'] === 'active')
-                            <span class="badge mt-1" style="background:var(--nec-gold);color:#000;font-size:0.55rem;">CURRENT</span>
-                            @endif
+                            <div class="card border-0 shadow-sm text-center h-100 px-2 py-3" style="border-radius:10px;border-top:3px solid {{ $step['status'] === 'completed' ? 'var(--nec-green)' : ($step['status'] === 'active' ? 'var(--nec-gold)' : '#e0e0e0') }};">
+                                <span class="badge mx-auto mb-2" style="{{ $step['status'] === 'completed' ? 'background:rgba(0,145,76,0.12);color:var(--nec-green);' : ($step['status'] === 'active' ? 'background:rgba(212,175,55,0.22);color:#8a6d00;' : 'background:#e9ecef;color:#6c757d;') }}font-size:0.55rem;letter-spacing:1px;">
+                                    {{ $step['status'] === 'completed' ? '✓ Completed' : ($step['status'] === 'active' ? '● In Progress' : '○ Upcoming') }}
+                                </span>
+                                <h6 class="fw-bold mb-1" style="font-size:0.8rem;">{{ $step['title'] }}</h6>
+                                <div class="fw-semibold mb-1" style="font-size:0.68rem;color:var(--nec-gold);"><i class="far fa-calendar-alt me-1"></i>{{ $step['date'] }}</div>
+                                <p class="text-muted mb-0" style="font-size:0.65rem;line-height:1.4;">{{ $step['desc'] }}</p>
+                            </div>
                         </div>
                     </div>
                     @endforeach
@@ -781,6 +797,11 @@
 .stat-grid-6 { grid-template-columns: repeat(6, 1fr); }
 @media (max-width: 992px) { .stat-grid-6 { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 576px) { .stat-grid-6 { grid-template-columns: repeat(2, 1fr); } }
+.timeline-pulse { animation: timelinePulse 2s ease-in-out infinite; }
+@keyframes timelinePulse {
+    0%, 100% { box-shadow: 0 0 0 6px rgba(212,175,55,0.18); }
+    50% { box-shadow: 0 0 0 12px rgba(212,175,55,0.08); }
+}
 .partner-track {
     display: flex;
     gap: 0.75rem;
