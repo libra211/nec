@@ -118,7 +118,7 @@
 <section class="py-5 section-shaded">
     <div class="container">
         <div class="text-center mb-5">
-            @include('partials.section-heading', ['icon' => 'fa-chart-line', 'label' => 'Election Snapshot', 'align' => 'center'])
+            @include('partials.section-heading', ['icon' => 'fa-chart-line', 'label' => 'Election Snapshot', 'align' => 'center', 'line' => false])
             <h2 class="fw-bold">South Sudan at a Glance</h2>
             <p class="text-muted mb-0">Key statistics for the 2026 General Elections</p>
         </div>
@@ -234,7 +234,7 @@
 <section class="py-5 bg-white">
     <div class="container">
         <div class="text-center mb-5">
-            @include('partials.section-heading', ['icon' => 'fa-road', 'label' => 'Road to 2026', 'align' => 'center'])
+            @include('partials.section-heading', ['icon' => 'fa-road', 'label' => 'Road to 2026', 'align' => 'center', 'line' => false])
             <h2 class="fw-bold reveal">Election Timeline</h2>
             <p class="text-muted mb-0">Key milestones on the path to the 2026 General Elections</p>
         </div>
@@ -344,30 +344,40 @@
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
-            @include('partials.section-heading', ['icon' => 'fa-eye', 'label' => 'Who We Are', 'align' => 'center'])
+            @include('partials.section-heading', ['icon' => 'fa-eye', 'label' => 'Who We Are', 'align' => 'center', 'line' => false])
             <h2 class="fw-bold reveal">Our Vision & Mission</h2>
         </div>
         <div class="row g-4 justify-content-center">
             <div class="col-lg-5 reveal">
-                <div class="card h-100 border-0 shadow-sm p-4" style="border-radius:12px;border-left:4px solid var(--nec-green) !important;">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div style="width:52px;height:52px;border-radius:12px;background:rgba(0,145,76,0.1);display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-eye" style="color:var(--nec-green);font-size:1.2rem;"></i>
+                <div class="card h-100 border-0 overflow-hidden" style="border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.08);">
+                    <div class="p-4 text-center" style="background:linear-gradient(135deg,rgba(0,145,76,0.10) 0%,rgba(0,145,76,0.03) 100%);">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:72px;height:72px;border-radius:50%;background:var(--nec-green);box-shadow:0 6px 18px rgba(0,145,76,0.35);">
+                            <i class="fas fa-eye text-white" style="font-size:1.5rem;"></i>
                         </div>
                         <h4 class="fw-bold mb-0">Our Vision</h4>
                     </div>
-                    <p class="text-muted mb-0" style="line-height:1.8;">A peaceful, prosperous, and democratic South Sudan where free, fair, and credible elections uphold the will of the people and strengthen national unity.</p>
+                    <div class="p-4 pt-4" style="border-top:3px solid var(--nec-green);">
+                        <p class="text-muted mb-0" style="line-height:1.9;">A peaceful, prosperous, and democratic South Sudan where free, fair, and credible elections uphold the will of the people and strengthen national unity.</p>
+                        <div class="d-flex align-items-center gap-2 mt-3" style="font-size:0.72rem;color:var(--nec-green);font-weight:600;">
+                            <i class="fas fa-check-circle"></i> Free &amp; Fair Elections
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-5 reveal reveal-delay-2">
-                <div class="card h-100 border-0 shadow-sm p-4" style="border-radius:12px;border-left:4px solid var(--nec-gold) !important;">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div style="width:52px;height:52px;border-radius:12px;background:rgba(212,175,55,0.12);display:flex;align-items:center;justify-content:center;">
-                            <i class="fas fa-bullseye" style="color:var(--nec-gold);font-size:1.2rem;"></i>
+                <div class="card h-100 border-0 overflow-hidden" style="border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.08);">
+                    <div class="p-4 text-center" style="background:linear-gradient(135deg,rgba(212,175,55,0.14) 0%,rgba(212,175,55,0.04) 100%);">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:72px;height:72px;border-radius:50%;background:var(--nec-gold);box-shadow:0 6px 18px rgba(212,175,55,0.4);">
+                            <i class="fas fa-bullseye" style="font-size:1.5rem;color:#000;"></i>
                         </div>
                         <h4 class="fw-bold mb-0">Our Mission</h4>
                     </div>
-                    <p class="text-muted mb-0" style="line-height:1.8;">To organize, conduct, and supervise elections with transparency, inclusivity, and integrity — ensuring every eligible citizen can freely exercise their democratic right to vote.</p>
+                    <div class="p-4 pt-4" style="border-top:3px solid var(--nec-gold);">
+                        <p class="text-muted mb-0" style="line-height:1.9;">To organize, conduct, and supervise elections with transparency, inclusivity, and integrity — ensuring every eligible citizen can freely exercise their democratic right to vote.</p>
+                        <div class="d-flex align-items-center gap-2 mt-3" style="font-size:0.72rem;color:#8a6d00;font-weight:600;">
+                            <i class="fas fa-check-circle"></i> Transparent &amp; Inclusive
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -420,7 +430,7 @@
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
-            @include('partials.section-heading', ['icon' => 'fa-bolt', 'label' => 'Quick Services', 'align' => 'center'])
+            @include('partials.section-heading', ['icon' => 'fa-bolt', 'label' => 'Quick Services', 'align' => 'center', 'line' => false])
             <h2 class="fw-bold">How Can We Help You?</h2>
             <p class="text-muted mb-0">Access NEC services quickly and easily</p>
         </div>
@@ -495,28 +505,24 @@
                 </a>
             </div>
             <div class="col-lg-4 reveal reveal-delay-2">
-                <div class="card border-0 shadow-sm h-100" style="border-radius:12px;border:1px solid #e0e0e0;">
-                    <div class="card-body p-0">
-                        <div class="p-3 pb-2">
-                            @include('partials.section-heading', ['icon' => 'fa-calendar-check', 'label' => 'Upcoming Events'])
+                <div class="card border-0 shadow-sm" style="border-radius:0;">
+                    <div class="card-header fw-bold text-white border-0 rounded-0 py-3" style="background:var(--nec-green);">
+                        <i class="fas fa-calendar-check me-2"></i> Upcoming Events
+                    </div>
+                    <div class="card-body p-3">
+                        @forelse($upcomingEvents as $ei => $ev)
+                        <div class="{{ $loop->last ? '' : 'mb-3 pb-3 border-bottom' }}" style="border-color:#eee !important;">
+                            <small class="fw-bold" style="color:var(--nec-gold);font-size:0.75rem;">
+                                <i class="far fa-calendar-alt me-1"></i> {{ $ev->start_date->format('j M Y') }}{{ $ev->end_date ? ' - ' . $ev->end_date->format('j M Y') : '' }}
+                            </small>
+                            <p class="mb-0 mt-1 fw-semibold" style="font-size:0.85rem;">{{ e($ev->title) }}</p>
                         </div>
-                        <div class="px-3 pb-3">
-                            @forelse($upcomingEvents as $ei => $ev)
-                            <div class="{{ $loop->last ? '' : 'mb-3 pb-3 border-bottom' }}" style="border-color:#eee !important;">
-                                <small class="fw-bold" style="color:var(--nec-gold);font-size:0.75rem;">
-                                    <i class="far fa-calendar-alt me-1"></i> {{ $ev->start_date->format('j M Y') }}{{ $ev->end_date ? ' - ' . $ev->end_date->format('j M Y') : '' }}
-                                </small>
-                                <p class="mb-0 mt-1 fw-semibold" style="font-size:0.85rem;">{{ e($ev->title) }}</p>
-                            </div>
-                            @empty
-                            <div class="text-center text-muted small py-3">No upcoming events scheduled.</div>
-                            @endforelse
-                            <div class="d-grid mt-3">
-                                <a href="{{ route('events.index') }}" class="btn fw-bold" style="background:var(--nec-green);color:#fff;border-radius:6px;">
-                                    View All Events <i class="fas fa-arrow-right ms-1"></i>
-                                </a>
-                            </div>
-                        </div>
+                        @empty
+                        <div class="text-center text-muted small py-3">No upcoming events scheduled.</div>
+                        @endforelse
+                        <a href="{{ route('events.index') }}" class="btn fw-bold mt-3 px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
+                            View All Events <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -624,7 +630,7 @@
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
-            @include('partials.section-heading', ['icon' => 'fa-download', 'label' => 'Resources', 'align' => 'center'])
+            @include('partials.section-heading', ['icon' => 'fa-download', 'label' => 'Resources', 'align' => 'center', 'line' => false])
             <h2 class="fw-bold">Downloads & Forms</h2>
             <p class="text-muted mb-0">Access important election documents and forms</p>
         </div>
@@ -655,7 +661,7 @@
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
-            @include('partials.section-heading', ['icon' => 'fa-users', 'label' => 'Commissioners', 'align' => 'center'])
+            @include('partials.section-heading', ['icon' => 'fa-users', 'label' => 'Commissioners', 'align' => 'center', 'line' => false])
             <h2 class="fw-bold reveal">NEC Commissioners</h2>
             <p class="text-muted mb-0">Meet the commissioners steering South Sudan's electoral process</p>
         </div>
@@ -706,7 +712,7 @@
 <section class="py-5 bg-white">
     <div class="container">
         <div class="text-center mb-4">
-            @include('partials.section-heading', ['icon' => 'fa-flag', 'label' => 'Political Parties', 'align' => 'center'])
+            @include('partials.section-heading', ['icon' => 'fa-flag', 'label' => 'Political Parties', 'align' => 'center', 'line' => false])
             <h2 class="fw-bold reveal">Registered Political Parties</h2>
             <p class="text-muted mb-0">Contesting parties in the 2026 General Elections</p>
         </div>
@@ -740,7 +746,7 @@
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-4">
-            @include('partials.section-heading', ['icon' => 'fa-handshake', 'label' => 'Our Partners', 'align' => 'center'])
+            @include('partials.section-heading', ['icon' => 'fa-handshake', 'label' => 'Our Partners', 'align' => 'center', 'line' => false])
             <h2 class="fw-bold reveal">Supported By</h2>
             <p class="text-muted mb-0">International partners supporting democracy in South Sudan</p>
         </div>
