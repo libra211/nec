@@ -76,12 +76,13 @@
     }
     .member-photo-wrapper img {
         width: 100%;
-        height: 280px;
-        object-fit: contain;
+        height: 320px;
+        object-fit: cover;
+        object-position: center 20%;
     }
     .member-initials {
         width: 100%;
-        height: 280px;
+        height: 320px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -383,7 +384,7 @@
                         <div class="col-md-4">
                             <div class="member-photo-wrapper h-100" style="min-height:350px;background:linear-gradient(180deg,#ffffff 0%,#ffffff 25%,#eef7f0 55%,#bfe0cd 100%);">
                                 @if($chairperson->photo)
-                                    <img src="{{ asset($chairperson->photo) }}" alt="{{ $chairperson->name }}" class="h-100" style="object-fit:contain;width:100%;">
+                                    <img src="{{ asset($chairperson->photo) }}" alt="{{ $chairperson->name }}" class="h-100" style="object-fit:cover;object-position:center 20%;width:100%;">
                                 @else
                                     <div class="member-initials h-100" style="height:100%;min-height:350px;"><i class="fas fa-user" style="font-size:5rem;"></i><span>{{ $chairperson->initials }}</span></div>
                                 @endif

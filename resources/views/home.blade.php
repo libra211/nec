@@ -861,9 +861,9 @@
             @forelse($commissioners as $c)
             <div class="col-6 col-md-4 col-lg-3 reveal reveal-delay-{{ $loop->iteration % 4 }}">
                 <div class="card h-100" style="border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-                    <div style="height:220px;overflow:hidden;background:{{ $comm_bgs[$loop->iteration % 4] }};">
+                    <div style="height:230px;overflow:hidden;background:{{ $comm_bgs[$loop->iteration % 4] }};">
                         @if($c->photo)
-                        <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:contain;">
+                        <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;">
                         @else
                         <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
                             <i class="fas fa-user" style="font-size:2.6rem;color:#adb5bd;"></i>
