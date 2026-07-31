@@ -72,7 +72,7 @@
     .member-photo-wrapper {
         position: relative;
         overflow: hidden;
-        background: #fff;
+        background: linear-gradient(180deg,#ffffff 0%,#ffffff 30%,#eef7f0 55%,#bfe0cd 100%);
     }
     .member-photo-wrapper img {
         width: 100%;
@@ -381,7 +381,7 @@
                 <div class="card border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <div class="member-photo-wrapper h-100" style="min-height:350px;background:#fff;">
+                            <div class="member-photo-wrapper h-100" style="min-height:350px;background:linear-gradient(180deg,#ffffff 0%,#ffffff 25%,#eef7f0 55%,#bfe0cd 100%);">
                                 @if($chairperson->photo)
                                     <img src="{{ asset($chairperson->photo) }}" alt="{{ $chairperson->name }}" class="h-100" style="object-fit:contain;width:100%;">
                                 @else

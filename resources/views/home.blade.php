@@ -853,7 +853,7 @@
             @forelse($commissioners as $c)
             <div class="col-6 col-md-4 col-lg-3 reveal reveal-delay-{{ $loop->iteration % 4 }}">
                 <div class="card h-100" style="border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-                    <div style="height:220px;overflow:hidden;background:#fff;border-bottom:1px solid #f0f0f0;">
+                    <div style="height:220px;overflow:hidden;background:linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#eef7f0 60%,#bfe0cd 100%);">
                         @if($c->photo)
                         <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:contain;">
                         @else
