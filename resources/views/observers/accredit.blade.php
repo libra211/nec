@@ -190,7 +190,7 @@
                             </div>
                             <div>
                                 <div class="fw-semibold small">NEC Headquarters</div>
-                                <small class="text-muted">NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba</small>
+                                <small class="text-muted">NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Thongpiny, Juba</small>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-3 mb-3">

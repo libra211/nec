@@ -72,7 +72,7 @@
     .member-photo-wrapper {
         position: relative;
         overflow: hidden;
-        background: #f5f6f8;
+        background: #fff;
     }
     .member-photo-wrapper img {
         width: 100%;
@@ -381,7 +381,7 @@
                 <div class="card border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <div class="member-photo-wrapper h-100" style="min-height:350px;background:#f5f6f8;">
+                            <div class="member-photo-wrapper h-100" style="min-height:350px;background:#fff;">
                                 @if($chairperson->photo)
                                     <img src="{{ asset($chairperson->photo) }}" alt="{{ $chairperson->name }}" class="h-100" style="object-fit:contain;width:100%;">
                                 @else
@@ -692,7 +692,7 @@
                                 <i class="fas fa-map-marker-alt" style="color:var(--nec-green);font-size:1.2rem;"></i>
                                 <div>
                                     <small class="text-muted d-block">Office</small>
-                                    <span class="fw-semibold" style="color:var(--nec-black);">National Elections Commission, NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba</span>
+                                    <span class="fw-semibold" style="color:var(--nec-black);">National Elections Commission, NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Thongpiny, Juba</span>
                                 </div>
                             </div>
                         </div>

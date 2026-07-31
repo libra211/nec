@@ -218,7 +218,7 @@ session(['contact_captcha' => $n1 + $n2]);
                         <div class="icon-wrap blue"><i class="fas fa-map-marker-alt"></i></div>
                         <div>
                             <div class="cta-label">Address</div>
-                            <div class="cta-value">National Elections Commission<br>{{ \App\Helpers\NecHelper::setting_get('contact_address', 'NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba') }}</div>
+                            <div class="cta-value">National Elections Commission<br>{{ \App\Helpers\NecHelper::setting_get('contact_address', 'NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Thongpiny, Juba') }}</div>
                         </div>
                     </div>
                     <div class="info-card">
@@ -249,7 +249,7 @@ session(['contact_captcha' => $n1 + $n2]);
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.987!2d31.582!3d4.851!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwNTEnMDMuNiJOIDMxw4XCmjM5JzM1LjIiRQ!5e0!3m2!1sen!2ss!4v1" allowfullscreen loading="lazy"></iframe>
                         <div class="map-overlay">
                             <h6><i class="fas fa-map-pin text-success me-1"></i> NEC Headquarters</h6>
-                            <small>Bilpam Road, Juba Na Bari, Juba, South Sudan</small>
+                            <small>Bilpam Road, Thongpiny, Juba, South Sudan</small>
                         </div>
                     </div>
                 </div>

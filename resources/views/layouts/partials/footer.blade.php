@@ -39,7 +39,7 @@
                         <p class="text-white-50 mb-3" style="line-height:1.8;font-size:0.88rem;text-align:justify;">The National Elections Commission (NEC) is the independent constitutional body responsible for organizing and supervising elections in South Sudan.</p>
                         <h5 style="color:var(--nec-gold);font-size:0.85rem;font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Contact Us</h5>
                         <div class="footer-contact mb-3">
-                            <p class="mb-1"><i class="fas fa-map-marker-alt me-2" style="color:var(--nec-gold);"></i>{{ \App\Helpers\NecHelper::setting_get('contact_address', 'NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Juba Na Bari, Juba') }}</p>
+                            <p class="mb-1"><i class="fas fa-map-marker-alt me-2" style="color:var(--nec-gold);"></i>{{ \App\Helpers\NecHelper::setting_get('contact_address', 'NEC Headquarters (formerly Aida Hotel), Plot no. 563, Bilpam Road, Thongpiny, Juba') }}</p>
                             @if(\App\Helpers\NecHelper::setting_get('public_show_stats', '1') === '1')
                             <p class="mb-1"><i class="fas fa-phone me-2" style="color:var(--nec-gold);"></i>{{ \App\Helpers\NecHelper::setting_get('contact_phone', '+211 (0) 912 345 678') }}</p>
                             <p class="mb-1"><i class="fas fa-envelope me-2" style="color:var(--nec-gold);"></i>{{ \App\Helpers\NecHelper::setting_get('contact_email', 'info@nec.gov.ss') }}</p>
