@@ -92,7 +92,7 @@ class HomeController extends Controller
 
         $upcomingEvents = ElectionEvent::where('start_date', '>=', now())
             ->orderBy('start_date')
-            ->limit(5)
+            ->limit(6)
             ->get();
 
         $topDownloads = Download::where('status', 'published')
