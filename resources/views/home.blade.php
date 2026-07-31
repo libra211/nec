@@ -508,14 +508,14 @@
                 <p class="text-uppercase fw-bold mb-0 gradient-text-gold" style="letter-spacing:2px;font-size:0.85rem;">Photo Gallery</p>
                 <h2 class="fw-bold reveal">Moments in Pictures</h2>
             </div>
-            <a href="{{ route('gallery') }}" class="btn btn-nec d-none d-md-inline-block fw-bold">
+            <a href="{{ route('media.gallery') }}" class="btn btn-nec d-none d-md-inline-block fw-bold">
                 View Gallery <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
         <div class="row g-3">
             @foreach($galleryAlbums->take(4) as $album)
             <div class="col-6 col-lg-3 reveal reveal-delay-{{ $loop->iteration }}">
-                <a href="{{ route('gallery') }}" class="text-decoration-none d-block position-relative overflow-hidden" style="border-radius:12px;height:200px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+                <a href="{{ route('media.gallery') }}" class="text-decoration-none d-block position-relative overflow-hidden" style="border-radius:12px;height:200px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
                     <img src="{{ asset($album->featured_image ?: ($album->images()->first()->image_path ?? 'assets/images/flag-gu.webp')) }}" alt="{{ e($album->title) }}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;">
                     <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.65) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:14px;">
                         <h6 class="text-white fw-bold mb-1" style="font-size:0.85rem;">{{ e($album->title) }}</h6>
@@ -526,7 +526,7 @@
             @endforeach
         </div>
         <div class="text-center mt-4 d-md-none">
-            <a href="{{ route('gallery') }}" class="btn btn-nec fw-bold">View Gallery <i class="fas fa-arrow-right ms-2"></i></a>
+            <a href="{{ route('media.gallery') }}" class="btn btn-nec fw-bold">View Gallery <i class="fas fa-arrow-right ms-2"></i></a>
         </div>
     </div>
 </section>
