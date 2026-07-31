@@ -62,11 +62,11 @@ class Download extends Model
 
     public function getFormattedSizeAttribute(): string
     {
-        $bytes = $this->file_size;
-        if (!$bytes && $this->file_path && Storage::exists($this->file_path)) {
-            $bytes = Storage::size($this->file_path);
+        $bytes = (int) $this->file_size;
+        if ($bytes <= 0 && $this->file_path && Storage::exists($this->file_path)) {
+            $bytes = (int) Storage::size($this->file_path);
         }
-        if (!$bytes || $bytes <= 0) return 'Download';
+        if ($bytes <= 0) return 'Download';
         if ($bytes < 1024) return $bytes . ' B';
         if ($bytes < 1048576) return round($bytes / 1024, 1) . ' KB';
         return round($bytes / 1048576, 1) . ' MB';

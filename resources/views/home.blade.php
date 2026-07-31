@@ -480,11 +480,13 @@
         <div class="row g-3">
             @forelse($topDownloads as $j => $d)
             <div class="col-md-4 col-lg-2 reveal {{ $d_delays[$j % 4] }}">
-                <a href="{{ asset($d->file_path) }}" class="stat-slim {{ $stat_colors[$j % 6] }} text-decoration-none d-block" target="_blank">
-                    <div class="stat-icon"><i class="fas {{ $d->file_icon }}"></i></div>
-                    <div class="stat-label">{{ e($d->title) }}</div>
-                    <div style="font-size:0.6rem;color:rgba(0,0,0,0.45);margin-bottom:2px;">{{ $d->file_type_label }}</div>
-                    <div class="stat-value-sm" style="font-size:0.85rem;font-weight:600;">{{ $d->formatted_size }}</div>
+                <a href="{{ asset($d->file_path) }}" class="text-decoration-none d-block p-3" style="background:#fff;border:1px solid #e0e0e0;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);" target="_blank">
+                    <div class="text-center mb-2">
+                        <i class="fas {{ $d->file_icon }}" style="font-size:1.5rem;color:var(--nec-green);"></i>
+                    </div>
+                    <div style="font-size:0.8rem;font-weight:600;color:var(--nec-gray-700);text-align:center;margin-bottom:4px;line-height:1.2;">{{ e($d->title) }}</div>
+                    <div style="font-size:0.6rem;color:rgba(0,0,0,0.45);text-align:center;margin-bottom:2px;">{{ $d->file_type_label }}</div>
+                    <div style="font-size:0.8rem;font-weight:700;color:var(--nec-green);text-align:center;">{{ $d->formatted_size }}</div>
                 </a>
             </div>
             @empty
@@ -495,31 +497,40 @@
 </section>
 
 <!-- COMMISSIONERS -->
-<section class="py-5" style="background:#fff;">
+<section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
-            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">LEADERSHIP</span>
+            <span class="badge bg-dark fw-bold px-3 py-2 rounded-0 mb-3" style="letter-spacing:2px;font-size:0.7rem;">COMMISSIONERS</span>
             <h2 class="fw-bold reveal">NEC Commissioners</h2>
             <p class="text-muted mb-0">Meet the commissioners steering South Sudan's electoral process</p>
         </div>
         <div class="row g-4 justify-content-center">
             @forelse($commissioners as $c)
             <div class="col-6 col-md-4 col-lg-3 reveal reveal-delay-{{ $loop->iteration % 4 }}">
-                <div class="card border-0 shadow-sm text-center h-100 p-4" style="border-radius:12px;">
-                    <div class="mx-auto mb-3" style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid var(--nec-green);">
+                <div class="card h-100" style="border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+                    <div style="height:220px;overflow:hidden;background:#f8f9fa;">
                         @if($c->photo)
                         <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:cover;">
                         @else
-                        <div style="width:100%;height:100%;background:var(--nec-green);display:flex;align-items:center;justify-content:center;"><span class="fw-bold text-white" style="font-size:1.2rem;">NE</span></div>
+                        <div style="width:100%;height:100%;background:linear-gradient(135deg,#e9ecef,#dee2e6);display:flex;align-items:center;justify-content:center;">
+                            <span style="font-size:2.5rem;font-weight:bold;color:#adb5bd;">{{ $c->initials }}</span>
+                        </div>
                         @endif
                     </div>
-                    <h6 class="fw-bold mb-1 small">{{ $c->name }}</h6>
-                    <span class="badge bg-light text-dark border fw-semibold mb-2 px-3 py-1" style="font-size:0.7rem;">{{ $c->position }}</span>
-                    @if($c->department)<p class="text-muted mb-2" style="font-size:0.7rem;">{{ $c->department }}</p>@endif
-                    <div class="d-flex justify-content-center gap-2 mt-auto pt-2 border-top">
-                        @if($c->facebook_url)<a href="{{ $c->facebook_url }}" class="text-decoration-none" style="color:#1877F2;font-size:0.9rem;" target="_blank" rel="noopener"><i class="fab fa-facebook"></i></a>@endif
-                        @if($c->twitter_url)<a href="{{ $c->twitter_url }}" class="text-decoration-none" style="color:#000;font-size:0.9rem;" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>@endif
-                        @if($c->linkedin_url)<a href="{{ $c->linkedin_url }}" class="text-decoration-none" style="color:#0A66C2;font-size:0.85rem;" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a>@endif
+                    <div class="p-3 text-center">
+                        <h6 class="fw-bold mb-1">{{ $c->name }}</h6>
+                        <p style="color:var(--nec-green);font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;">{{ $c->position }}</p>
+                        @if($c->email || $c->phone)
+                        <div class="d-flex justify-content-center gap-2 mb-2" style="font-size:0.75rem;">
+                            @if($c->email)<a href="mailto:{{ $c->email }}" style="color:#6c757d;text-decoration:none;"><i class="far fa-envelope me-1"></i></a>@endif
+                            @if($c->phone)<a href="tel:{{ $c->phone }}" style="color:#6c757d;text-decoration:none;"><i class="fas fa-phone me-1"></i></a>@endif
+                        </div>
+                        @endif
+                        <div class="d-flex justify-content-center gap-2">
+                            @if($c->facebook_url)<a href="{{ $c->facebook_url }}" style="color:#1877F2;font-size:0.8rem;" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>@endif
+                            @if($c->twitter_url)<a href="{{ $c->twitter_url }}" style="color:#000;font-size:0.8rem;" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>@endif
+                            @if($c->linkedin_url)<a href="{{ $c->linkedin_url }}" style="color:#0A66C2;font-size:0.8rem;" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a>@endif
+                        </div>
                     </div>
                 </div>
             </div>
