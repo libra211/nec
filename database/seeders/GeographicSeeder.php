@@ -313,6 +313,18 @@ class GeographicSeeder extends Seeder
             ['name' => 'Nzara Town Hall', 'constituency' => 'Nzara', 'state' => 'Western Equatoria', 'county' => 'Nzara', 'lat' => 4.5344, 'lng' => 28.2736],
         ];
 
+        $voterCounts = [
+            'Juba Primary School' => 1850, 'Kator Community Hall' => 1420, 'Kajo-Keji Cathedral' => 980,
+            'Yei Trading Center' => 1250, 'Terekeka Primary' => 640, 'Bor South School' => 1560,
+            'Duk Community Center' => 720, 'Malakal Town Hall' => 1780, 'Renk Stadium' => 890,
+            'Wau Grand Mosque' => 1320, 'Aweil Centre School' => 1150, 'Kuajok Market' => 610,
+            'Rumbek Primary' => 1040, 'Torit Cathedral' => 1230, 'Yambio Town Hall' => 1100,
+            'Bentiu IDP Camp' => 970, 'Maridi School' => 690, 'Nasir Payam' => 760,
+            'Mayom Community Hall' => 540, 'Akobo School' => 830, 'Lobonok Center' => 470,
+            'Magwi Primary' => 880, 'Jur River Center' => 560, 'Kapoeta Center' => 990,
+            'Nzara Town Hall' => 720,
+        ];
+
         foreach ($pollingStations as $ps) {
             DB::table('nec_polling_stations')->updateOrInsert(
                 ['name' => $ps['name']],
@@ -323,6 +335,7 @@ class GeographicSeeder extends Seeder
                     'county' => $ps['county'],
                     'latitude' => $ps['lat'],
                     'longitude' => $ps['lng'],
+                    'registered_voters' => $voterCounts[$ps['name']] ?? 0,
                     'status' => 'active',
                 ]
             );
