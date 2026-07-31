@@ -11,7 +11,7 @@ class DownloadController extends Controller
     public function index()
     {
         abort_unless(feature_enabled('public_feature_downloads'), 404);
-        $downloads = Download::orderByDesc('created_at')->paginate(24);
+        $downloads = Download::orderByDesc('created_at')->paginate(\App\Helpers\NecHelper::pageLimit('paginate_downloads', 24));
 
         return view('downloads.index', compact('downloads'));
     }
@@ -20,7 +20,7 @@ class DownloadController extends Controller
     {
         $forms = Download::where('category', 'forms')
             ->orderByDesc('created_at')
-            ->paginate(24);
+            ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_downloads', 24));
 
         return view('downloads.forms', compact('forms'));
     }

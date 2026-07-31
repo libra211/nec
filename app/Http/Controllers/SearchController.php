@@ -16,10 +16,10 @@ class SearchController extends Controller
             $results = News::where('status', 'published')
                 ->where(function ($q) use ($query) {
                     $q->where('title', 'LIKE', "%{$query}%")
-                      ->orWhere('body', 'LIKE', "%{$query}%");
+                      ->orWhere('content', 'LIKE', "%{$query}%");
                 })
                 ->orderByDesc('created_at')
-                ->paginate(15)
+                ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_search', 15))
                 ->appends(['q' => $query]);
         }
 

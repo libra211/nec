@@ -100,6 +100,12 @@ class NecHelper
         return (bool) Setting::updateOrCreate(['key' => $key], ['value' => $value]);
     }
 
+    public static function pageLimit(string $key, int $default = 12): int
+    {
+        $value = self::setting_get($key, (string) $default);
+        return max(1, min(100, (int) $value));
+    }
+
     public static function feature_enabled(string $featureKey, bool $default = true): bool
     {
         return self::setting_get($featureKey, $default ? '1' : '0') === '1';

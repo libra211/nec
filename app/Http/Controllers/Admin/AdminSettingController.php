@@ -36,6 +36,10 @@ class AdminSettingController extends Controller
             return $this->updatePublicDisplay($request);
         }
 
+        if ($tab === 'homepage') {
+            return $this->updateHomepage($request);
+        }
+
         if ($tab === 'voter-education') {
             return $this->updateVoterEducation($request);
         }
@@ -330,6 +334,57 @@ class AdminSettingController extends Controller
         $this->logActivity('voter_education_updated', "Updated voter education resource: {$section}");
 
         return back()->with('success', 'Voter education section saved successfully.')->with('active_tab', 'voter-education');
+    }
+
+    private function updateHomepage(Request $request)
+    {
+        $sectionToggles = [
+            'homepage_section_news', 'homepage_section_announcements', 'homepage_section_results',
+            'homepage_section_events', 'homepage_section_gallery', 'homepage_section_team',
+            'homepage_section_parties', 'homepage_section_downloads',
+        ];
+        foreach ($sectionToggles as $key) {
+            \App\Helpers\NecHelper::setting_set($key, $request->boolean($key) ? '1' : '0');
+        }
+
+        $counts = [
+            'homepage_team_count' => ['label' => 'Team members', 'default' => 5],
+            'homepage_team_columns' => ['label' => 'Team members per row', 'default' => 5],
+            'homepage_news_count' => ['label' => 'News items', 'default' => 3],
+            'homepage_announcements_count' => ['label' => 'Announcements', 'default' => 4],
+            'homepage_results_count' => ['label' => 'Results', 'default' => 5],
+            'homepage_events_count' => ['label' => 'Events', 'default' => 6],
+            'homepage_gallery_count' => ['label' => 'Gallery albums', 'default' => 6],
+            'homepage_downloads_count' => ['label' => 'Downloads', 'default' => 8],
+            'homepage_parties_count' => ['label' => 'Political parties', 'default' => 8],
+        ];
+        foreach ($counts as $key => $meta) {
+            $min = $key === 'homepage_team_count' ? 0 : ($key === 'homepage_team_columns' ? 2 : 1);
+            \App\Helpers\NecHelper::setting_set($key, (string) max($min, min(50, (int) $request->input($key, $meta['default']))));
+        }
+
+        $pageSizes = [
+            'paginate_news' => 12,
+            'paginate_publications' => 12,
+            'paginate_press_releases' => 12,
+            'paginate_speeches' => 12,
+            'paginate_videos' => 12,
+            'paginate_gallery_albums' => 12,
+            'paginate_downloads' => 24,
+            'paginate_events' => 12,
+            'paginate_election_events' => 12,
+            'paginate_candidates' => 20,
+            'paginate_results' => 20,
+            'paginate_search' => 15,
+        ];
+        foreach ($pageSizes as $key => $default) {
+            $value = $request->filled($key) ? (int) $request->input($key) : (int) \App\Helpers\NecHelper::pageLimit($key, $default);
+            \App\Helpers\NecHelper::setting_set($key, (string) max(1, min(100, $value)));
+        }
+
+        $this->logActivity('homepage_layout_updated', 'Updated homepage layout settings');
+
+        return back()->with('success', 'Homepage layout settings updated.')->with('active_tab', 'homepage');
     }
 
     private function updatePublicDisplay(Request $request)

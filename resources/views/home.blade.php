@@ -555,6 +555,7 @@
 </section>
 
 <!-- LATEST NEWS -->
+@if($showNews)
 <section class="py-5">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -595,6 +596,7 @@
         </div>
     </div>
 </section>
+@endif
 
 <!-- QUICK SERVICES -->
 <section class="py-5">
@@ -640,7 +642,8 @@
     </div>
 </section>
 
-<!-- ANNOUNCEMENTS -->
+<!-- ANNOUNCEMENTS & EVENTS -->
+@if($showAnnouncements || $showEvents)
 <section class="py-5 position-relative overflow-hidden" style="background:linear-gradient(160deg,#e9f6ef 0%,#f7fbf9 45%,#f0f7f4 100%);">
     <div style="position:absolute;top:-80px;right:-60px;width:260px;height:260px;border-radius:50%;background:rgba(212,175,55,0.10);"></div>
     <div style="position:absolute;bottom:-100px;left:-80px;width:300px;height:300px;border-radius:50%;background:rgba(0,145,76,0.07);"></div>
@@ -648,6 +651,7 @@
     <i class="far fa-calendar-check" style="position:absolute;bottom:30px;right:40px;font-size:6rem;color:rgba(212,175,55,0.07);"></i>
     <div class="container position-relative">
         <div class="row g-4">
+            @if($showAnnouncements)
             <div class="col-lg-8 reveal d-flex flex-column">
                 @include('partials.section-heading', ['icon' => 'fa-bullhorn', 'label' => 'Announcements'])
                 <h2 class="fw-bold mb-4">Public Notices</h2>
@@ -674,6 +678,8 @@
                     View All Notices <i class="fas fa-arrow-right ms-1"></i>
                 </a>
             </div>
+            @endif
+            @if($showEvents)
             <div class="col-lg-4 reveal reveal-delay-2 d-flex flex-column">
                 <div class="card border-0 shadow-sm flex-grow-1" style="border-radius:12px;overflow:hidden;">
                     <div class="card-header fw-bold text-white border-0 rounded-0 py-3" style="background:var(--nec-green);">
@@ -696,12 +702,14 @@
                     View All Events <i class="fas fa-arrow-right ms-1"></i>
                 </a>
             </div>
+            @endif
         </div>
     </div>
 </section>
+@endif
 
 <!-- PHOTO GALLERY -->
-@if(($galleryAlbums ?? collect())->isNotEmpty())
+@if($showGallery && ($galleryAlbums ?? collect())->isNotEmpty())
 <section class="py-5 bg-white">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -797,6 +805,7 @@
 </section>
 
 <!-- DOWNLOADS -->
+@if($showDownloads)
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
@@ -841,8 +850,10 @@
         </div>
     </div>
 </section>
+@endif
 
 <!-- COMMISSIONERS -->
+@if($showTeam)
 <section class="py-5" style="background:var(--nec-gray-50);">
     <div class="container">
         <div class="text-center mb-5">
@@ -850,7 +861,17 @@
             <h2 class="fw-bold reveal">NEC Commissioners</h2>
             <p class="text-muted mb-0">Meet the commissioners steering South Sudan's electoral process</p>
         </div>
-        <div class="row g-4 justify-content-center">
+        @php
+            $rowColsClass = match($teamColumns ?? 5) {
+                2 => 'row-cols-md-2 row-cols-lg-2',
+                3 => 'row-cols-md-3 row-cols-lg-3',
+                4 => 'row-cols-md-2 row-cols-lg-4',
+                5 => 'row-cols-md-3 row-cols-lg-5',
+                6 => 'row-cols-md-3 row-cols-lg-6',
+                default => 'row-cols-md-3 row-cols-lg-4',
+            };
+        @endphp
+        <div class="row g-4 justify-content-center {{ $rowColsClass }}">
             @php
                 $comm_bgs = [
                     'linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#eef7f0 60%,#bfe0cd 100%)',
@@ -860,7 +881,7 @@
                 ];
             @endphp
             @forelse($commissioners as $c)
-            <div class="col-6 col-md-4 col-lg-3 reveal reveal-delay-{{ $loop->iteration % 4 }}">
+            <div class="reveal reveal-delay-{{ $loop->iteration % 4 }}">
                 <div class="card team-card h-100" style="position:relative;border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
                     <div style="position:relative;height:300px;overflow:hidden;background:{{ $comm_bgs[$loop->iteration % 4] }};">
                         @if($c->photo)
@@ -905,9 +926,10 @@
         </div>
     </div>
 </section>
+@endif
 
 <!-- POLITICAL PARTIES -->
-@if(($politicalParties ?? collect())->isNotEmpty())
+@if($showParties && ($politicalParties ?? collect())->isNotEmpty())
 <section class="py-5 bg-white">
     <div class="container">
         <div class="text-center mb-4">

@@ -13,6 +13,7 @@
         'elections' => ['icon' => 'fa-vote-yea', 'label' => 'Elections', 'desc' => 'Dates, types & deadlines'],
         'voter-education' => ['icon' => 'fa-graduation-cap', 'label' => 'Voter Education', 'desc' => 'Civic education resource cards'],
         'public-display' => ['icon' => 'fa-globe', 'label' => 'Public Display', 'desc' => 'Stats visibility & features'],
+        'homepage' => ['icon' => 'fa-th-large', 'label' => 'Homepage Layout', 'desc' => 'Sections, item counts & list sizes'],
         'profile' => ['icon' => 'fa-user-circle', 'label' => 'Profile', 'desc' => 'Name, email & password'],
         'login-logs' => ['icon' => 'fa-history', 'label' => 'Login Logs', 'desc' => 'Recent login activity'],
         'security' => ['icon' => 'fa-shield-alt', 'label' => 'Security', 'desc' => 'OTP, captcha, access control'],
@@ -836,6 +837,98 @@
                 </div>
                 @endif
 
+                {{-- ===== HOMEPAGE LAYOUT ===== --}}
+                @if($key === 'homepage')
+                <div class="settings-info-card success mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Control which sections appear on the public homepage and how many items each one shows. Turn a section off to hide it entirely.
+                </div>
+
+                <div class="settings-block">
+                    <div class="settings-block-title"><i class="fas fa-th-large text-primary me-1"></i>Homepage Sections</div>
+                    <div class="settings-block-desc">Enable or disable each block of the public homepage.</div>
+                    <div class="row g-3">
+                        @php
+                            $homeSections = [
+                                'homepage_section_news' => ['label' => 'Latest News', 'icon' => 'fa-newspaper', 'color' => 'info'],
+                                'homepage_section_announcements' => ['label' => 'Announcements', 'icon' => 'fa-bullhorn', 'color' => 'warning'],
+                                'homepage_section_results' => ['label' => 'Election Results', 'icon' => 'fa-chart-pie', 'color' => 'danger'],
+                                'homepage_section_events' => ['label' => 'Upcoming Events', 'icon' => 'fa-calendar-alt', 'color' => 'success'],
+                                'homepage_section_gallery' => ['label' => 'Photo Gallery', 'icon' => 'fa-images', 'color' => 'primary'],
+                                'homepage_section_team' => ['label' => 'Commissioners', 'icon' => 'fa-users', 'color' => 'secondary'],
+                                'homepage_section_parties' => ['label' => 'Political Parties', 'icon' => 'fa-flag', 'color' => 'warning'],
+                                'homepage_section_downloads' => ['label' => 'Resources / Downloads', 'icon' => 'fa-download', 'color' => 'success'],
+                            ];
+                        @endphp
+                        @foreach($homeSections as $hkey => $hinfo)
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-2 rounded-2 feature-toggle-item">
+                                <div class="form-check form-switch mb-0 me-2">
+                                    <input class="form-check-input setting-input" type="checkbox" name="{{ $hkey }}" role="switch" id="{{ $hkey }}" value="1" {{ ($settings[$hkey]->value ?? '1') === '1' ? 'checked' : '' }}>
+                                </div>
+                                <i class="fas {{ $hinfo['icon'] }} text-{{ $hinfo['color'] }} me-1" style="font-size:13px"></i>
+                                <label class="small fw-semibold mb-0" for="{{ $hkey }}">{{ $hinfo['label'] }}</label>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="settings-block">
+                    <div class="settings-block-title"><i class="fas fa-sort-amount-down text-primary me-1"></i>Homepage Item Counts</div>
+                    <div class="settings-block-desc">How many items each homepage section displays. Team "members per row" sets how many fit in a single row on large screens.</div>
+                    <div class="row g-3">
+                        @php
+                            $homeCounts = [
+                                'homepage_team_count' => ['label' => 'Team Members Shown', 'default' => 0, 'hint' => '0 shows all active commissioners'],
+                                'homepage_team_columns' => ['label' => 'Team Members Per Row', 'default' => 5],
+                                'homepage_news_count' => ['label' => 'Latest News', 'default' => 3],
+                                'homepage_announcements_count' => ['label' => 'Announcements', 'default' => 4],
+                                'homepage_results_count' => ['label' => 'Election Results', 'default' => 5],
+                                'homepage_events_count' => ['label' => 'Upcoming Events', 'default' => 6],
+                                'homepage_gallery_count' => ['label' => 'Gallery Albums', 'default' => 6],
+                                'homepage_downloads_count' => ['label' => 'Resources / Downloads', 'default' => 8],
+                                'homepage_parties_count' => ['label' => 'Political Parties', 'default' => 8],
+                            ];
+                        @endphp
+                        @foreach($homeCounts as $ckey => $cinfo)
+                        <div class="col-md-4 col-6">
+                            <div class="settings-field">
+                                <label class="settings-field-label">{{ $cinfo['label'] }}</label>
+                                <input type="number" name="{{ $ckey }}" class="form-control setting-input" min="0" max="50" value="{{ $settings[$ckey]->value ?? $cinfo['default'] }}">
+                                @if(!empty($cinfo['hint']))<div class="settings-field-hint">{{ $cinfo['hint'] }}</div>@endif
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="settings-block">
+                    <div class="settings-block-title"><i class="fas fa-list-ul text-primary me-1"></i>Listing Pages (Items Per Page)</div>
+                    <div class="settings-block-desc">How many items appear per page on the public listing pages.</div>
+                    <div class="row g-3">
+                        @php
+                            $homePages = [
+                                'paginate_news' => 'News', 'paginate_publications' => 'Publications',
+                                'paginate_press_releases' => 'Press Releases', 'paginate_speeches' => 'Speeches',
+                                'paginate_videos' => 'Videos', 'paginate_gallery_albums' => 'Gallery Albums',
+                                'paginate_downloads' => 'Downloads', 'paginate_events' => 'Events',
+                                'paginate_election_events' => 'Election Calendar', 'paginate_candidates' => 'Candidates',
+                                'paginate_results' => 'Election Results', 'paginate_search' => 'Search Results',
+                            ];
+                        @endphp
+                        @foreach($homePages as $pkey => $plabel)
+                        <div class="col-md-3 col-6">
+                            <div class="settings-field">
+                                <label class="settings-field-label">{{ $plabel }}</label>
+                                <input type="number" name="{{ $pkey }}" class="form-control setting-input" min="1" max="100" value="{{ $settings[$pkey]->value ?? 12 }}">
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
                 {{-- ===== PROFILE ===== --}}
                 @if($key === 'profile')
                 <div class="settings-block">
@@ -951,7 +1044,7 @@
                                         <span class="badge bg-success-subtle text-success" style="font-size:10px;">Success</span>
                                         @else
                                         <span class="badge bg-danger-subtle text-danger" style="font-size:10px;">Failed</span>
-                                        @endif
+                @endif
                                     </td>
                                     <td class="small text-muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $log->user_agent }}">{{ Str::limit($log->user_agent, 40) ?? '—' }}</td>
                                 </tr>

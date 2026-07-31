@@ -10,7 +10,7 @@ class ElectionController extends Controller
 {
     public function index()
     {
-        $events = ElectionEvent::orderByDesc('start_date')->paginate(12);
+        $events = ElectionEvent::orderByDesc('start_date')->paginate(\App\Helpers\NecHelper::pageLimit('paginate_election_events', 12));
 
         return view('elections.index', compact('events'));
     }
@@ -27,7 +27,7 @@ class ElectionController extends Controller
         abort_unless(feature_enabled('public_feature_results'), 404);
         $results = Result::with(['electionEvent', 'constituency'])
             ->orderByDesc('created_at')
-            ->paginate(20);
+            ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_results', 20));
 
         $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->get();
 

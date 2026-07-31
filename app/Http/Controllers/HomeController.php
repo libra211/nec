@@ -77,56 +77,63 @@ class HomeController extends Controller
             'observers' => $this->publicStatValue('observers', $autoStat('observers')),
         ];
 
-        $latestNews = News::where('status', 'published')
-            ->orderByDesc('created_at')
-            ->limit(3)
-            ->get();
+        $homeCount = fn(string $key, int $default) => max(0, (int) \App\Helpers\NecHelper::setting_get($key, (string) $default));
+        $section = fn(string $key) => \App\Helpers\NecHelper::setting_get($key, '1') === '1';
 
-        $latestAnnouncements = Announcement::where('status', 'published')
-            ->orderByDesc('created_at')
-            ->limit(4)
-            ->get();
+        $showNews = $section('homepage_section_news');
+        $showAnnouncements = $section('homepage_section_announcements');
+        $showResults = $section('homepage_section_results');
+        $showEvents = $section('homepage_section_events');
+        $showGallery = $section('homepage_section_gallery');
+        $showTeam = $section('homepage_section_team');
+        $showParties = $section('homepage_section_parties');
+        $showDownloads = $section('homepage_section_downloads');
 
-        $latestResults = Result::orderByDesc('created_at')
-            ->limit(5)
-            ->get();
+        $latestNews = $showNews
+            ? News::where('status', 'published')->orderByDesc('created_at')->limit($homeCount('homepage_news_count', 3))->get()
+            : collect();
 
-        $upcomingEvents = ElectionEvent::where('start_date', '>=', now())
-            ->orderBy('start_date')
-            ->limit(6)
-            ->get();
+        $latestAnnouncements = $showAnnouncements
+            ? Announcement::where('status', 'published')->orderByDesc('created_at')->limit($homeCount('homepage_announcements_count', 4))->get()
+            : collect();
 
-        $topDownloads = Download::where('status', 'published')
-            ->orderByDesc('downloads_count')
-            ->limit(6)
-            ->get();
+        $latestResults = $showResults
+            ? Result::orderByDesc('created_at')->limit($homeCount('homepage_results_count', 5))->get()
+            : collect();
 
-        $educationResources = EducationMaterial::where('status', 'published')
-            ->whereNotNull('file_path')
-            ->where('file_path', '!=', '')
-            ->orderBy('title')
-            ->get();
+        $upcomingEvents = $showEvents
+            ? ElectionEvent::where('start_date', '>=', now())->orderBy('start_date')->limit($homeCount('homepage_events_count', 6))->get()
+            : collect();
 
-        $topDownloads = $educationResources->merge($topDownloads)->take(8);
+        $downloadsLimit = $homeCount('homepage_downloads_count', 8);
+        $topDownloads = $showDownloads
+            ? Download::where('status', 'published')->orderByDesc('downloads_count')->limit($downloadsLimit)->get()
+            : collect();
+
+        $educationResources = $showDownloads
+            ? EducationMaterial::where('status', 'published')->whereNotNull('file_path')->where('file_path', '!=', '')->orderBy('title')->get()
+            : collect();
+
+        $topDownloads = $educationResources->merge($topDownloads)->take($downloadsLimit);
 
         $electionDate = $this->publicStatValue('election_date', \App\Helpers\NecHelper::setting_get('election_date', '2026-12-22'));
         $electionType = $this->publicStatValue('election_type', \App\Helpers\NecHelper::setting_get('election_type', 'General Elections'));
 
-        $galleryAlbums = GalleryAlbum::withCount('images')
-            ->where('status', 'published')
-            ->orderByDesc('created_at')
-            ->limit(6)
-            ->get();
+        $galleryAlbums = $showGallery
+            ? GalleryAlbum::withCount('images')->where('status', 'published')->orderByDesc('created_at')->limit($homeCount('homepage_gallery_count', 6))->get()
+            : collect();
 
-        $commissioners = Commissioner::where('status', 'active')
-            ->orderBy('order_num')
-            ->limit(5)
-            ->get();
+        $commissioners = $showTeam
+            ? Commissioner::where('status', 'active')->orderBy('order_num')
+                ->when(($teamLimit = $homeCount('homepage_team_count', 0)) > 0, fn($q) => $q->limit($teamLimit))
+                ->get()
+            : collect();
 
-        $politicalParties = PoliticalParty::where('status', 'active')
-            ->orderBy('name')
-            ->limit(8)
-            ->get();
+        $teamColumns = max(1, min(6, $homeCount('homepage_team_columns', 5)));
+
+        $politicalParties = $showParties
+            ? PoliticalParty::where('status', 'active')->orderBy('name')->limit($homeCount('homepage_parties_count', 8))->get()
+            : collect();
 
         return view('home', compact(
             'stats',
@@ -139,7 +146,16 @@ class HomeController extends Controller
             'electionType',
             'galleryAlbums',
             'commissioners',
-            'politicalParties'
+            'politicalParties',
+            'showNews',
+            'showAnnouncements',
+            'showResults',
+            'showEvents',
+            'showGallery',
+            'showTeam',
+            'showParties',
+            'showDownloads',
+            'teamColumns'
         ));
     }
 }

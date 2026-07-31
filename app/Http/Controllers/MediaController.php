@@ -15,7 +15,7 @@ class MediaController extends Controller
     {
         $articles = News::where('status', 'published')
             ->orderByDesc('created_at')
-            ->paginate(12);
+            ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_news', 12));
 
         return view('media.news', compact('articles'));
     }
@@ -38,7 +38,7 @@ class MediaController extends Controller
             $q->orderBy('sort_order');
         }])->where('status', 'published')
           ->orderByDesc('created_at')
-          ->paginate(12);
+          ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_gallery_albums', 12));
 
         return view('media.gallery', compact('albums'));
     }
@@ -48,7 +48,7 @@ class MediaController extends Controller
         abort_unless(feature_enabled('public_feature_videos'), 404);
         $videos = Media::where('type', 'video')
             ->orderByDesc('created_at')
-            ->paginate(12);
+            ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_videos', 12));
 
         return view('media.videos', compact('videos'));
     }
@@ -56,7 +56,7 @@ class MediaController extends Controller
     public function speeches()
     {
         abort_unless(feature_enabled('public_feature_speeches'), 404);
-        $speeches = Speech::orderByDesc('speech_date')->paginate(12);
+        $speeches = Speech::orderByDesc('speech_date')->paginate(\App\Helpers\NecHelper::pageLimit('paginate_speeches', 12));
 
         return view('media.speeches', compact('speeches'));
     }
@@ -66,7 +66,7 @@ class MediaController extends Controller
         $releases = News::where('category', 'press-release')
             ->where('status', 'published')
             ->orderByDesc('created_at')
-            ->paginate(12);
+            ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_press_releases', 12));
 
         return view('media.press-releases', compact('releases'));
     }
@@ -75,7 +75,7 @@ class MediaController extends Controller
     {
         $publications = Download::where('category', 'publications')
             ->orderByDesc('created_at')
-            ->paginate(12);
+            ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_publications', 12));
 
         return view('media.publications', compact('publications'));
     }

@@ -12,12 +12,12 @@ class EventController extends Controller
         $events = Event::published()
             ->where('start_date', '>=', now())
             ->orderBy('start_date')
-            ->paginate(12);
+            ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_events', 12));
 
         $pastEvents = Event::published()
             ->where('start_date', '<', now())
             ->orderByDesc('start_date')
-            ->paginate(12);
+            ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_events', 12));
 
         return view('events.index', compact('events', 'pastEvents'));
     }
