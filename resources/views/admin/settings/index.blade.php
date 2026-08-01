@@ -881,7 +881,7 @@
                         @php
                             $homeCounts = [
                                 'homepage_team_count' => ['label' => 'Team Members Shown', 'default' => 0, 'hint' => '0 shows all active commissioners'],
-                                'homepage_team_columns' => ['label' => 'Team Members Per Row', 'default' => 5],
+                                'homepage_team_columns' => ['label' => 'Team Members Per Row', 'default' => 4],
                                 'homepage_news_count' => ['label' => 'Latest News', 'default' => 3],
                                 'homepage_announcements_count' => ['label' => 'Announcements', 'default' => 4],
                                 'homepage_results_count' => ['label' => 'Election Results', 'default' => 5],

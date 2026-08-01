@@ -567,23 +567,59 @@
                 View All News <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
+        @php
+        $cat_colors = [
+            'Elections' => '#0d6efd',
+            'Voter Registration' => '#10b981',
+            'Political Parties' => '#8b5cf6',
+            'Training' => '#f59e0b',
+            'Security' => '#ef4444',
+            'Observers' => '#06b6d4',
+            'press_release' => '#0f5e3a',
+            'press-release' => '#0f5e3a',
+            'news' => '#0d6efd',
+            'general' => '#64748b',
+        ];
+        $cat_icons = [
+            'Elections' => 'fa-vote-yea',
+            'Voter Registration' => 'fa-clipboard-list',
+            'Political Parties' => 'fa-flag',
+            'Training' => 'fa-chalkboard-teacher',
+            'Security' => 'fa-shield-alt',
+            'Observers' => 'fa-binoculars',
+            'press_release' => 'fa-file-alt',
+            'press-release' => 'fa-file-alt',
+            'news' => 'fa-newspaper',
+            'general' => 'fa-tag',
+        ];
+        $fmtCat = fn($cat) => ucfirst(str_replace(['_', '-'], ' ', $cat ?? 'General'));
+        @endphp
         <div class="row g-4">
             @forelse($latestNews as $n)
+            @php $nc = $n->category ?? 'general'; @endphp
             <div class="col-md-4 reveal reveal-delay-{{ $loop->iteration }}">
-                <div class="card card-elevated h-100">
-                    @if($n->image)
-                    <div class="overflow-hidden" style="height:170px;border-radius:12px 12px 0 0;"><img src="{{ asset($n->image) }}" alt="{{ $n->title }}" style="width:100%;height:100%;object-fit:cover;"></div>
-                    @else
-                    <div class="d-flex align-items-center justify-content-center" style="height:170px;background:var(--nec-gradient-primary);border-radius:12px 12px 0 0;"><i class="fas fa-newspaper text-white" style="font-size:3rem;opacity:0.4;"></i></div>
-                    @endif
-                    <div class="card-body d-flex flex-column">
-                        <span class="badge bg-{{ ($n->category ?? '') === 'press-release' ? 'success' : (($n->category ?? '') === 'news' ? 'info' : 'warning') }} mb-2">{{ ucfirst(str_replace('-', ' ', $n->category ?? 'General')) }}</span>
-                        <h5 class="fw-bold mb-2">{{ $n->title }}</h5>
-                        <p class="text-muted small mb-3">{{ Str::limit(strip_tags($n->excerpt ?? $n->title), 120) }}...</p>
-                        <div class="d-flex align-items-center gap-3 text-muted small mb-3 mt-auto">
-                            <span><i class="far fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($n->created_at)->format('d M Y') }}</span>
+                <div class="card border-0 shadow-sm h-100 news-card position-relative">
+                    <div class="position-relative" style="height:160px;background:linear-gradient(135deg,{{ $cat_colors[$nc] ?? '#0f5e3a' }},rgba(0,0,0,0.6));overflow:hidden;">
+                        @if($n->image)
+                        <img src="{{ asset($n->image) }}" alt="{{ $n->title }}" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                        <i class="fas {{ $cat_icons[$nc] ?? 'fa-newspaper' }} text-white position-absolute top-50 start-50 translate-middle" style="font-size:2.5rem;opacity:0.2;"></i>
+                        @endif
+                        <span class="news-cat" style="background:{{ $cat_colors[$nc] ?? '#6c757d' }};color:#fff;">
+                            <i class="fas {{ $cat_icons[$nc] ?? 'fa-tag' }} me-1"></i>{{ $fmtCat($n->category) }}
+                        </span>
+                    </div>
+                    <div class="card-body d-flex flex-column p-3">
+                        <h6 class="news-title mb-2">{{ $n->title }}</h6>
+                        <p class="news-excerpt mb-3 flex-grow-1">{{ $n->excerpt }}</p>
+                        <div class="d-flex flex-wrap gap-2 news-meta mb-2">
+                            <span><i class="far fa-calendar-alt me-1"></i>{{ ($n->published_at ?? $n->created_at)->format('d M Y') }}</span>
+                            <span><i class="far fa-clock me-1"></i>{{ ($n->published_at ?? $n->created_at)->format('H:i') }}</span>
+                            <span><i class="fas fa-eye me-1"></i>{{ number_format($n->views ?? 0) }}</span>
                         </div>
-                        <a href="{{ route('news.article', $n->slug) }}" class="fw-semibold text-decoration-none text-green">Read More <i class="fas fa-arrow-right ms-1"></i></a>
+                        <a href="{{ route('news.article', $n->slug) }}" class="btn btn-sm btn-outline-success mt-1" style="border-radius:8px;font-size:0.8rem;">
+                            Read Full Article <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -873,43 +909,62 @@
         @endphp
         <div class="row g-4 justify-content-center {{ $rowColsClass }}">
             @php
-                $comm_bgs = [
-                    'linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#eef7f0 60%,#bfe0cd 100%)',
-                    'linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#eef4fb 60%,#b6cdec 100%)',
-                    'linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#fdf6e6 60%,#ecd9a8 100%)',
-                    'linear-gradient(180deg,#ffffff 0%,#ffffff 32%,#ecf9f7 60%,#b2e0da 100%)',
+                $member_bgs = [
+                    'linear-gradient(180deg,#ffffff 0%,#ffffff 28%,#eef7f0 55%,#bfe0cd 100%)',
+                    'linear-gradient(180deg,#ffffff 0%,#ffffff 28%,#eef4fb 55%,#b6cdec 100%)',
+                    'linear-gradient(180deg,#ffffff 0%,#ffffff 28%,#fdf6e6 55%,#ecd9a8 100%)',
+                    'linear-gradient(180deg,#ffffff 0%,#ffffff 28%,#ecf9f7 55%,#b2e0da 100%)',
                 ];
             @endphp
             @forelse($commissioners as $c)
             <div class="reveal reveal-delay-{{ $loop->iteration % 4 }}">
-                <div class="card team-card h-100" style="position:relative;border-radius:12px;overflow:hidden;border:1px solid #e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-                    <div style="position:relative;height:300px;overflow:hidden;background:{{ $comm_bgs[$loop->iteration % 4] }};">
+                <div class="member-card team-card h-100" onclick="window.location='{{ route('about.leadership') }}?member={{ $c->id }}'">
+                    <div class="member-photo-wrapper" style="background:{{ $member_bgs[$loop->index % 4] }};">
                         @if($c->photo)
-                        <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;">
+                        <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}">
                         @else
-                        <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
-                            <i class="fas fa-user" style="font-size:2.6rem;color:#adb5bd;"></i>
-                            <span style="font-size:1rem;font-weight:700;color:#6c757d;">{{ $c->initials }}</span>
-                        </div>
+                        <div class="member-initials"><i class="fas fa-user"></i><span>{{ $c->initials }}</span></div>
+                        @endif
+                        @if($c->years_of_service)
+                        <span class="member-years"><i class="fas fa-clock me-1"></i>{{ $c->years_of_service }}y</span>
                         @endif
                         <div class="team-hover-overlay">
-                            <a href="{{ route('about.leadership') }}?member={{ $c->id }}" class="team-hover-btn">View Details <i class="fas fa-arrow-right ms-1"></i></a>
+                            <a href="{{ route('about.leadership') }}?member={{ $c->id }}" class="team-hover-btn" onclick="event.stopPropagation()">View Details <i class="fas fa-arrow-right ms-1"></i></a>
                         </div>
                     </div>
-                    <div class="p-3 text-center">
-                        <h6 class="fw-bold mb-1">{{ $c->name }}</h6>
-                        <p style="color:var(--nec-green);font-size:0.8rem;font-weight:600;margin-bottom:0.5rem;">{{ $c->position }}</p>
-                        @if($showSocials && ($c->email || $c->phone))
-                        <div class="d-flex justify-content-center gap-2 mb-2">
-                            @if($c->email)<a href="mailto:{{ $c->email }}" class="comm-social" style="--sc:#6c757d;" aria-label="Email"><i class="far fa-envelope"></i></a>@endif
-                            @if($c->phone)<a href="tel:{{ $c->phone }}" class="comm-social" style="--sc:#6c757d;" aria-label="Phone"><i class="fas fa-phone"></i></a>@endif
-                        </div>
+                    <div class="member-info">
+                        @php
+                            $badgeClass = 'badge-commissioner';
+                            if (str_contains($c->position, 'Chairperson') && !str_contains($c->position, 'Deputy')) $badgeClass = 'badge-chairperson';
+                            elseif (str_contains($c->position, 'Deputy')) $badgeClass = 'badge-deputy';
+                        @endphp
+                        <span class="member-position-badge {{ $badgeClass }}">{{ $c->position }}</span>
+                        <h5 class="member-name">{{ $c->name }}</h5>
+                        @if($c->department)
+                        <p class="member-dept mb-0"><i class="fas fa-building me-1"></i>{{ $c->department }}</p>
                         @endif
-                        @if($showSocials)
-                        <div class="d-flex justify-content-center gap-2">
-                            @if($c->facebook_url)<a href="{{ $c->facebook_url }}" class="comm-social" style="--sc:#1877F2;" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>@endif
-                            @if($c->twitter_url)<a href="{{ $c->twitter_url }}" class="comm-social" style="--sc:#000;" target="_blank" rel="noopener" aria-label="X"><i class="fab fa-x-twitter"></i></a>@endif
-                            @if($c->linkedin_url)<a href="{{ $c->linkedin_url }}" class="comm-social" style="--sc:#0A66C2;" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>@endif
+                        @php $hasSocial = $c->facebook_url || $c->twitter_url || $c->linkedin_url || $c->website_url || $c->email || $c->phone; @endphp
+                        @if($showSocials && $hasSocial)
+                        <hr class="member-divider">
+                        <div class="member-social">
+                            @if($c->email)
+                            <a href="mailto:{{ $c->email }}" aria-label="Email" onclick="event.stopPropagation()"><i class="fas fa-envelope"></i></a>
+                            @endif
+                            @if($c->phone)
+                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $c->phone) }}" aria-label="Phone" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>
+                            @endif
+                            @if($c->facebook_url)
+                            <a href="{{ $c->facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook" onclick="event.stopPropagation()"><i class="fab fa-facebook-f"></i></a>
+                            @endif
+                            @if($c->twitter_url)
+                            <a href="{{ $c->twitter_url }}" target="_blank" rel="noopener" aria-label="X (Twitter)" onclick="event.stopPropagation()"><i class="fab fa-x-twitter"></i></a>
+                            @endif
+                            @if($c->linkedin_url)
+                            <a href="{{ $c->linkedin_url }}" target="_blank" rel="noopener" aria-label="LinkedIn" onclick="event.stopPropagation()"><i class="fab fa-linkedin-in"></i></a>
+                            @endif
+                            @if($c->website_url)
+                            <a href="{{ $c->website_url }}" target="_blank" rel="noopener" aria-label="Website" onclick="event.stopPropagation()"><i class="fas fa-globe"></i></a>
+                            @endif
                         </div>
                         @endif
                     </div>
@@ -937,22 +992,31 @@
             <h2 class="fw-bold reveal">Registered Political Parties</h2>
             <p class="text-muted mb-0">Contesting parties in the 2026 General Elections</p>
         </div>
-        <div class="row g-3 justify-content-center">
-            @foreach($politicalParties as $p)
-            <div class="col-4 col-md-3 col-lg-2 reveal reveal-delay-{{ $loop->iteration % 4 }}">
-                <a href="{{ route('parties.index') }}" class="text-decoration-none d-block p-3 text-center" style="background:#fff;border:1px solid #e0e0e0;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                    <div class="mx-auto mb-2 d-flex align-items-center justify-content-center overflow-hidden" style="width:56px;height:56px;border-radius:50%;background:{{ $p->color ?? '#f0f0f0' }};">
+        <div class="party-slider" style="overflow:hidden;position:relative;">
+            <div class="party-track">
+                @foreach($politicalParties as $p)
+                <a href="{{ route('parties.index') }}" class="party-logo-link text-decoration-none flex-shrink-0" title="{{ $p->name }}">
+                    <div class="d-flex align-items-center justify-content-center overflow-hidden party-logo" style="width:76px;height:76px;border-radius:50%;background:{{ $p->color ?? '#f0f0f0' }};border:1px solid #e0e0e0;box-shadow:0 3px 10px rgba(0,0,0,0.08);">
                         @if($p->logo)
                         <img src="{{ asset($p->logo) }}" alt="{{ $p->name }}" style="width:100%;height:100%;object-fit:cover;">
                         @else
-                        <span class="fw-bold text-white" style="font-size:0.9rem;">{{ $p->acronym ?: Str::upper(Str::substr($p->name, 0, 3)) }}</span>
+                        <span class="fw-bold text-white" style="font-size:1.1rem;">{{ $p->acronym ?: Str::upper(Str::substr($p->name, 0, 3)) }}</span>
                         @endif
                     </div>
-                    <div class="fw-bold" style="font-size:0.75rem;line-height:1.2;">{{ $p->acronym ?: $p->name }}</div>
-                    @if($p->acronym)<div class="text-muted" style="font-size:0.6rem;">{{ $p->name }}</div>@endif
                 </a>
+                @endforeach
+                @foreach($politicalParties as $p)
+                <a href="{{ route('parties.index') }}" class="party-logo-link text-decoration-none flex-shrink-0" title="{{ $p->name }}">
+                    <div class="d-flex align-items-center justify-content-center overflow-hidden party-logo" style="width:76px;height:76px;border-radius:50%;background:{{ $p->color ?? '#f0f0f0' }};border:1px solid #e0e0e0;box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+                        @if($p->logo)
+                        <img src="{{ asset($p->logo) }}" alt="{{ $p->name }}" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                        <span class="fw-bold text-white" style="font-size:1.1rem;">{{ $p->acronym ?: Str::upper(Str::substr($p->name, 0, 3)) }}</span>
+                        @endif
+                    </div>
+                </a>
+                @endforeach
             </div>
-            @endforeach
         </div>
         <div class="text-center mt-4">
             <a href="{{ route('parties.index') }}" class="btn fw-bold px-4" style="background:var(--nec-green);color:#fff;border-radius:0;">
@@ -1024,6 +1088,159 @@
 .stat-grid-6 { grid-template-columns: repeat(6, 1fr); }
 @media (max-width: 992px) { .stat-grid-6 { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 576px) { .stat-grid-6 { grid-template-columns: repeat(2, 1fr); } }
+.party-logo { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.party-logo-link:hover .party-logo { transform: scale(1.12); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+.member-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e5e5;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+.member-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+.member-photo-wrapper {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg,#ffffff 0%,#ffffff 30%,#eef7f0 55%,#bfe0cd 100%);
+}
+.member-photo-wrapper img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    object-position: center 20%;
+}
+.member-initials {
+    width: 100%;
+    height: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #adb5bd;
+}
+.member-initials i { font-size: 4rem; }
+.member-initials span { font-size: 1.1rem; font-weight: 600; }
+.member-social {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.member-social a {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f3f5;
+    color: #495057 !important;
+    font-size: 0.9rem;
+    border: none;
+    text-decoration: none !important;
+    transition: all 0.25s ease;
+}
+.member-social a:hover {
+    background: var(--nec-green);
+    color: #fff !important;
+    transform: translateY(-2px);
+    text-decoration: none !important;
+}
+.member-divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 0.9rem 0 0.8rem;
+    opacity: 1;
+}
+.member-info { padding: 1.25rem; }
+.member-info a { text-decoration: none !important; }
+.member-position-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+.badge-chairperson { background: #d4af37; color: #1a1a1a; }
+.badge-deputy { background: #1a3c8f; color: #fff; }
+.badge-commissioner { background: #2E8B57; color: #fff; }
+.member-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+.member-dept {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+.member-years {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+.news-card { transition: transform 0.2s, box-shadow 0.2s; border-radius: 12px; overflow: hidden; }
+.news-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.1) !important; }
+.news-card .news-cat {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    z-index: 2;
+}
+.news-card .news-meta { font-size: 0.72rem; color: #94a3b8; }
+.news-card .news-meta i { width: 14px; text-align: center; }
+.news-card .news-title {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.news-card .news-excerpt {
+    font-size: 0.82rem;
+    color: #64748b;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.party-track {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: max-content;
+    padding: 0.5rem 0;
+    animation: partySlide 45s linear infinite;
+}
+.party-track:hover { animation-play-state: paused; }
+@keyframes partySlide {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-50% - 0.75rem)); }
+}
 .timeline-pulse { animation: timelinePulse 2s ease-in-out infinite; }
 @keyframes timelinePulse {
     0%, 100% { box-shadow: 0 0 0 6px rgba(212,175,55,0.18); }

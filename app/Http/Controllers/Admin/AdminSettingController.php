@@ -349,7 +349,7 @@ class AdminSettingController extends Controller
 
         $counts = [
             'homepage_team_count' => ['label' => 'Team members', 'default' => 5],
-            'homepage_team_columns' => ['label' => 'Team members per row', 'default' => 5],
+            'homepage_team_columns' => ['label' => 'Team members per row', 'default' => 4],
             'homepage_news_count' => ['label' => 'News items', 'default' => 3],
             'homepage_announcements_count' => ['label' => 'Announcements', 'default' => 4],
             'homepage_results_count' => ['label' => 'Results', 'default' => 5],

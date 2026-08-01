@@ -129,7 +129,7 @@ class HomeController extends Controller
                 ->get()
             : collect();
 
-        $teamColumns = max(1, min(6, $homeCount('homepage_team_columns', 5)));
+        $teamColumns = max(1, min(6, $homeCount('homepage_team_columns', 4)));
 
         $politicalParties = $showParties
             ? PoliticalParty::where('status', 1)->orderBy('name')->limit($homeCount('homepage_parties_count', 8))->get()
