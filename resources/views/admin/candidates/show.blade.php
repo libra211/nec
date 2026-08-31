@@ -10,7 +10,7 @@
 .detail-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.08) !important; }
 .info-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #94a3b8; margin-bottom: 0.25rem; }
 .info-value { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
-.candidate-photo-lg { width: 100px; height: 100px; border-radius: 20px; object-fit: cover; border: 3px solid #e2e8f0; }
+.candidate-photo-lg { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #e2e8f0; }
 .animate-in { animation: fadeUp 0.35s ease both; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .animate-in-d1 { animation-delay: 0.05s; }

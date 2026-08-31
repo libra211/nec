@@ -77,6 +77,7 @@ class AuthController extends Controller
                 'admin_user_id' => $user->id,
                 'admin_user_name' => $user->name,
                 'admin_role' => $user->role ?? 'admin',
+                'admin_avatar' => $user->avatar,
                 'admin_state' => $user->state ?? '',
                 'admin_constituency' => $user->constituency ?? '',
             ]);
@@ -250,9 +251,12 @@ class AuthController extends Controller
             $ip = request()->ip();
             $ua = request()->userAgent();
             $location = '';
-            if ($ip && $ip !== '127.0.0.1' && $ip !== '::1') {
+            $isLocal = in_array($ip, ['127.0.0.1', '::1', 'localhost'], true);
+            if ($isLocal) {
+                $location = 'Local Machine';
+            } elseif ($ip) {
                 try {
-                    $resp = Http::timeout(2)->get("http://ip-api.com/json/{$ip}?fields=city,regionName,country");
+                    $resp = Http::timeout(2)->get("http://ip-api.com/json/{$ip}?fields=city,regionName,country,lat,lon");
                     if ($resp->successful()) {
                         $data = $resp->json();
                         $parts = array_filter([$data['city'] ?? '', $data['regionName'] ?? '', $data['country'] ?? '']);

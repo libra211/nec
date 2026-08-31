@@ -935,8 +935,8 @@
                     <div class="settings-block-title">Profile Picture</div>
                     <div class="settings-block-desc">Upload a photo to personalise your admin account.</div>
                     <div class="d-flex align-items-start gap-4 flex-wrap">
-                        <div id="avatarPreviewContainer" style="position:relative;width:100px;height:100px;border-radius:20px;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;background:#f1f5f9;">
-                            <img id="avatarPreviewImg" src="{{ $user->avatar ? asset('storage/' . $user->avatar) : asset('assets/images/default-avatar.png') }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                        <div id="avatarPreviewContainer" style="position:relative;width:100px;height:100px;border-radius:50%;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;background:#f1f5f9;">
+                            <img id="avatarPreviewImg" src="{{ $user->avatar ? asset('storage/' . $user->avatar) : asset('assets/images/default-avatar.png') }}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                             <div id="avatarRemoveOverlay" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);padding:2px;text-align:center;{{ $user->avatar ? '' : 'display:none;' }}">
                                 <button type="button" id="removeAvatarBtn" style="background:none;border:none;color:#fff;font-size:0.6rem;cursor:pointer;"><i class="fas fa-times"></i></button>
                             </div>
@@ -1012,44 +1012,112 @@
 
                 {{-- ===== LOGIN LOGS ===== --}}
                 @if($key === 'login-logs')
-                <div class="settings-info-card mb-3">
-                    <i class="fas fa-history text-info me-1"></i>
-                    Showing the most recent login attempts across the system.
-                    <strong>{{ $allLoginLogs->total() }}</strong> total records.
+                @php
+                    $logs = $allLoginLogs->getCollection();
+                    $totalLogs = $allLoginLogs->total();
+                    $succLogs = $logs->where('success', true)->count();
+                    $failLogs = $logs->where('success', false)->count();
+                    $openCount = $logs->count();
+                    $succPct = $openCount > 0 ? round(($succLogs / $openCount) * 100) : 0;
+                    $failPct = $openCount > 0 ? round(($failLogs / $openCount) * 100) : 0;
+                @endphp
+
+                <div class="login-log-stats row g-3 mb-3">
+                    <div class="col-md-3 col-6">
+                        <div class="ll-stat-card ll-stat-total">
+                            <div class="ll-stat-icon"><i class="fas fa-fingerprint"></i></div>
+                            <div class="ll-stat-body">
+                                <div class="ll-stat-value">{{ $totalLogs }}</div>
+                                <div class="ll-stat-label">Total Attempts</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="ll-stat-card ll-stat-success">
+                            <div class="ll-stat-icon"><i class="fas fa-shield-check"></i></div>
+                            <div class="ll-stat-body">
+                                <div class="ll-stat-value">{{ $succLogs }}</div>
+                                <div class="ll-stat-label">Successful</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="ll-stat-card ll-stat-failed">
+                            <div class="ll-stat-icon"><i class="fas fa-shield-exclamation"></i></div>
+                            <div class="ll-stat-body">
+                                <div class="ll-stat-value">{{ $failLogs }}</div>
+                                <div class="ll-stat-label">Failed</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="ll-stat-card ll-stat-success">
+                            <div class="ll-stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="ll-stat-body">
+                                <div class="ll-stat-value" style="font-size:18px;">{{ $succPct }}%</div>
+                                <div class="ll-stat-label">Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="settings-block" style="padding:0;overflow:hidden;">
+                    <div class="settings-block-title px-4 pt-3 pb-2" style="border-bottom:1px solid var(--border-color);">
+                        <i class="fas fa-history text-info me-2"></i>Recent Login Activity
+                        <span class="ms-auto small text-muted fw-normal"><i class="fas fa-map-marker-alt me-1"></i>Location resolved from login IP</span>
+                    </div>
                     <div class="table-responsive">
                         <table class="table log-table mb-0">
                             <thead>
                                 <tr>
                                     <th>Date/Time</th>
                                     <th>Identifier</th>
-                                    <th>Name</th>
+                                    <th style="min-width:200px;">Location</th>
                                     <th>IP Address</th>
-                                    <th>Location</th>
+                                    <th>Device</th>
                                     <th>Status</th>
-                                    <th>User Agent</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($allLoginLogs as $log)
+                                @php
+                                    $loc = !empty($log->location) ? $log->location : 'Unknown Region';
+                                    $isLocal = in_array($log->ip_address, ['127.0.0.1', '::1', 'localhost'], true);
+                                    $locLabel = $isLocal ? 'Local Machine' : $loc;
+                                    $ua = $log->user_agent ?? '';
+                                    $isMobile = stripos($ua, 'Mobile') !== false || stripos($ua, 'Android') !== false;
+                                    $isMac = stripos($ua, 'Mac') !== false;
+                                    $isWin = stripos($ua, 'Windows') !== false;
+                                    $isLinux = stripos($ua, 'Linux') !== false;
+                                    if ($isMobile) { $devIcon = 'fa-mobile-screen'; $devLabel = 'Mobile'; }
+                                    elseif ($isMac) { $devIcon = 'fa-apple'; $devLabel = 'macOS'; }
+                                    elseif ($isWin) { $devIcon = 'fa-windows'; $devLabel = 'Windows'; }
+                                    elseif ($isLinux) { $devIcon = 'fa-linux'; $devLabel = 'Linux'; }
+                                    else { $devIcon = 'fa-globe'; $devLabel = 'Web'; }
+                                @endphp
                                 <tr>
-                                    <td class="text-nowrap small">{{ $log->logged_at->format('M d, Y H:i') }}</td>
+                                    <td class="text-nowrap small">{{ $log->logged_at->format('M d, Y') }}<br><span class="text-muted" style="font-size:10px;">{{ $log->logged_at->format('H:i:s') }}</span></td>
                                     <td><code class="small">{{ $log->identifier }}</code></td>
-                                    <td class="small">{{ $log->name ?? '—' }}</td>
+                                    <td>
+                                        <span class="ll-location {{ $isLocal ? 'll-local' : '' }}">
+                                            <i class="fas {{ $isLocal ? 'fa-laptop-house' : 'fa-map-marker-alt' }}"></i>
+                                            {{ $locLabel }}
+                                        </span>
+                                    </td>
                                     <td><code class="small">{{ $log->ip_address ?? '—' }}</code></td>
-                                    <td class="small">{{ $log->location ?? '—' }}</td>
+                                    <td>
+                                        <span class="ll-device"><i class="fas {{ $devIcon }}"></i> {{ $devLabel }}</span>
+                                    </td>
                                     <td>
                                         @if($log->success)
-                                        <span class="badge bg-success-subtle text-success" style="font-size:10px;">Success</span>
+                                        <span class="badge bg-success-subtle text-success" style="font-size:10px;"><i class="fas fa-check-circle me-1"></i>Success</span>
                                         @else
-                                        <span class="badge bg-danger-subtle text-danger" style="font-size:10px;">Failed</span>
-                @endif
+                                        <span class="badge bg-danger-subtle text-danger" style="font-size:10px;"><i class="fas fa-times-circle me-1"></i>Failed</span>
+                                        @endif
                                     </td>
-                                    <td class="small text-muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $log->user_agent }}">{{ Str::limit($log->user_agent, 40) ?? '—' }}</td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="7" class="text-center text-muted py-4">No login logs recorded yet.</td></tr>
+                                <tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-inbox fa-2x mb-2 d-block opacity-50"></i>No login activity recorded yet.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>

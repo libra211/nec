@@ -25,7 +25,7 @@
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#1e293b;">{{ $loop->iteration }}</td>
                         <td style="padding:10px 12px;">
-                            <div style="width:36px;height:36px;border-radius:10px;overflow:hidden;border:1px solid #eee;display:flex;align-items:center;justify-content:center;background:#fafafa;">
+                            <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;border:1px solid #eee;display:flex;align-items:center;justify-content:center;background:#fafafa;">
                                 <img src="{{ asset($c->photo ?? 'assets/images/default-avatar.png') }}" alt="" style="width:100%;height:100%;object-fit:cover;">
                             </div>
                         </td>

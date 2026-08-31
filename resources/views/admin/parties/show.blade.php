@@ -11,7 +11,7 @@
 .info-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #94a3b8; margin-bottom: 0.25rem; }
 .info-value { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
 .party-logo-lg { width: 80px; height: 80px; border-radius: 16px; object-fit: cover; border: 2px solid #e2e8f0; }
-.candidate-avatar { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; }
+.candidate-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
 .animate-in { animation: fadeUp 0.35s ease both; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .animate-in-d1 { animation-delay: 0.05s; }

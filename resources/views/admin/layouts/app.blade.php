@@ -1,5 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+@php
+    if ($adminAvatarSess = session('admin_avatar')) {
+        $adminAvatar = $adminAvatarSess ? asset('storage/' . $adminAvatarSess) : asset('assets/images/default-avatar.png');
+    } elseif ($adminEmail = session('admin_email')) {
+        $adminAvatar = asset('assets/images/default-avatar.png');
+        $adminUser = \App\Models\User::where('email', $adminEmail)->first();
+        if ($adminUser && $adminUser->avatar) {
+            $adminAvatar = asset('storage/' . $adminUser->avatar);
+        }
+    } else {
+        $adminAvatar = asset('assets/images/default-avatar.png');
+    }
+@endphp
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +30,7 @@
     <nav class="sidebar" id="adminmenu">
         <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
             <span class="sidebar-logo">
-                <img src="{{ \App\Helpers\NecHelper::setting_get('logo', asset('assets/images/nec-logo-white.svg')) }}" alt="NEC">
+                <img src="{{ \App\Helpers\NecHelper::setting_get('logo', asset('assets/images/logos/neclogo.jpeg')) }}" alt="NEC">
             </span>
             <span class="sidebar-brand-text">
                 <span class="brand-name">NEC</span>
@@ -353,18 +366,13 @@
                 <div class="dropdown topbar-user-dropdown">
                     <a href="#" class="topbar-user" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="user-avatar">
-                            <img src="{{ asset('assets/images/default-avatar.png') }}" alt="Admin">
+                            <img src="{{ $adminAvatar }}" alt="Admin" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">
                             <span class="online-dot"></span>
                         </div>
-                        <div class="user-info">
-                            <div class="user-name">{{ session('admin_user_name', 'Admin') }}</div>
-                            <div class="user-role">{{ ucfirst(str_replace('_', ' ', session('admin_role', 'Administrator'))) }}</div>
-                        </div>
-                        <i class="fas fa-chevron-down ms-2" style="font-size:10px;color:var(--text-dim)"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end user-dropdown-menu">
                         <div class="dropdown-header d-flex align-items-center gap-2 px-3 py-2">
-                            <img src="{{ asset('assets/images/default-avatar.png') }}" alt="Avatar" class="rounded-circle" width="36" height="36">
+                            <img src="{{ $adminAvatar }}" alt="Avatar" class="rounded-circle" width="36" height="36">
                             <div>
                                 <div class="fw-bold small">{{ session('admin_user_name', 'Admin') }}</div>
                                 <div class="text-muted" style="font-size:11px">{{ session('admin_email', '') }}</div>

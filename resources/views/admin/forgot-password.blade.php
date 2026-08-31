@@ -68,9 +68,13 @@
             margin-bottom: 16px;
             box-shadow: 0 8px 32px rgba(252,96,17,.3);
             position: relative;
+            overflow: hidden;
+            padding: 0;
         }
         .brand-icon-circle img {
-            height: 52px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             border-radius: 50%;
             position: relative;
             z-index: 1;
@@ -92,7 +96,8 @@
         .brand-title {
             font-weight: 800;
             color: #fff;
-            font-size: 1.5rem;
+            font-size: 1.15rem;
+            line-height: 1.3;
             margin-bottom: 4px;
         }
         .brand-sub {
@@ -257,8 +262,8 @@
             .login-form-wrap { width: 100%; padding: 25px; }
             .brand-features { display: none; }
             .brand-icon-circle { width: 80px; height: 80px; }
-            .brand-icon-circle img { height: 42px; }
-            .brand-title { font-size: 1.3rem; }
+            .brand-icon-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+            .brand-title { font-size: 1rem; }
         }
     </style>
 </head>
@@ -266,7 +271,7 @@
     <div class="login-wrapper">
         <div class="login-brand">
             <div class="brand-icon-circle">
-                <img src="{{ \App\Helpers\NecHelper::setting_get('logo', asset('assets/images/nec-logo-white.svg')) }}" alt="NEC South Sudan" style="height:52px;position:relative;z-index:1;">
+                <img src="{{ \App\Helpers\NecHelper::setting_get('logo', asset('assets/images/logos/neclogo.jpeg')) }}" alt="NEC South Sudan">
             </div>
             <div class="brand-title">South Sudan<br>National Elections Commission</div>
             <p class="brand-sub">Ensuring free, fair, and credible elections for the people of South Sudan</p>
@@ -320,13 +325,6 @@
                     <a href="{{ route('admin.login') }}" class="back-link">
                         <i class="fas fa-arrow-left"></i> Back to login
                     </a>
-                </div>
-
-                <div class="divider">secured</div>
-
-                <div class="trust-badges">
-                    <div class="trust-badge"><i class="fas fa-shield-halved" style="color:#059669;"></i> SSL Secure</div>
-                    <div class="trust-badge"><i class="fas fa-bolt" style="color:#7c3aed;"></i> Encrypted</div>
                 </div>
             </div>
         </div>

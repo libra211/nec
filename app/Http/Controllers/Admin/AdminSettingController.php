@@ -293,7 +293,7 @@ class AdminSettingController extends Controller
 
         $user->update($updateData);
 
-        session(['admin_user_name' => $updateData['name'], 'admin_email' => $updateData['email']]);
+        session(['admin_user_name' => $updateData['name'], 'admin_email' => $updateData['email'], 'admin_avatar' => $user->avatar]);
 
         $this->logActivity('profile_updated', "Updated profile: {$user->name}", $user);
 

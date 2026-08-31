@@ -17,4 +17,25 @@ require __DIR__.'/../vendor/autoload.php';
 /** @var Application $app */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-$app->handleRequest(Request::capture());
+$request = Request::capture();
+
+// Serve the app under the /nec base path (local dev via http://localhost/nec).
+$base = '/nec';
+$path = $request->getPathInfo();
+if ($path === $base || str_starts_with($path, $base.'/')) {
+    $trimmed = substr($path, strlen($base)) ?: '/';
+    $server = $request->server->all();
+    $server['REQUEST_URI'] = $trimmed.($request->getQueryString() ? '?'.$request->getQueryString() : '');
+    $server['PATH_INFO'] = $trimmed;
+    $server['ORIGINAL_REQUEST_URI'] = $request->server->get('REQUEST_URI');
+    $request->initialize(
+        $request->query->all(),
+        $request->request->all(),
+        $request->attributes->all(),
+        $request->cookies->all(),
+        $request->files->all(),
+        $server
+    );
+}
+
+$app->handleRequest($request);

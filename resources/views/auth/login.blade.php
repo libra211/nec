@@ -36,7 +36,7 @@
         .login-brand {
             width: 42%;
             background: #2C2220;
-            padding: 40px 32px 40px 28px;
+            padding: 24px 32px 30px 28px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -67,9 +67,14 @@
             margin-bottom: 16px;
             box-shadow: 0 8px 32px rgba(252,96,17,.3);
             position: relative;
+            overflow: hidden;
+            padding: 0;
         }
         .brand-icon-circle img {
-            height: 52px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
             position: relative;
             z-index: 1;
         }
@@ -87,7 +92,7 @@
             0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(1.4); opacity: 0; }
         }
-        .brand-title { font-weight: 800; color: #fff; font-size: 1.5rem; margin-bottom: 4px; }
+        .brand-title { font-weight: 800; color: #fff; font-size: 1.15rem; line-height: 1.3; margin-bottom: 4px; }
         .brand-sub {
             color: rgba(255,255,255,.5);
             font-weight: 400;
@@ -118,7 +123,7 @@
         }
         .login-form-wrap {
             width: 58%;
-            padding: 40px 48px 40px 56px;
+            padding: 24px 48px 30px 56px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -396,8 +401,8 @@
             .login-form-wrap { width: 100%; padding: 25px; }
             .brand-features { display: none; }
             .brand-icon-circle { width: 80px; height: 80px; }
-            .brand-icon-circle img { height: 42px; }
-            .brand-title { font-size: 1.3rem; }
+            .brand-icon-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+            .brand-title { font-size: 1rem; }
         }
     </style>
 </head>
@@ -408,7 +413,7 @@
     <div class="login-wrapper">
         <div class="login-brand">
             <div class="brand-icon-circle">
-                <img src="{{ \App\Helpers\NecHelper::setting_get('logo', asset('assets/images/nec-logo-white.svg')) }}" alt="NEC South Sudan">
+                <img src="{{ \App\Helpers\NecHelper::setting_get('logo', asset('assets/images/logos/neclogo.jpeg')) }}" alt="NEC South Sudan">
             </div>
             <div class="brand-title">South Sudan<br>National Elections Commission</div>
             <p class="brand-sub">{{ \App\Helpers\NecHelper::setting_get('site_tagline', 'Ensuring free, fair, and credible elections for the people of South Sudan') }}</p>
@@ -462,10 +467,6 @@
 
                         <!-- Email Field -->
                         <div class="field-group" id="emailField" style="{{ ($mode ?? 'email') === 'phone' ? 'display:none;' : '' }}">
-                            <label class="form-label">
-                                <span class="field-icon email"><i class="fas fa-envelope"></i></span>
-                                <span class="field-label-text">Email or Voter ID</span>
-                            </label>
                             <div class="input-wrap">
                                 <i class="fas fa-envelope input-icon"></i>
                                 <input type="text" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Email or Voter ID" value="{{ old('email', $email ?? '') }}" {{ ($mode ?? 'email') === 'phone' ? 'disabled' : '' }} autofocus>
@@ -561,13 +562,6 @@
                         </div>
                     </div>
                 </form>
-
-                <div class="divider">secured</div>
-
-                <div class="trust-badges">
-                    <div class="trust-badge"><i class="fas fa-shield-halved" style="color:#059669;"></i> SSL Secure</div>
-                    <div class="trust-badge"><i class="fas fa-bolt" style="color:#7c3aed;"></i> Encrypted</div>
-                </div>
             </div>
         </div>
     </div>
