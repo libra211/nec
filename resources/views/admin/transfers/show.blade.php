@@ -25,8 +25,8 @@
                     <div class="col-md-6"><strong class="text-muted d-block mb-1">Voter ID</strong><p><code>{{ $transfer->voter_identifier }}</code></p></div>
                     <div class="col-md-6"><strong class="text-muted d-block mb-1">National ID</strong><p>{{ $transfer->national_id ?? 'N/A' }}</p></div>
                     <div class="col-md-6"><strong class="text-muted d-block mb-1">Phone</strong><p>{{ $transfer->phone ?? 'N/A' }}</p></div>
-                    <div class="col-md-6"><strong class="text-muted d-block mb-1">From Constituency</strong><p class="text-danger">{{ $transfer->from_constituency ?? 'N/A' }}</p></div>
-                    <div class="col-md-6"><strong class="text-muted d-block mb-1">To Constituency</strong><p class="text-success fw-bold">{{ $transfer->to_constituency ?? 'N/A' }}</p></div>
+                    <div class="col-md-6"><strong class="text-muted d-block mb-1">From</strong><p class="text-danger mb-0">{{ $transfer->from_constituency ?? 'N/A' }}</p><small class="text-muted">{{ $transfer->from_state ?? '' }}</small></div>
+                    <div class="col-md-6"><strong class="text-muted d-block mb-1">To</strong><p class="text-success fw-bold mb-0">{{ $transfer->to_constituency ?? 'N/A' }}</p><small class="text-muted">{{ $transfer->to_state ?? '' }}</small></div>
                     <div class="col-12"><strong class="text-muted d-block mb-1">Reason</strong><p>{{ $transfer->reason ?? 'No reason provided' }}</p></div>
                     @if($transfer->admin_notes)
                         <div class="col-12"><strong class="text-muted d-block mb-1">Admin Notes</strong><p>{{ $transfer->admin_notes }}</p></div>

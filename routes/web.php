@@ -262,6 +262,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Voter Transfers
     Route::get('voter-transfers', [AdminVoterTransferController::class, 'index'])->name('voter-transfers.index');
+    Route::get('voter-transfers/export', [AdminVoterTransferController::class, 'export'])->name('voter-transfers.export');
     Route::get('voter-transfers/{transfer}', [AdminVoterTransferController::class, 'show'])->name('voter-transfers.show');
     Route::patch('voter-transfers/{transfer}/approve', [AdminVoterTransferController::class, 'approve'])->name('voter-transfers.approve');
     Route::patch('voter-transfers/{transfer}/reject', [AdminVoterTransferController::class, 'reject'])->name('voter-transfers.reject');

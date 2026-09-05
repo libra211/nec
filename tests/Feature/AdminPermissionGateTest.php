@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Observer;
+use App\Models\VoterTransfer;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
@@ -195,5 +196,69 @@ class AdminPermissionGateTest extends TestCase
             ->assertSee('Juba Primary School')
             ->assertSee('Torit Cathedral')
             ->assertSee('All States');
+    }
+
+    public function test_voter_transfers_page_is_scoped_to_coordinator_state(): void
+    {
+        VoterTransfer::create([
+            'voter_identifier' => 'NEC26M999901',
+            'full_name' => 'EETransfer Sarah',
+            'from_state' => 'Eastern Equatoria',
+            'from_constituency' => 'Torit',
+            'to_state' => 'Central Equatoria',
+            'to_constituency' => 'Juba',
+            'status' => 'pending',
+        ]);
+        VoterTransfer::create([
+            'voter_identifier' => 'NEC26M999902',
+            'full_name' => 'CETransfer Adam',
+            'from_state' => 'Central Equatoria',
+            'from_constituency' => 'Juba',
+            'to_state' => 'Lakes',
+            'to_constituency' => 'Rumbek',
+            'status' => 'pending',
+        ]);
+
+        $this->loginAs('state_coordinator', 'coord.ee@nec.gov.ss');
+        $this->get('/admin/voter-transfers')
+            ->assertStatus(200)
+            ->assertSee('EETransfer Sarah')
+            ->assertDontSee('CETransfer Adam');
+    }
+
+    public function test_superadmin_voter_transfers_page_shows_all(): void
+    {
+        VoterTransfer::create([
+            'voter_identifier' => 'NEC26M999903',
+            'full_name' => 'SuperTransfer Tom',
+            'from_state' => 'Warrap',
+            'from_constituency' => 'Gogrial',
+            'to_state' => 'Northern Bahr el Ghazal',
+            'to_constituency' => 'Aweil',
+            'status' => 'pending',
+        ]);
+
+        $this->loginAs('super_admin');
+        $this->get('/admin/voter-transfers')
+            ->assertStatus(200)
+            ->assertSee('SuperTransfer Tom');
+    }
+
+    public function test_coordinator_cannot_act_on_transfer_outside_their_state(): void
+    {
+        $outside = VoterTransfer::create([
+            'voter_identifier' => 'NEC26M999904',
+            'full_name' => 'OutsideOnly Dan',
+            'from_state' => 'Central Equatoria',
+            'from_constituency' => 'Juba',
+            'to_state' => 'Lakes',
+            'to_constituency' => 'Rumbek',
+            'status' => 'pending',
+        ]);
+
+        $this->loginAs('state_coordinator', 'coord.ee@nec.gov.ss');
+        $this->patch("/admin/voter-transfers/{$outside->id}/approve")->assertStatus(403);
+        $this->get("/admin/voter-transfers/{$outside->id}")->assertStatus(403);
+        $this->assertSame('pending', $outside->fresh()->status);
     }
 }
