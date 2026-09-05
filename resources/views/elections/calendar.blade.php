@@ -244,79 +244,82 @@ $timeline_pct = $election_idx !== null ? round(($election_idx + 1) / $total_even
                     </div>
                 </div>
 
-                <!-- Table Header -->
-                <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
-                    <h2 class="fw-bold mb-0" style="color: var(--nec-green); font-size:1.35rem;">
-                        <i class="fas fa-clock me-2"></i>2026 General Elections Calendar
-                    </h2>
-                    <div class="d-flex gap-2 mt-2 mt-sm-0">
-                        <div class="input-group input-group-sm" style="max-width:220px;">
-                            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted" style="font-size:0.75rem;"></i></span>
-                            <input type="text" class="form-control border-start-0" id="calendarSearch" placeholder="Search activities..." style="font-size:0.82rem;">
+                <!-- Table -->
+                <div class="card border-0 shadow-sm mb-2" style="border-radius:14px;overflow:hidden;">
+                    <div class="card-header bg-white d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
+                        <h6 class="mb-0 fw-bold" style="color:var(--nec-green);">
+                            <i class="fas fa-clock me-2"></i>2026 General Elections Calendar
+                        </h6>
+                        <div class="d-flex gap-2">
+                            <div class="input-group input-group-sm" style="max-width:220px;">
+                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted" style="font-size:0.75rem;"></i></span>
+                                <input type="text" class="form-control border-start-0" id="calendarSearch" placeholder="Search activities..." style="font-size:0.82rem;">
+                            </div>
+                            <button class="btn btn-sm btn-outline-success" id="exportCsvBtn" title="Export as CSV" style="font-size:0.78rem;">
+                                <i class="fas fa-download"></i>
+                            </button>
                         </div>
-                        <button class="btn btn-sm btn-outline-success" id="exportCsvBtn" title="Export as CSV" style="font-size:0.78rem;">
-                            <i class="fas fa-download"></i>
-                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" id="calendarTable">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th scope="col" class="ps-4" style="width:4%;">#</th>
+                                        <th scope="col" style="width:38%;">Activity</th>
+                                        <th scope="col" style="width:17%;">Start Date</th>
+                                        <th scope="col" style="width:17%;">End Date</th>
+                                        <th scope="col" class="text-center pe-4" style="width:12%;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $i = 1; $is_election = false; @endphp
+                                    @foreach($calendar as $ev)
+                                        @php
+                                            $is_election = stripos($ev['activity'], 'Election Day') !== false;
+                                            $icon = 'fa-calendar-day';
+                                            if (stripos($ev['activity'], 'Voter') !== false || stripos($ev['activity'], 'Register') !== false) {
+                                                $icon = 'fa-users';
+                                            } elseif (stripos($ev['activity'], 'Candidate') !== false || stripos($ev['activity'], 'Nomination') !== false) {
+                                                $icon = 'fa-user-check';
+                                            } elseif (stripos($ev['activity'], 'Campaign') !== false || stripos($ev['activity'], 'Silence') !== false) {
+                                                $icon = 'fa-bullhorn';
+                                            } elseif (stripos($ev['activity'], 'Election') !== false || stripos($ev['activity'], 'Polling') !== false) {
+                                                $icon = 'fa-check-double';
+                                            } elseif (stripos($ev['activity'], 'Result') !== false) {
+                                                $icon = 'fa-chart-bar';
+                                            } elseif (stripos($ev['activity'], 'Objection') !== false || stripos($ev['activity'], 'Claim') !== false) {
+                                                $icon = 'fa-gavel';
+                                            } elseif (stripos($ev['activity'], 'Vetting') !== false) {
+                                                $icon = 'fa-search';
+                                            } elseif (stripos($ev['activity'], 'Display') !== false || stripos($ev['activity'], 'Publication') !== false) {
+                                                $icon = 'fa-file-alt';
+                                            } elseif (stripos($ev['activity'], 'Dispute') !== false) {
+                                                $icon = 'fa-scale-balanced';
+                                            }
+                                        @endphp
+                                    <tr class="{{ $is_election ? 'table-warning' : '' }}">
+                                        <td class="ps-4 text-center fw-bold {{ $is_election ? 'text-warning-emphasis' : 'text-muted' }}" style="font-size:0.82rem;">{{ $i++ }}</td>
+                                        <td class="fw-semibold" style="font-size:0.88rem;">
+                                            <span class="d-inline-flex align-items-center justify-content-center me-2" style="width:26px;height:26px;border-radius:8px;background:rgba(46,139,87,0.12);color:var(--nec-green);font-size:0.72rem;">
+                                                <i class="fas {{ $icon }}"></i>
+                                            </span>
+                                            {{ $ev['activity'] }}
+                                            @if($is_election)
+                                                <span class="badge rounded-pill bg-danger ms-2" style="font-size:0.6rem;animation:pulse-badge 2s infinite;"><i class="fas fa-check-circle me-1"></i>VOTE</span>
+                                            @endif
+                                        </td>
+                                        <td style="font-size:0.85rem;"><i class="far fa-calendar-alt me-1 text-muted"></i>{{ $ev['start'] }}</td>
+                                        <td style="font-size:0.85rem;"><i class="far fa-calendar-alt me-1 text-muted"></i>{{ $ev['end'] }}</td>
+                                        <td class="text-center pe-4"><span class="badge rounded-pill px-3 py-1 {{ $ev['status_class'] }}" style="font-size:0.7rem;font-weight:600;">{{ $ev['status'] }}</span></td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <p class="text-muted mb-3" style="font-size:0.88rem;">The following table outlines key electoral activities and their scheduled start and end dates for the 2026 General Elections. Dates are subject to revision by the Commission as necessary.</p>
-
-                <!-- Table -->
-                <div class="table-responsive">
-                    <table class="table table-bordered align-middle" id="calendarTable" style="border-color:var(--nec-gray-200);">
-                        <thead class="table-dark">
-                            <tr>
-                                <th style="width:4%;">#</th>
-                                <th style="width:38%;">Activity</th>
-                                <th style="width:17%;">Start Date</th>
-                                <th style="width:17%;">End Date</th>
-                                <th style="width:10%;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php $i = 1; $is_election = false; @endphp
-                            @foreach($calendar as $ev)
-                                @php
-                                    $is_election = stripos($ev['activity'], 'Election Day') !== false;
-                                    $icon = 'fa-calendar-day';
-                                    if (stripos($ev['activity'], 'Voter') !== false || stripos($ev['activity'], 'Register') !== false) {
-                                        $icon = 'fa-users';
-                                    } elseif (stripos($ev['activity'], 'Candidate') !== false || stripos($ev['activity'], 'Nomination') !== false) {
-                                        $icon = 'fa-user-check';
-                                    } elseif (stripos($ev['activity'], 'Campaign') !== false || stripos($ev['activity'], 'Silence') !== false) {
-                                        $icon = 'fa-bullhorn';
-                                    } elseif (stripos($ev['activity'], 'Election') !== false || stripos($ev['activity'], 'Polling') !== false) {
-                                        $icon = 'fa-check-double';
-                                    } elseif (stripos($ev['activity'], 'Result') !== false) {
-                                        $icon = 'fa-chart-bar';
-                                    } elseif (stripos($ev['activity'], 'Objection') !== false || stripos($ev['activity'], 'Claim') !== false) {
-                                        $icon = 'fa-gavel';
-                                    } elseif (stripos($ev['activity'], 'Vetting') !== false) {
-                                        $icon = 'fa-search';
-                                    } elseif (stripos($ev['activity'], 'Display') !== false || stripos($ev['activity'], 'Publication') !== false) {
-                                        $icon = 'fa-file-alt';
-                                    } elseif (stripos($ev['activity'], 'Dispute') !== false) {
-                                        $icon = 'fa-scale-balanced';
-                                    }
-                                @endphp
-                            <tr class="{{ $is_election ? 'table-warning' : '' }}">
-                                <td class="text-center fw-bold {{ $is_election ? 'text-warning-emphasis' : 'text-muted' }}" style="font-size:0.82rem;">{{ $i++ }}</td>
-                                <td class="fw-semibold" style="font-size:0.88rem;">
-                                    <i class="fas {{ $icon }} me-2" style="color:var(--nec-green);width:16px;text-align:center;"></i>
-                                    {{ $ev['activity'] }}
-                                    @if($is_election)
-                                        <span class="badge bg-danger ms-2" style="font-size:0.6rem;animation:pulse-badge 2s infinite;"><i class="fas fa-check-circle me-1"></i>VOTE</span>
-                                    @endif
-                                </td>
-                                <td style="font-size:0.85rem;"><i class="far fa-calendar-alt me-1 text-muted"></i>{{ $ev['start'] }}</td>
-                                <td style="font-size:0.85rem;"><i class="far fa-calendar-alt me-1 text-muted"></i>{{ $ev['end'] }}</td>
-                                <td><span class="badge w-100 {{ $ev['status_class'] }}" style="font-size:0.7rem;">{{ $ev['status'] }}</span></td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <small class="text-muted"><i class="fas fa-info-circle me-1"></i>Table is sortable — click any column header. Use the search box above to filter.</small>
+                <small class="text-muted"><i class="fas fa-info-circle me-1"></i>Use the search box above to filter activities. Click the download button to export the calendar as CSV.</small>
             </div>
         </div>
     </div>
@@ -375,11 +378,13 @@ $timeline_pct = $election_idx !== null ? round(($election_idx + 1) / $total_even
 #countdownDisplay > div {
     min-width: 50px;
 }
-.table-dark th {
-    font-size: 0.78rem;
+.table-success th {
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid rgba(255,255,255,0.1) !important;
+    letter-spacing: 0.6px;
+    font-weight: 700 !important;
+    color: #14532d !important;
+    border-bottom: 2px solid rgba(46,139,87,0.25) !important;
 }
 .table tbody tr:hover {
     background: rgba(0,145,76,0.04) !important;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ElectionEvent;
 use App\Models\Result;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ElectionController extends Controller
@@ -36,7 +37,15 @@ class ElectionController extends Controller
 
     public function types()
     {
-        return view('elections.types');
+        $events = ElectionEvent::where('status', 'active')->orderBy('start_date')->get();
+
+        $presidential = $events->first(fn ($e) => str_contains($e->title, 'Presidential'));
+        $parliamentary = $events->first(fn ($e) => str_contains($e->title, 'National Legislative'));
+        $stateAssembly = $events->filter(fn ($e) => str_contains($e->title, 'State Assembly'));
+
+        $fmt = fn ($e) => $e ? Carbon::parse($e->start_date)->format('d M Y') : null;
+
+        return view('elections.types', compact('presidential', 'parliamentary', 'stateAssembly', 'fmt'));
     }
 
     public function electoralSystem()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Commissioner;
+use App\Models\Download;
 use Illuminate\Support\Facades\DB;
 
 class AboutController extends Controller
@@ -85,7 +86,12 @@ class AboutController extends Controller
 
     public function legalFramework()
     {
-        return view('about.legal-framework');
+        $documents = Download::where('status', 'published')
+            ->whereIn('category', ['constitution', 'legislation', 'legal', 'regulations'])
+            ->orderByRaw("FIELD(category, 'constitution','legislation','legal','regulations'), id")
+            ->get();
+
+        return view('about.legal-framework', compact('documents'));
     }
 
     public function boundaryCommission()
