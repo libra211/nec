@@ -20,17 +20,17 @@ class DashboardItems
         $roleKey = [
             'state_coordinator' => [
                 'state_kpis'      => 'Core stats (State Voters, Today, Week, Month)',
-                'state_status'    => 'Status stats (Active, Inactive, Diaspora, Pending Transfers)',
+                'state_status'    => 'Status stats (Active, Inactive, Diaspora, Observers)',
                 'state_trend'     => 'Registration Trend chart',
                 'state_county'    => 'Voters by County chart',
                 'state_age'       => 'Age Distribution chart',
                 'state_reg_type'  => 'Registration Type chart',
-                'state_transfers' => 'Pending Transfer Queue',
+                'state_transfers' => 'State Modules Overview',
                 'state_team'      => 'State Election Team',
                 'state_recent'    => 'Recent Registrations in State',
             ],
             'constituency_officer' => [
-                'constituency_kpis'    => 'Core stats (Stations, Today, Pending Transfers)',
+                'constituency_kpis'    => 'Core stats (Stations, Today, Active Stations)',
                 'constituency_break'   => 'Demographic stats (Total, Male, Female, Active Stations)',
                 'constituency_recent'  => 'Recent Registrations',
             ],

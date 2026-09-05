@@ -66,11 +66,22 @@ class AdminPermissionGateTest extends TestCase
         $this->loginAs('state_coordinator', 'coord.ce@nec.gov.ss');
         $this->get('/admin')
             ->assertStatus(200)
-            ->assertSee('Voter Transfers')
+            ->assertDontSee('Voter Transfers')
+            ->assertSee('State Modules')
             ->assertDontSee('Election Petitions')
             ->assertDontSee('Dashboard Visibility')
             ->assertDontSee('Security Logs')
             ->assertDontSee('Observer Applications');
+    }
+
+    public function test_coordinator_dashboard_has_state_modules_and_no_transfers(): void
+    {
+        $this->loginAs('state_coordinator', 'coord.ee@nec.gov.ss');
+        $this->get('/admin')
+            ->assertStatus(200)
+            ->assertSee('State Modules')
+            ->assertDontSee('Pending Transfer')
+            ->assertDontSee('Voter Transfers');
     }
 
     public function test_roles_without_module_access_are_redirected(): void
@@ -198,7 +209,7 @@ class AdminPermissionGateTest extends TestCase
             ->assertSee('All States');
     }
 
-    public function test_voter_transfers_page_is_scoped_to_coordinator_state(): void
+    public function test_coordinator_is_redirected_from_voter_transfers(): void
     {
         VoterTransfer::create([
             'voter_identifier' => 'NEC26M999901',
@@ -209,21 +220,10 @@ class AdminPermissionGateTest extends TestCase
             'to_constituency' => 'Juba',
             'status' => 'pending',
         ]);
-        VoterTransfer::create([
-            'voter_identifier' => 'NEC26M999902',
-            'full_name' => 'CETransfer Adam',
-            'from_state' => 'Central Equatoria',
-            'from_constituency' => 'Juba',
-            'to_state' => 'Lakes',
-            'to_constituency' => 'Rumbek',
-            'status' => 'pending',
-        ]);
 
         $this->loginAs('state_coordinator', 'coord.ee@nec.gov.ss');
-        $this->get('/admin/voter-transfers')
-            ->assertStatus(200)
-            ->assertSee('EETransfer Sarah')
-            ->assertDontSee('CETransfer Adam');
+        $this->get('/admin/voter-transfers')->assertStatus(302);
+        $this->get('/admin/voter-transfers/export')->assertStatus(302);
     }
 
     public function test_superadmin_voter_transfers_page_shows_all(): void
@@ -244,7 +244,7 @@ class AdminPermissionGateTest extends TestCase
             ->assertSee('SuperTransfer Tom');
     }
 
-    public function test_coordinator_cannot_act_on_transfer_outside_their_state(): void
+    public function test_coordinator_cannot_access_transfer_outside_their_state(): void
     {
         $outside = VoterTransfer::create([
             'voter_identifier' => 'NEC26M999904',
@@ -257,8 +257,8 @@ class AdminPermissionGateTest extends TestCase
         ]);
 
         $this->loginAs('state_coordinator', 'coord.ee@nec.gov.ss');
-        $this->patch("/admin/voter-transfers/{$outside->id}/approve")->assertStatus(403);
-        $this->get("/admin/voter-transfers/{$outside->id}")->assertStatus(403);
+        $this->patch("/admin/voter-transfers/{$outside->id}/approve")->assertStatus(302);
+        $this->get("/admin/voter-transfers/{$outside->id}")->assertStatus(302);
         $this->assertSame('pending', $outside->fresh()->status);
     }
 }

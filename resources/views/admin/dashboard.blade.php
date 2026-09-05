@@ -961,7 +961,7 @@
     <div class="col-md-3 col-6"><div class="stat-slim green"><div class="stat-row"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_active'] ?? 0) }}</div><div class="stat-label">Active Voters</div></div></div></div></div>
     <div class="col-md-3 col-6"><div class="stat-slim red"><div class="stat-row"><div class="stat-icon"><i class="fas fa-user-slash"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_inactive'] ?? 0) }}</div><div class="stat-label">Inactive</div></div></div></div></div>
     <div class="col-md-3 col-6"><div class="stat-slim purple"><div class="stat-row"><div class="stat-icon"><i class="fas fa-earth-africa"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_diaspora'] ?? 0) }}</div><div class="stat-label">Diaspora</div></div></div></div></div>
-    <div class="col-md-3 col-6"><div class="stat-slim orange"><div class="stat-row"><div class="stat-icon"><i class="fas fa-exchange-alt"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_transfers_pending'] ?? 0) }}</div><div class="stat-label">Pending Transfers</div></div></div></div></div>
+    <div class="col-md-3 col-6"><div class="stat-slim cyan"><div class="stat-row"><div class="stat-icon"><i class="fas fa-eye"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_observers'] ?? 0) }}</div><div class="stat-label">State Observers</div></div></div></div></div>
 </div>
 @endif
 @if(($visible['state_trend'] ?? true) || ($visible['state_county'] ?? true))
@@ -988,43 +988,84 @@
 <div class="row g-4 mb-4">
     @if($visible['state_transfers'] ?? true)
     <div class="col-lg-7">
-        <div class="card border-0 shadow-sm mb-4"><div class="card-header border-bottom bg-white d-flex justify-content-between align-items-center"><h6 class="mb-0 fw-bold"><i class="fas fa-exchange-alt me-2" style="color:var(--nec-gold)"></i>Pending Transfer Queue</h6><span class="text-muted" style="font-size:0.78rem;"><i class="fas fa-arrow-right me-1"></i>Transfers into / out of {{ explode(' ', session('admin_state'))[0] }}</span></div>
-            <div class="card-body p-0">
-                @if (($stats['state_transfer_queue'] ?? collect())->count() > 0)
-                <div class="table-responsive"><table class="table table-hover table-sm mb-0 align-middle">
-                    <thead><tr><th class="ps-3">Voter</th><th>Direction</th><th>From</th><th>To</th><th>Reason</th><th class="text-end pe-3">Action</th></tr></thead>
-                    <tbody>
-                        @foreach ($stats['state_transfer_queue'] as $t)
-                        @php $incoming = $t->to_state === session('admin_state'); @endphp
-                        <tr>
-                            <td class="ps-3"><a href="{{ route('admin.voter-transfers.show', $t->id) }}" class="text-decoration-none fw-semibold">{{ $t->full_name }}</a></td>
-                            <td>
-                                @if($incoming)
-                                <span class="badge" style="background:rgba(46,139,87,0.15);color:#2e8b57;"><i class="fas fa-arrow-down me-1"></i>Incoming</span>
-                                @else
-                                <span class="badge" style="background:rgba(26,60,143,0.15);color:#1a3c8f;"><i class="fas fa-arrow-up me-1"></i>Outgoing</span>
-                                @endif
-                            </td>
-                            <td><small>{{ $t->from_state }}</small></td>
-                            <td><small>{{ $t->to_state }}</small></td>
-                            <td><small class="text-muted">{{ \Illuminate\Support\Str::limit($t->reason ?? '—', 40) }}</small></td>
-                            <td class="text-end pe-3">
-                                @if($can('voter-transfers.approve'))
-                                <form method="POST" action="{{ route('admin.voter-transfers.approve', $t->id) }}" class="d-inline">@csrf @method('PATCH')
-                                    <button class="btn btn-sm btn-success" type="submit" title="Approve"><i class="fas fa-check"></i></button></form>
-                                @endif
-                                @if($can('voter-transfers.reject'))
-                                <form method="POST" action="{{ route('admin.voter-transfers.reject', $t->id) }}" class="d-inline ms-1">@csrf @method('PATCH')
-                                    <button class="btn btn-sm btn-outline-danger" type="submit" title="Reject"><i class="fas fa-times"></i></button></form>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table></div>
-                @else
-                <div class="p-4 text-center text-muted"><i class="fas fa-check-circle text-success mb-2 d-block"></i>No pending transfers for your state.</div>
-                @endif
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header border-bottom bg-white d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold"><i class="fas fa-th-large me-2" style="color:var(--nec-green)"></i>State Modules</h6>
+                <span class="text-muted" style="font-size:0.78rem;"><i class="fas fa-map-marked-alt me-1"></i>{{ explode(' ', session('admin_state'))[0] }} overview</span>
+            </div>
+            <div class="card-body p-3">
+                <div class="row g-3">
+                    @if($can('polling-stations.view'))
+                    <div class="col-md-6">
+                        <a href="{{ route('admin.polling-stations.index') }}" class="text-decoration-none">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(26,60,143,0.05);border:1px solid rgba(26,60,143,0.15);">
+                                <div class="kpi-icon" style="background:rgba(26,60,143,0.1);width:42px;height:42px;min-width:42px;"><i class="fas fa-church" style="color:var(--nec-blue);"></i></div>
+                                <div>
+                                    <div class="fw-bold" style="font-size:1.05rem;color:#1e293b;">{{ number_format($stats['state_stations'] ?? 0) }}</div>
+                                    <div class="small text-muted">Polling Stations <span class="badge ms-1" style="background:rgba(46,139,87,0.12);color:#2e8b57;">{{ $stats['state_stations_active'] ?? 0 }} active</span></div>
+                                </div>
+                                <i class="fas fa-chevron-right ms-auto text-muted"></i>
+                            </div>
+                        </a>
+                    </div>
+                    @endif
+                    @if($can('constituencies.view'))
+                    <div class="col-md-6">
+                        <a href="{{ route('admin.constituencies.index') }}" class="text-decoration-none">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.2);">
+                                <div class="kpi-icon" style="background:rgba(212,175,55,0.12);width:42px;height:42px;min-width:42px;"><i class="fas fa-landmark" style="color:var(--nec-gold);"></i></div>
+                                <div>
+                                    <div class="fw-bold" style="font-size:1.05rem;color:#1e293b;">{{ number_format($stats['state_constituencies'] ?? 0) }}</div>
+                                    <div class="small text-muted">Constituencies</div>
+                                </div>
+                                <i class="fas fa-chevron-right ms-auto text-muted"></i>
+                            </div>
+                        </a>
+                    </div>
+                    @endif
+                    @if($can('observers.view'))
+                    <div class="col-md-6">
+                        <a href="{{ route('admin.observers.index') }}" class="text-decoration-none">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(111,66,193,0.06);border:1px solid rgba(111,66,193,0.16);">
+                                <div class="kpi-icon" style="background:rgba(111,66,193,0.1);width:42px;height:42px;min-width:42px;"><i class="fas fa-eye" style="color:#6f42c1;"></i></div>
+                                <div>
+                                    <div class="fw-bold" style="font-size:1.05rem;color:#1e293b;">{{ number_format($stats['state_observers'] ?? 0) }}</div>
+                                    <div class="small text-muted">Observers <span class="badge ms-1" style="background:rgba(46,139,87,0.12);color:#2e8b57;">{{ $stats['state_observers_accredited'] ?? 0 }} accredited</span></div>
+                                </div>
+                                <i class="fas fa-chevron-right ms-auto text-muted"></i>
+                            </div>
+                        </a>
+                    </div>
+                    @endif
+                    @if($can('contacts.view'))
+                    <div class="col-md-6">
+                        <a href="{{ route('admin.contacts.index') }}" class="text-decoration-none">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(13,110,253,0.05);border:1px solid rgba(13,110,253,0.16);">
+                                <div class="kpi-icon" style="background:rgba(13,110,253,0.1);width:42px;height:42px;min-width:42px;"><i class="fas fa-envelope" style="color:#1a3c8f;"></i></div>
+                                <div>
+                                    <div class="fw-bold" style="font-size:1.05rem;color:#1e293b;">{{ number_format($stats['state_contacts_unread'] ?? 0) }}</div>
+                                    <div class="small text-muted">New Messages</div>
+                                </div>
+                                <i class="fas fa-chevron-right ms-auto text-muted"></i>
+                            </div>
+                        </a>
+                    </div>
+                    @endif
+                    @if($can('voters.view'))
+                    <div class="col-md-6">
+                        <a href="{{ route('admin.voters.index') }}" class="text-decoration-none">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(46,139,87,0.06);border:1px solid rgba(46,139,87,0.18);">
+                                <div class="kpi-icon" style="background:rgba(46,139,87,0.12);width:42px;height:42px;min-width:42px;"><i class="fas fa-users" style="color:var(--nec-green);"></i></div>
+                                <div>
+                                    <div class="fw-bold" style="font-size:1.05rem;color:#1e293b;">{{ number_format($stats['state_voters'] ?? 0) }}</div>
+                                    <div class="small text-muted">Registered Voters <span class="badge ms-1" style="background:rgba(46,139,87,0.12);color:#2e8b57;">{{ $stats['state_staff_total'] ?? 0 }} staff</span></div>
+                                </div>
+                                <i class="fas fa-chevron-right ms-auto text-muted"></i>
+                            </div>
+                        </a>
+                    </div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -1115,7 +1156,7 @@
 <div class="row g-3 mb-4">
     <div class="col-md-4"><div class="card border-0 shadow-sm nec-kpi h-100" style="border-left-color:var(--nec-blue)!important;"><div class="card-body d-flex align-items-center gap-3"><div class="kpi-icon" style="background:rgba(26,60,143,0.12);"><i class="fas fa-vote-yea fa-lg" style="color:var(--nec-blue)"></i></div><div><h6 class="text-muted mb-0">Polling Stations</h6><h3 class="mb-0" style="color:var(--nec-blue);">{{ number_format($stats['constituency_stations'] ?? 0) }}</h3></div></div></div></div>
     <div class="col-md-4"><div class="card border-0 shadow-sm nec-kpi h-100" style="border-left-color:var(--nec-green)!important;"><div class="card-body d-flex align-items-center gap-3"><div class="kpi-icon" style="background:rgba(46,139,87,0.12);"><i class="fas fa-user-plus fa-lg" style="color:var(--nec-green)"></i></div><div><h6 class="text-muted mb-0">Registered Today</h6><h3 class="mb-0" style="color:var(--nec-green);">{{ number_format($stats['constituency_today'] ?? 0) }}</h3></div></div></div></div>
-    <div class="col-md-4"><div class="card border-0 shadow-sm nec-kpi h-100" style="border-left-color:var(--nec-gold)!important;"><div class="card-body d-flex align-items-center gap-3"><div class="kpi-icon" style="background:rgba(212,175,55,0.12);"><i class="fas fa-exchange-alt fa-lg" style="color:var(--nec-gold)"></i></div><div><h6 class="text-muted mb-0">Pending Transfers</h6><h3 class="mb-0" style="color:var(--nec-gold);">{{ number_format($stats['constituency_pending_transfers'] ?? 0) }}</h3></div></div></div></div>
+    <div class="col-md-4"><div class="card border-0 shadow-sm nec-kpi h-100" style="border-left-color:var(--nec-gold)!important;"><div class="card-body d-flex align-items-center gap-3"><div class="kpi-icon" style="background:rgba(212,175,55,0.12);"><i class="fas fa-church fa-lg" style="color:var(--nec-gold)"></i></div><div><h6 class="text-muted mb-0">Active Stations</h6><h3 class="mb-0" style="color:var(--nec-gold);">{{ number_format($stats['constituency_stations_active'] ?? $stats['constituency_stations'] ?? 0) }}</h3></div></div></div></div>
 </div>
 @endif
 @if($visible['constituency_break'] ?? true)

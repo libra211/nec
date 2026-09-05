@@ -162,7 +162,7 @@ class PermissionSeeder extends Seeder
             'admin' => [
                 'dashboard.view',
                 'voters.view', 'voters.create', 'voters.update', 'voters.export',
-                'voter-transfers.view', 'voter-transfers.approve', 'voter-transfers.reject',
+                'voter-transfers.view', 'voter-transfers.approve', 'voter-transfers.reject', 'voter-transfers.export',
                 'users.view', 'users.create', 'users.update',
                 'staff.view', 'staff.create', 'staff.update',
                 'parties.view', 'parties.create', 'parties.update',
@@ -187,7 +187,6 @@ class PermissionSeeder extends Seeder
             'state_coordinator' => [
                 'dashboard.view',
                 'voters.view', 'voters.export',
-                'voter-transfers.view', 'voter-transfers.approve', 'voter-transfers.reject',
                 'constituencies.view',
                 'polling-stations.view',
                 'observers.view',
@@ -197,7 +196,6 @@ class PermissionSeeder extends Seeder
             'constituency_officer' => [
                 'dashboard.view',
                 'voters.view', 'voters.create', 'voters.update',
-                'voter-transfers.view',
                 'polling-stations.view',
                 'observers.view',
             ],

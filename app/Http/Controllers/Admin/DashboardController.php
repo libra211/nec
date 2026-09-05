@@ -493,9 +493,9 @@ class DashboardController extends Controller
             $stats['state_inactive'] = (clone $stateBase)->where('status', 'inactive')->count();
             $stats['state_diaspora'] = (clone $stateBase)->where('is_diaspora', true)->count();
             $stats['state_constituencies'] = DB::table('nec_constituencies')->where('state', $userState)->count();
-            $stats['state_transfers_pending'] = VoterTransfer::where(function ($q) use ($userState) {
-                $q->where('from_state', $userState)->orWhere('to_state', $userState);
-            })->where('status', 'pending')->count();
+            $stats['state_observers'] = DB::table('nec_observers')->where('assigned_state', $userState)->count();
+            $stats['state_observers_accredited'] = DB::table('nec_observers')->where('assigned_state', $userState)->where('status', 'accredited')->count();
+            $stats['state_contacts_unread'] = DB::table('nec_contacts')->where('status', 'new')->count();
             $stats['state_recent_registrations'] = (clone $stateBase)->where('registered_at', '>=', $now->copy()->subDays(7))->count();
             $stats['state_this_month'] = (clone $stateBase)->where('registered_at', '>=', $now->copy()->startOfMonth())->count();
             $stats['state_today'] = (clone $stateBase)->where('registered_at', '>=', $now->copy()->startOfDay())->count();
@@ -521,15 +521,13 @@ class DashboardController extends Controller
             $stats['state_stations'] = (clone $stateStations)->count();
             $stats['state_stations_active'] = (clone $stateStations)->where('status', 'active')->count();
             $stats['state_capacity_pct'] = max(0, $stats['state_stations']) > 0 ? round(($stats['state_voters'] / ($stats['state_stations'] * 1000)) * 100, 1) : 0;
-            $stats['state_transfer_queue'] = VoterTransfer::where(function ($q) use ($userState) {
-                $q->where('from_state', $userState)->orWhere('to_state', $userState);
-            })->where('status', 'pending')->orderByDesc('created_at')->limit(8)->get();
             $stats['state_recent_voters'] = (clone $stateBase)->orderByDesc('registered_at')
                 ->limit(12)->get(['voter_id', 'full_name', 'gender', 'dob', 'county', 'polling_station', 'status', 'is_diaspora', 'registered_at']);
             $stats['state_registration_types'] = (clone $stateBase)->selectRaw('COALESCE(registration_type, "self") as registration_type, COUNT(*) as total')
                 ->groupBy('registration_type')->pluck('total', 'registration_type');
             $stateStaff = User::where('state', $userState)->whereIn('role', ['state_coordinator', 'constituency_officer', 'registration_officer', 'data_entry'])->get(['name', 'email', 'role', 'position']);
             $stats['state_staff'] = $stateStaff;
+            $stats['state_staff_total'] = $stateStaff->count();
             $stats['state_registrars'] = $stateStaff->where('role', 'registration_officer')->count();
             $stats['state_officers'] = $stateStaff->where('role', 'constituency_officer')->count();
             $stats['state_data_entries'] = $stateStaff->where('role', 'data_entry')->count();
@@ -541,9 +539,6 @@ class DashboardController extends Controller
             $stats['constituency_male'] = Voter::where('constituency', $userConstituency)->where('gender', 'M')->count();
             $stats['constituency_female'] = Voter::where('constituency', $userConstituency)->where('gender', 'F')->count();
             $stats['constituency_today'] = Voter::where('constituency', $userConstituency)->where('registered_at', '>=', $now->copy()->startOfDay())->count();
-            $stats['constituency_pending_transfers'] = VoterTransfer::where(function ($q) use ($userConstituency) {
-                $q->where('from_constituency', $userConstituency)->orWhere('to_constituency', $userConstituency);
-            })->where('status', 'pending')->count();
             $stats['constituency_recent'] = Voter::where('constituency', $userConstituency)->orderByDesc('registered_at')->limit(8)->get(['voter_id', 'full_name', 'gender', 'polling_station', 'status', 'registered_at']);
             $stats['constituency_active_stations'] = DB::table('nec_polling_stations')->where('constituency', $userConstituency)->where('status', 'active')->count();
         }

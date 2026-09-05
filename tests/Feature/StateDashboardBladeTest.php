@@ -11,7 +11,7 @@ class StateDashboardBladeTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function test_state_dashboard_is_state_scoped_and_transfer_direction_renders(): void
+    public function test_state_dashboard_is_state_scoped_and_shows_modules(): void
     {
         $state = Voter::whereNotNull('state')->value('state') ?? 'Central Equatoria';
         $user = User::where('role', 'state_coordinator')->first();
@@ -30,8 +30,9 @@ class StateDashboardBladeTest extends TestCase
 
         $response = $this->get('/admin');
         $response->assertStatus(200)
-            ->assertSee('Incoming')
-            ->assertSee('Outgoing')
+            ->assertSee('State Modules')
+            ->assertSee('Polling Stations')
+            ->assertDontSee('Pending Transfer')
             ->assertSee('Recent Registrations in State')
             ->assertSee('Age Distribution')
             ->assertSee('Registration Type');
