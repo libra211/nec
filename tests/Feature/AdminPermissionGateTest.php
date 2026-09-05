@@ -68,7 +68,8 @@ class AdminPermissionGateTest extends TestCase
             ->assertSee('Voter Transfers')
             ->assertDontSee('Election Petitions')
             ->assertDontSee('Dashboard Visibility')
-            ->assertDontSee('Security Logs');
+            ->assertDontSee('Security Logs')
+            ->assertDontSee('Observer Applications');
     }
 
     public function test_roles_without_module_access_are_redirected(): void

@@ -38,9 +38,13 @@
                     if (count($parts) > 1) $initials .= mb_substr(end($parts), 0, 1);
                 }
             @endphp
-            <div class="rounded-circle d-flex align-items-center justify-content-center me-4" style="width:80px;height:80px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:3px solid #bbf7d0;">
-                <span style="font-size:28px;font-weight:800;color:#166534;">{{ strtoupper($initials) }}</span>
-            </div>
+            @if($voter->photo)
+                <img src="{{ asset($voter->photo) }}" alt="Voter photo" class="rounded-circle me-4" style="width:80px;height:80px;object-fit:cover;border:3px solid #bbf7d0;">
+            @else
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-4" style="width:80px;height:80px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:3px solid #bbf7d0;">
+                    <span style="font-size:28px;font-weight:800;color:#166534;">{{ strtoupper($initials) }}</span>
+                </div>
+            @endif
             <div>
                 <h3 class="mb-1">{{ $voter->full_name }}</h3>
                 <div class="d-flex align-items-center gap-3">
@@ -116,9 +120,12 @@
             <div class="card-body">
                 <table class="table table-borderless mb-0">
                     <tr><th class="text-muted" style="width:180px">Full Name</th><td>{{ $voter->full_name }}</td></tr>
-                    <tr><th class="text-muted">Date of Birth</th><td>{{ $voter->dob ? date('d M Y', strtotime($voter->dob)) : 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Date of Birth</th><td>{{ $voter->dob ? date('d M Y', strtotime($voter->dob)) : 'N/A' }} <span class="text-muted small">({{ $voter->age() }} yrs)</span></td></tr>
                     <tr><th class="text-muted">Gender</th><td>{{ ($voter->gender ?? '') === 'M' ? 'Male' : (($voter->gender ?? '') === 'F' ? 'Female' : ($voter->gender ?? 'N/A')) }}</td></tr>
                     <tr><th class="text-muted">National ID</th><td>{{ $voter->national_id ? substr($voter->national_id, 0, 3) . '****' . substr($voter->national_id, -2) : 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Reg Number</th><td>{{ $voter->reg_number ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Nationality</th><td>{{ $voter->nationality ?? ($voter->country?->name ?? 'South Sudanese') }}</td></tr>
+                    <tr><th class="text-muted">Preferred Language</th><td>{{ $voter->preferred_language ?? 'English' }}</td></tr>
                     <tr><th class="text-muted">Phone</th><td>{{ $voter->phone ?? 'N/A' }}</td></tr>
                     <tr><th class="text-muted">Email</th><td>{{ $voter->email ?? 'N/A' }}</td></tr>
                 </table>
@@ -154,6 +161,7 @@
                 <table class="table table-borderless mb-0">
                     <tr><th class="text-muted" style="width:180px">Registration Type</th><td>{{ $voter->registration_type === 'agent' ? 'Agent-Assisted' : 'Self-Registration' }}</td></tr>
                     <tr><th class="text-muted">Registered By</th><td>{{ $voter->registered_by_code ?? ($voter->registration_type === 'agent' ? 'NEC Registration Team' : 'NEC Online Portal') }}</td></tr>
+                    <tr><th class="text-muted">Officer Name</th><td>{{ $voter->registered_by_name ?? 'N/A' }}</td></tr>
                     <tr><th class="text-muted">Title/Role</th><td>{{ $voter->registered_by_title ?? ($voter->registration_type === 'agent' ? 'Registration Officer' : 'Online Portal') }}</td></tr>
                     <tr><th class="text-muted">Location</th><td>{{ $voter->registered_by_location ?? ($voter->registration_type === 'agent' ? 'NEC Field Office' : 'NEC Portal') }}</td></tr>
                     <tr><th class="text-muted">Registration Date</th><td>{{ $voter->registered_at ? date('d M Y, h:i A', strtotime($voter->registered_at)) : 'N/A' }}</td></tr>
@@ -165,24 +173,97 @@
     <div class="col-lg-6">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0" style="color:var(--nec-green)"><i class="fas fa-check-circle me-2"></i>Eligibility &amp; Roll Status</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted" style="width:180px">Eligible to Vote</th><td>
+                        @if($voter->isDeceased())
+                            <span class="badge bg-dark">Deceased — excluded</span>
+                        @elseif($voter->isEligibleToVote())
+                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>Eligible</span>
+                        @else
+                            <span class="badge bg-warning text-dark">Not yet eligible</span>
+                        @endif
+                    </td></tr>
+                    <tr><th class="text-muted">Age at Next Election</th><td>{{ $voter->ageAtElection() }} years</td></tr>
+                    <tr><th class="text-muted">Eligibility Date</th><td>{{ $voter->eligibility_date?->format('d M Y') ?? ($voter->eligibilityDate()?->format('d M Y') ?? 'N/A') }}</td></tr>
+                    <tr><th class="text-muted">Pre-Registered</th><td>{{ $voter->isPreRegistered() ? '<span class="badge bg-info">Yes</span>' : 'No' }}</td></tr>
+                    <tr><th class="text-muted">Electoral Status</th><td><span class="badge bg-{{ $statusColors[$voter->status] ?? 'success' }}">{{ ucfirst($voter->status ?? 'active') }}</span></td></tr>
+                    <tr><th class="text-muted">Record Created</th><td>{{ $voter->created_at ? date('d M Y, h:i A', strtotime($voter->created_at)) : 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Last Updated</th><td>{{ $voter->updated_at ? date('d M Y, h:i A', strtotime($voter->updated_at)) : 'N/A' }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0" style="color:#7c3aed"><i class="fas fa-user-lock me-2"></i>Voter Portal Account</h5>
+            </div>
+            <div class="card-body">
+                @if($voter->account)
+                    <table class="table table-borderless mb-0">
+                        <tr><th class="text-muted" style="width:180px">Account Email</th><td>{{ $voter->account->email }}</td></tr>
+                        <tr><th class="text-muted">Account Status</th><td>
+                            @php $accColors = ['active' => 'success', 'inactive' => 'secondary', 'locked' => 'danger']; @endphp
+                            <span class="badge bg-{{ $accColors[$voter->account->status] ?? 'secondary' }}">{{ ucfirst($voter->account->status ?? 'inactive') }}</span>
+                        </td></tr>
+                        <tr><th class="text-muted">Email Verified</th><td>{{ $voter->account->email_verified_at ? date('d M Y', strtotime($voter->account->email_verified_at)) : '<span class="text-danger">No</span>' }}</td></tr>
+                        <tr><th class="text-muted">Last Login</th><td>{{ $voter->account->last_login ? date('d M Y, h:i A', strtotime($voter->account->last_login)) : 'Never' }}</td></tr>
+                    </table>
+                @else
+                    <p class="text-muted text-center mb-0">No portal account created yet.</p>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    @if($voter->is_diaspora || $voter->country_id || $voter->country_name || $voter->city)
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0" style="color:#0369a1"><i class="fas fa-globe-africa me-2"></i>Diaspora / International Registration</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted" style="width:180px">Type</th><td><span class="badge bg-info">Diaspora</span></td></tr>
+                    <tr><th class="text-muted">Country</th><td>{{ $voter->country_name ?? $voter->country?->name ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">City</th><td>{{ $voter->city ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Address</th><td>{{ $voter->address ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Postal Code</th><td>{{ $voter->postal_code ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Passport No.</th><td>{{ $voter->passport_number ? substr($voter->passport_number, 0, 2) . '****' . substr($voter->passport_number, -2) : 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Document Type</th><td>{{ $voter->document_type ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Mission</th><td>{{ $voter->diasporaMission?->name ?? ($voter->diaspora_mission_id ? 'Assigned' : 'N/A') }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom">
                 <h5 class="mb-0" style="color:var(--nec-gold)"><i class="fas fa-exchange-alt me-2"></i>Transfer History</h5>
             </div>
             <div class="card-body">
-                @if(isset($voter->transfers) && count($voter->transfers))
+                @if(isset($voter->voterTransfers) && $voter->voterTransfers->count())
                     <table class="table table-bordered table-hover table-sm">
                         <thead class="table-light">
-                            <tr><th>From</th><th>To</th><th>Status</th><th>Date</th></tr>
+                            <tr><th>From</th><th>To</th><th>Status</th><th>Requested</th><th>Reviewed</th></tr>
                         </thead>
                         <tbody>
-                            @foreach($voter->transfers as $transfer)
+                            @foreach($voter->voterTransfers as $transfer)
                             <tr>
                                 <td>{{ $transfer->from_constituency ?? '-' }}, {{ $transfer->from_state ?? '-' }}</td>
                                 <td>{{ $transfer->to_constituency ?? '-' }}, {{ $transfer->to_state ?? '-' }}</td>
                                 <td>
-                                    @php $tColors = ['pending' => 'warning', 'approved' => 'success', 'rejected' => 'danger']; @endphp
+                                    @php $tColors = ['pending' => 'warning', 'approved' => 'success', 'rejected' => 'danger', 'cancelled' => 'secondary']; @endphp
                                     <span class="badge bg-{{ $tColors[$transfer->status] ?? 'secondary' }}">{{ ucfirst($transfer->status) }}</span>
                                 </td>
                                 <td>{{ date('d M Y', strtotime($transfer->created_at)) }}</td>
+                                <td>{{ $transfer->reviewed_at ? date('d M Y', strtotime($transfer->reviewed_at)) . ($transfer->reviewed_by ? ' · ' . $transfer->reviewed_by : '') : '—' }}</td>
                             </tr>
                             @endforeach
                         </tbody>

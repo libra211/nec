@@ -215,11 +215,16 @@ class AdminVoterController extends Controller
     public function show($id)
     {
         $voter = $this->findScopedVoter($id);
-        $transfers = VoterTransfer::where('voter_id', $voter->id)->orderByDesc('created_at')->get();
+        $voter->load([
+            'voterTransfers' => fn ($q) => $q->orderByDesc('created_at'),
+            'account',
+            'country',
+            'diasporaMission',
+        ]);
 
         $this->logActivity('voter_viewed', "Viewed voter profile: {$voter->full_name}", $voter);
 
-        return view('admin.voters.show', compact('voter', 'transfers'));
+        return view('admin.voters.show', compact('voter'));
     }
 
     public function edit($id)

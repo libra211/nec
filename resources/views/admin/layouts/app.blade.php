@@ -121,7 +121,7 @@
                 </a>
             </div>
             @endif
-            @if($has('observers.view'))
+            @if($role === 'super_admin')
             <div class="menu-top{{ request()->routeIs('admin.observers.index') || request()->routeIs('admin.observers.show') || request()->routeIs('admin.observers.status') ? ' current' : '' }}">
                 <a href="{{ route('admin.observers.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-eye"></i></span>
