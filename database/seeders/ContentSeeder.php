@@ -149,7 +149,11 @@ class ContentSeeder extends Seeder
         ];
 
         foreach ($items as $item) {
-            DB::table('nec_gallery')->insert(array_merge($item, ['created_at' => $now]));
+            unset($item['album']);
+            DB::table('nec_gallery')->updateOrInsert(
+                ['image_path' => $item['image_path']],
+                array_merge($item, ['created_at' => $now, 'updated_at' => $now])
+            );
         }
     }
 }

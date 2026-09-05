@@ -13,6 +13,11 @@ class PopulateAllSeeder extends Seeder
     {
         $now = now();
 
+        $this->call([
+            CountriesSeeder::class,
+            DiasporaSeeder::class,
+        ]);
+
         $this->seedIfEmpty('nec_voter_accounts', fn() => $this->seedVoterAccounts($now));
         $this->seedIfEmpty('nec_voter_transfers', fn() => $this->seedVoterTransfers($now));
         $this->seedIfEmpty('nec_categories', fn() => $this->seedCategories($now));

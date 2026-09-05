@@ -96,6 +96,7 @@
                             <li><a href="{{ route('voter.transfer') }}">Transfer Request</a></li>
                             <li><a href="{{ route('voter.inquiry') }}">Voter Inquiry</a></li>
                             <li><a href="{{ route('constituencies.index') }}">Find Constituency</a></li>
+                            <li><a href="{{ route('reports.voter-stats') }}">Voter Statistics</a></li>
                             <li><a href="{{ route('voter.education') }}">Voter Education</a></li>
                             <li><a href="{{ route('voter.how-to-vote') }}">How to Vote</a></li>
                             <li><a href="{{ route('downloads.forms') }}">Download Forms</a></li>

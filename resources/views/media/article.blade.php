@@ -59,10 +59,10 @@ if (isset($article)) {
     ];
 }
 
-function reading_time($text) {
+if (!function_exists('reading_time')) { function reading_time($text) {
     $words = str_word_count(strip_tags($text));
     return max(1, ceil($words / 200));
-}
+} }
 $cat_color = $cat_colors[$articleData['category']] ?? '#6c757d';
 $cat_icon = $cat_icons[$articleData['category']] ?? 'fa-tag';
 @endphp

@@ -52,7 +52,7 @@ class CandidateSeeder extends Seeder
         foreach ($this->parties as $p) {
             DB::table('nec_political_parties')->updateOrInsert(
                 ['acronym' => $p['acronym']],
-                ['name' => $p['name'], 'acronym' => $p['acronym'], 'color' => $p['color'], 'status' => 'active', 'created_at' => $now]
+                ['name' => $p['name'], 'acronym' => $p['acronym'], 'color' => $p['color'], 'status' => 1, 'created_at' => $now]
             );
         }
 

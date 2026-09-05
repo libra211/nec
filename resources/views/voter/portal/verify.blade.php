@@ -163,16 +163,27 @@
                         <div class="result-field">
                             <span class="rf-label">Status</span>
                             <span class="rf-value">
-                                <span class="badge bg-success" style="font-size:11px;font-weight:700;">
-                                    <i class="fas fa-check-circle me-1"></i> {{ ucfirst($voter->status ?? 'Active') }}
+                                @php
+                                    $vStatus = $voter->status ?? 'active';
+                                    $vBadge = $vStatus === 'deceased' ? 'bg-dark' : 'bg-success';
+                                    $vIcon = $vStatus === 'deceased' ? 'fa-heart-crack' : 'fa-check-circle';
+                                @endphp
+                                <span class="badge {{ $vBadge }}" style="font-size:11px;font-weight:700;">
+                                    <i class="fas {{ $vIcon }} me-1"></i> {{ ucfirst($vStatus) }}
                                 </span>
                             </span>
                         </div>
 
+                        @if($voter->isDeceased())
+                        <div class="w-100 p-3 rounded" style="background:#343a40;color:#fff;text-align:center;font-size:13px;font-weight:600;">
+                            <i class="fas fa-heart-crack me-1"></i> This record is marked deceased and is excluded from the electoral roll
+                        </div>
+                        @else
                         <div class="verified-badge w-100">
                             <i class="fas fa-shield-alt"></i>
                             <span>This voter is verified as registered with NEC</span>
                         </div>
+                        @endif
 
                         <div class="text-center mt-3">
                             <button onclick="resetSearch()" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;font-weight:600;">

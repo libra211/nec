@@ -71,6 +71,8 @@ class AuthController extends Controller
             SecurityAudit::auditLogin($identifier, true);
             $this->logLoginAttempt($identifier, true, $user->name, $user->role ?? 'admin');
 
+            $request->session()->regenerate();
+
             session([
                 'admin_logged_in' => true,
                 'admin_email' => $user->email,
@@ -213,6 +215,8 @@ class AuthController extends Controller
                 'locked_until' => null,
                 'last_login' => now(),
             ]);
+
+            $request->session()->regenerate();
 
             session([
                 'voter_logged_in' => true,

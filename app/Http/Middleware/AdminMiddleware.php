@@ -12,26 +12,28 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
+        $unauthorized = static fn () => redirect()->route('login')->with('error', 'Please log in to access the admin panel.');
+
         if (!session('admin_logged_in', false)) {
-            // Check for remember me cookie
             $token = $request->cookie('nec_remember');
             $type = $request->cookie('nec_remember_type');
             if ($token && $type === 'admin') {
                 $user = User::where('remember_token', $token)->where('status', 'active')->first();
-                if ($user) {
-                    session([
-                        'admin_logged_in' => true,
-                        'admin_email' => $user->email,
-                        'admin_user_id' => $user->id,
-                        'admin_user_name' => $user->name,
-                        'admin_role' => $user->role ?? 'admin',
-                        'admin_state' => $user->state ?? '',
-                        'admin_constituency' => $user->constituency ?? '',
-                    ]);
-                    return $next($request);
+                if (! $user) {
+                    return $unauthorized();
                 }
+                session([
+                    'admin_logged_in' => true,
+                    'admin_email' => $user->email,
+                    'admin_user_id' => $user->id,
+                    'admin_user_name' => $user->name,
+                    'admin_role' => $user->role ?? 'admin',
+                    'admin_state' => $user->state ?? '',
+                    'admin_constituency' => $user->constituency ?? '',
+                ]);
+            } else {
+                return $unauthorized();
             }
-            return redirect()->route('login')->with('error', 'Please log in to access the admin panel.');
         }
 
         $role = session('admin_role', 'viewer');

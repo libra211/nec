@@ -176,6 +176,35 @@
     .agent-panel .field-input-wrap .form-control,
     .agent-panel .field-input-wrap .form-select { background: #fff; }
 
+    /* ─── DIASPORA PANEL ─────────────────────────────────────── */
+    .diaspora-panel {
+        display: none; margin-bottom: 1.4rem; padding: 1.4rem 1.4rem 1rem;
+        background: linear-gradient(180deg, #f3f7ff, #f8fbff);
+        border-radius: var(--reg-radius); border: 1.5px dashed var(--reg-blue);
+        box-shadow: var(--reg-shadow-sm);
+    }
+    .diaspora-panel.show { display: block; animation: sectionIn 0.3s; }
+    .diaspora-panel .field-input-wrap .form-control,
+    .diaspora-panel .field-input-wrap .form-select { background: #fff; }
+
+    /* ─── FILE UPLOAD PREVIEW ────────────────────────────────── */
+    .upload-preview {
+        margin-top: 0.45rem; display: none;
+    }
+    .upload-preview.show { display: block; animation: sectionIn 0.3s; }
+    .upload-preview img {
+        max-width: 160px; max-height: 120px; border-radius: var(--reg-radius-sm);
+        border: 1px solid var(--reg-gray-300); box-shadow: var(--reg-shadow-sm);
+    }
+    .upload-preview .up-file {
+        display: inline-flex; align-items: center; gap: 0.45rem;
+        font-size: 0.8rem; color: var(--reg-gray-600); background: #fff;
+        border: 1px solid var(--reg-gray-200); border-radius: var(--reg-radius-xs);
+        padding: 0.35rem 0.7rem;
+    }
+    .upload-preview .up-file i { color: var(--reg-green); }
+    .name-caps { text-transform: capitalize; }
+
     /* ─── DOB ELIGIBILITY ────────────────────────────────────── */
     .dob-result {
         margin-top: 0.5rem; padding: 0.75rem 1rem; border-radius: var(--reg-radius-sm);
@@ -342,9 +371,11 @@
         </div>
 
         <div class="reg-card-inner">
-            <form id="registrationForm" method="POST" action="{{ route('voter.register.submit') }}">
+            <form id="registrationForm" method="POST" action="{{ route('voter.register.submit') }}" enctype="multipart/form-data" novalidate>
                 @csrf
                 <input type="hidden" name="registration_type" id="registrationTypeInput" value="self">
+                <input type="hidden" name="location_type" id="locationTypeInput" value="ss">
+                <input type="hidden" name="preferred_language" value="English">
 
                 {{-- ═══════════════ STEP 1: Registration Type ═══════════════ --}}
                 <div class="form-section active" id="section1">
@@ -429,7 +460,7 @@
                                 <label class="field-label">Date of Birth <span class="req">*</span></label>
                                 <div class="field-input-wrap">
                                     <i class="fas fa-calendar-days field-input-icon"></i>
-                                    <input type="date" name="dob" id="dob" class="form-control" required max="{{ date('Y-m-d', mktime(0,0,0,12,31,config('nec.election_year') - 18)) }}" lang="en-GB" onchange="onDobChange();autoSaveField()">
+                                    <input type="date" name="dob" id="dob" class="form-control" required max="{{ date('Y-m-d', mktime(0,0,0,12,31,config('nec.election_year') - config('nec.minimum_registration_age'))) }}" lang="en-GB" onchange="onDobChange();autoSaveField()">
                                 </div>
                                 <div class="dob-result" id="dobInfo"></div>
                             </div>
@@ -458,13 +489,33 @@
                         </div>
                         <div class="col-md-12">
                             <div class="field-group">
-                                <label class="field-label">Email Address <span class="optional">(optional)</span></label>
+                                <label class="field-label">Email Address <span class="optional">(optional — recommended for faster verification)</span></label>
                                 <div class="field-input-wrap">
                                     <i class="fas fa-envelope field-input-icon"></i>
                                     <input type="email" name="email" id="email" class="form-control" placeholder="your.email@example.com" maxlength="255" oninput="checkDuplicate('email', this.value)">
                                     <span class="status-icon" id="email_status"></span>
                                 </div>
                                 <div class="dup-alert warn" id="email_alert"><i class="fas fa-exclamation-triangle"></i> <span id="email_msg"></span></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label class="field-label">Your Photo <span class="optional">(optional, jpg/png/webp up to 5MB)</span></label>
+                                <div class="field-input-wrap">
+                                    <i class="fas fa-image field-input-icon"></i>
+                                    <input type="file" name="photo" id="photo" class="form-control" accept="image/*" onchange="previewUpload(this, 'photoPreview')">
+                                </div>
+                                <div class="upload-preview" id="photoPreview"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label class="field-label">National ID / Passport Scan <span class="optional">(optional, jpg/png/webp/pdf up to 5MB)</span></label>
+                                <div class="field-input-wrap">
+                                    <i class="fas fa-file-image field-input-icon"></i>
+                                    <input type="file" name="id_document" id="id_document" class="form-control" accept="image/*,application/pdf" onchange="previewUpload(this, 'docPreview', true)">
+                                </div>
+                                <div class="upload-preview" id="docPreview"></div>
                             </div>
                         </div>
                     </div>
@@ -481,11 +532,104 @@
                         <div class="section-icon gold"><i class="fas fa-map-location-dot"></i></div>
                         <div class="section-title-text">
                             <h3>Your Location</h3>
-                            <p>Select your registration area — fields load as you choose each level</p>
+                            <p>Where are you currently located? Choose your registration area below.</p>
                         </div>
                     </div>
 
-                    <div class="location-chain">
+                    <div class="reg-type-grid mt-2 mb-3" id="locationTypeGrid">
+                        <div class="reg-type-card selected" data-loctype="ss" onclick="selectLocationType('ss')">
+                            <div class="reg-type-icon"><i class="fas fa-map-location-dot" style="color:var(--reg-green)"></i></div>
+                            <div class="reg-type-title">Inside South Sudan</div>
+                            <div class="reg-type-desc">Register at your state, county or polling station</div>
+                        </div>
+                        <div class="reg-type-card" data-loctype="diaspora" onclick="selectLocationType('diaspora')">
+                            <div class="reg-type-icon"><i class="fas fa-earth-africa" style="color:var(--reg-blue)"></i></div>
+                            <div class="reg-type-title">Outside (Diaspora)</div>
+                            <div class="reg-type-desc">South Sudanese living abroad register at a mission</div>
+                        </div>
+                    </div>
+
+                    {{-- Diaspora fields --}}
+                    <div class="diaspora-panel" id="diasporaPanel" style="display:none;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="field-label"><span class="req">*</span> Country of Residence</label>
+                                    <div class="field-input-wrap">
+                                        <i class="fas fa-earth-americas field-input-icon"></i>
+                                        <select name="country_id" id="country_select" class="form-select" onchange="loadDiasporaMissions()">
+                                            <option value="">Select country...</option>
+                                            @foreach($countries as $country)
+                                                <option value="{{ $country->id }}" data-nationality="{{ $country->nationality }}">{{ $country->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="field-label">Nationality <span class="optional">(optional)</span></label>
+                                    <div class="field-input-wrap">
+                                        <i class="fas fa-passport field-input-icon"></i>
+                                        <input type="text" name="nationality" id="nationality" class="form-control name-caps" placeholder="e.g. South Sudanese" maxlength="120">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="field-label"><span class="req">*</span> Passport Number</label>
+                                    <div class="field-input-wrap">
+                                        <i class="fas fa-passport field-input-icon"></i>
+                                        <input type="text" name="passport_number" id="passport_number" class="form-control" placeholder="e.g. SS-123456" maxlength="60" oninput="checkDuplicate('passport_number', this.value)">
+                                        <span class="status-icon" id="passport_number_status"></span>
+                                    </div>
+                                    <div class="dup-alert warn" id="passport_number_alert"><i class="fas fa-exclamation-triangle"></i> <span id="passport_number_msg"></span></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label class="field-label"><span class="req">*</span> City / Town</label>
+                                    <div class="field-input-wrap">
+                                        <i class="fas fa-city field-input-icon"></i>
+                                        <input type="text" name="city" id="city" class="form-control name-caps" placeholder="e.g. Nairobi" maxlength="120">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="field-group">
+                                    <label class="field-label"><span class="req">*</span> Residential Address</label>
+                                    <div class="field-input-wrap">
+                                        <i class="fas fa-house-chimney field-input-icon"></i>
+                                        <input type="text" name="address" id="address" class="form-control" placeholder="Street, estate/building, district" maxlength="255">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-group">
+                                    <label class="field-label">Postal Code <span class="optional">(optional)</span></label>
+                                    <div class="field-input-wrap">
+                                        <i class="fas fa-envelope field-input-icon"></i>
+                                        <input type="text" name="postal_code" id="postal_code" class="form-control" placeholder="e.g. 00100" maxlength="30">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="field-group">
+                                    <label class="field-label"><span class="req">*</span> Registration Venue (Mission / Consulate)</label>
+                                    <div class="field-input-wrap">
+                                        <i class="fas fa-building-columns field-input-icon"></i>
+                                        <select name="diaspora_mission_id" id="diaspora_mission_select" class="form-select">
+                                            <option value="">Select country first...</option>
+                                        </select>
+                                        <div class="field-hint"><i class="fas fa-info-circle"></i> This will be your polling location for the elections.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- South Sudan location chain --}}
+                    <div class="location-chain" id="ssLocationPanel">
                         <div class="chain-item" id="chain_region">
                             <div class="chain-dot"><i class="fas fa-check"></i></div>
                             <div class="field-group">
@@ -582,6 +726,7 @@
                             <input type="text" name="registration_center" id="registration_center" class="form-control" placeholder="If different from polling station">
                         </div>
                     </div>
+                    </div>
 
                     <div class="btn-nav-group">
                         <button type="button" class="btn-reg btn-reg-prev" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
@@ -631,6 +776,8 @@ let duplicateTimers = {};
 
 const API_BASE = '{{ url("/api/geo") }}';
 const ELECTION_YEAR = {{ config('nec.election_year') }};
+const VOTING_AGE = {{ config('nec.voting_age') }};
+const MIN_REG_AGE = {{ config('nec.minimum_registration_age') }};
 
 /* ─── STEP NAVIGATION ───────────────────────────────────────── */
 
@@ -677,6 +824,70 @@ function selectRegType(type) {
     if (type === 'self') clearFieldError('agent_id');
 }
 
+/* ─── LOCATION TYPE (SS / DIASPORA) ─────────────────────────── */
+
+function selectLocationType(type) {
+    document.querySelectorAll('#locationTypeGrid .reg-type-card').forEach(function(c){ c.classList.remove('selected'); });
+    document.querySelector('#locationTypeGrid .reg-type-card[data-loctype="' + type + '"]').classList.add('selected');
+    document.getElementById('locationTypeInput').value = type;
+    var diasporaPanel = document.getElementById('diasporaPanel');
+    var ssPanel = document.getElementById('ssLocationPanel');
+    var diasporaIds = ['country_select','passport_number','city','address','diaspora_mission_select'];
+    var ssIds = ['state_select','county_select','constituency_select','payam_select','polling_station_select'];
+    if (type === 'diaspora') {
+        diasporaPanel.classList.add('show'); ssPanel.style.display = 'none';
+        diasporaIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.setAttribute('required',''); });
+        ssIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.removeAttribute('required'); });
+    } else {
+        diasporaPanel.classList.remove('show'); ssPanel.style.display = '';
+        diasporaIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.removeAttribute('required'); });
+        ssIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.setAttribute('required',''); });
+    }
+    if (currentStep === 4) buildReview();
+}
+
+function loadDiasporaMissions() {
+    var countryId = document.getElementById('country_select').value;
+    var sel = document.getElementById('diaspora_mission_select');
+    var natEl = document.getElementById('nationality');
+    var opt = document.getElementById('country_select').selectedOptions[0];
+    if (natEl && opt && opt.dataset.nationality) natEl.value = opt.dataset.nationality;
+    sel.innerHTML = '<option value="">Loading...</option>';
+    if (!countryId) { sel.innerHTML = '<option value="">Select country first...</option>'; return; }
+    fetch(API_BASE + '/diaspora-missions?country_id=' + countryId)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        var arr = Array.isArray(data) ? data : (data.missions || []);
+        sel.innerHTML = '<option value="">Select mission / consulate...</option>';
+        arr.forEach(function(m){
+            sel.innerHTML += '<option value="'+m.id+'">'+m.name + (m.city ? ' — '+m.city : '') + '</option>';
+        });
+    })
+    .catch(function(){ sel.innerHTML = '<option value="">Select mission / consulate...</option>'; });
+}
+
+function previewUpload(input, targetId, isDoc) {
+    var box = document.getElementById(targetId);
+    if (!box) return;
+    if (!input.files || !input.files[0]) { box.classList.remove('show'); box.innerHTML = ''; return; }
+    var file = input.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+        showFieldError(input.id, 'File must be 5MB or less.');
+        input.value = '';
+        box.classList.remove('show'); box.innerHTML = '';
+        return;
+    }
+    clearFieldError(input.id);
+    box.classList.add('show');
+    if (file.type === 'application/pdf' || isDoc) {
+        box.innerHTML = '<div class="up-file"><i class="fas fa-' + (file.type === 'application/pdf' ? 'file-pdf' : 'file') + '"></i> ' + file.name + ' <small>(' + Math.round(file.size/1024) + ' KB)</small></div>';
+    } else {
+        var reader = new FileReader();
+        reader.onload = function(e){ box.innerHTML = '<img src="'+e.target.result+'" alt="Photo preview">'; };
+        reader.readAsDataURL(file);
+    }
+}
+
 /* ─── DOB ELIGIBILITY ───────────────────────────────────────── */
 
 function onDobChange() {
@@ -689,25 +900,41 @@ function onDobChange() {
     var electionCutoff = new Date(ELECTION_YEAR, 11, 31);
     var ageAtElection = Math.floor((electionCutoff - birth) / 31557600000);
     var ageToday = Math.floor((now - birth) / 31557600000);
-    var nextBday = new Date(birth); nextBday.setFullYear(now.getFullYear());
-    if (nextBday <= now) nextBday.setFullYear(now.getFullYear() + 1);
-    var monthsAway = Math.round((nextBday - now) / 2592000000);
     var formatted = birth.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    var eligibleDate = new Date(birth);
+    eligibleDate.setFullYear(birth.getFullYear() + VOTING_AGE);
+    var eligibleText = eligibleDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    if (ageAtElection >= 18) {
-        box.className = 'dob-result eligible show';
-        box.innerHTML = '<div class="dob-icon"><i class="fas fa-circle-check"></i></div><div class="dob-text">'
-            + '<strong>You are eligible!</strong><br>'
-            + 'Born ' + formatted + ' — you will be <strong>' + ageAtElection + '</strong> years old on election day (31 Dec ' + ELECTION_YEAR + ').'
-            + '<div class="dob-sub">You meet the age requirement. Currently ' + ageToday + ' years old.</div></div>';
-    } else {
-        var yrsShort = 18 - ageAtElection;
-        var mosShort = monthsAway % 12;
+    if (ageAtElection < MIN_REG_AGE) {
         box.className = 'dob-result not-eligible show';
         box.innerHTML = '<div class="dob-icon"><i class="fas fa-circle-xmark"></i></div><div class="dob-text">'
-            + '<strong>Not eligible yet</strong><br>'
-            + 'Born ' + formatted + ' — you would be only <strong>' + ageAtElection + '</strong> on election day.'
-            + '<div class="dob-sub">You need to be 18 by 31 Dec ' + ELECTION_YEAR + '. You are ' + yrsShort + ' year' + (yrsShort !== 1 ? 's' : '') + (mosShort ? ' and ' + mosShort + ' month' + (mosShort !== 1 ? 's' : '') : '') + ' short.</div></div>';
+            + '<strong>Registration open from ' + MIN_REG_AGE + ' (' + (ELECTION_YEAR - MIN_REG_AGE) + ')</strong><br>'
+            + 'Born ' + formatted + ' — you would be only <strong>' + ageAtElection + '</strong> on election day (31 Dec ' + ELECTION_YEAR + ').'
+            + '<div class="dob-sub">The minimum age to register for this cycle is ' + MIN_REG_AGE + '.</div></div>';
+        return;
+    }
+
+    if (ageAtElection >= VOTING_AGE) {
+        box.className = 'dob-result eligible show';
+        box.innerHTML = '<div class="dob-icon"><i class="fas fa-circle-check"></i></div><div class="dob-text">'
+            + '<strong>You are eligible to vote!</strong><br>'
+            + 'Born ' + formatted + ' — you will be <strong>' + ageAtElection + '</strong> years old on election day (31 Dec ' + ELECTION_YEAR + ').'
+            + '<div class="dob-sub">You meet the age requirement. Currently ' + ageToday + ' years old.</div></div>';
+        return;
+    }
+
+    if (ageToday < VOTING_AGE) {
+        var yrsTo18 = VOTING_AGE - ageToday;
+        box.className = 'dob-result not-eligible show';
+        box.innerHTML = '<div class="dob-icon"><i class="fas fa-hourglass-half"></i></div><div class="dob-text">'
+            + '<strong>Pre-registration accepted!</strong><br>'
+            + 'Born ' + formatted + ' — you will be <strong>' + ageAtElection + '</strong> on election day and eligible to vote once 18.'
+            + '<div class="dob-sub">Eligibility date: <strong>' + eligibleText + '</strong> (' + yrsTo18 + ' year' + (yrsTo18 !== 1 ? 's' : '') + ' to go).</div></div>';
+    } else {
+        box.className = 'dob-result eligible show';
+        box.innerHTML = '<div class="dob-icon"><i class="fas fa-circle-check"></i></div><div class="dob-text">'
+            + '<strong>You are eligible to vote!</strong><br>'
+            + 'Born ' + formatted + ' — ' + ageAtElection + ' years old on election day.</div></div>';
     }
 }
 
@@ -766,19 +993,19 @@ function validateStep2() {
             [function(v) {
                 if (!v) return false;
                 var cutoff = new Date(ELECTION_YEAR, 11, 31);
-                return Math.floor((cutoff - new Date(v)) / 31557600000) >= 18;
-            }, 'You must be at least 18 by 31 Dec ' + ELECTION_YEAR + '.'],
+                return Math.floor((cutoff - new Date(v)) / 31557600000) >= MIN_REG_AGE;
+            }, 'You must be at least ' + MIN_REG_AGE + ' by 31 Dec ' + ELECTION_YEAR + ' to register.'],
         ]},
         { id: 'national_id', tests: [
             [function(v) { return v.trim().length >= 4; }, 'National ID must be at least 4 characters.'],
             [function(v) { return /^[A-Za-z0-9\-]+$/.test(v.trim()); }, 'Only letters, numbers, and hyphens allowed.'],
         ]},
         { id: 'phone', tests: [
-            [function(v) { return v.trim().length >= 10; }, 'Phone number must be at least 10 digits.'],
+            [function(v) { return v.trim().length >= 9; }, 'Phone number must be at least 9 digits.'],
             [function(v) {
-                var d = v.replace(/[\s\-]/g, '');
-                return (/^\+211\d{9}$/.test(d)) || (/^09\d{8}$/.test(d));
-            }, 'Enter +211 9XXXXXXXX (13 chars) or 09XXXXXXXX (10 chars).'],
+                var d = v.replace(/[\s\-()]/g, '');
+                return (/^(\+211\d{9}$|09\d{8}$|\+\d{8,15}$|\d{8,15}$)/).test(d);
+            }, 'Enter a valid number, e.g. +211 912 345 678 or +254 712 345 678.'],
         ]},
     ];
 
@@ -802,12 +1029,24 @@ function validateStep2() {
 
 function validateStep3() {
     var valid = true;
-    ['state_select','county_select','constituency_select','payam_select','polling_station_select'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.classList.remove('is-invalid');
-        if (!el.value) { el.classList.add('is-invalid'); valid = false; }
-    });
+    var locType = document.getElementById('locationTypeInput').value;
+    if (locType === 'diaspora') {
+        ['country_select','passport_number','city','address','diaspora_mission_select'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove('is-invalid');
+            if (!el.value.trim()) { el.classList.add('is-invalid'); valid = false; }
+        });
+        var natEl = document.getElementById('nationality');
+        if (natEl && !natEl.value.trim()) { natEl.classList.add('is-invalid'); valid = false; } else if (natEl) { natEl.classList.remove('is-invalid'); }
+    } else {
+        ['state_select','county_select','constituency_select','payam_select','polling_station_select'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove('is-invalid');
+            if (!el.value) { el.classList.add('is-invalid'); valid = false; }
+        });
+    }
     if (!valid) { var f = document.querySelector('#section3 .is-invalid'); if (f) f.focus(); }
     return valid;
 }
@@ -997,6 +1236,12 @@ function autoSaveField() {
         ['state_select','county_select','constituency_select','payam_select','boma_select','polling_station_select'].forEach(function(f){
             var el=document.getElementById(f); if(el) data[f.replace('_select','')]=el.value;
         });
+        data.location_type = document.getElementById('locationTypeInput').value;
+        if (data.location_type === 'diaspora') {
+            ['country_id','nationality','passport_number','city','address','postal_code','diaspora_mission_id'].forEach(function(f){
+                var el=document.getElementById(f); if(el) data[f]=el.value;
+            });
+        }
         data.registration_type = document.getElementById('registrationTypeInput').value;
         data.agent_id = document.getElementById('agent_id')?.value || '';
         fetch('{{ url("/api/voter/auto-save") }}',{
@@ -1042,19 +1287,36 @@ function buildReview() {
 
     // Location section
     html += '<div class="review-section"><div class="review-section-title"><i class="fas fa-map-marker-alt"></i> Location</div>';
-    var stateEl = document.getElementById('state_select');
-    var countyEl = document.getElementById('county_select');
-    var consEl = document.getElementById('constituency_select');
-    var payamEl = document.getElementById('payam_select');
-    var bomaEl = document.getElementById('boma_select');
-    var stationEl = document.getElementById('polling_station_select');
+    var locType = document.getElementById('locationTypeInput').value;
+    if (locType === 'diaspora') {
+        var countrySel = document.getElementById('country_select');
+        var missionSel = document.getElementById('diaspora_mission_select');
+        var missionText = null;
+        if (missionSel && missionSel.selectedIndex >= 0 && missionSel.value) missionText = missionSel.selectedOptions[0].text;
+        html += reviewRow('Residency', '<span style="background:#e8eef8;color:#1a3c8f;padding:2px 8px;border-radius:20px;font-size:0.75rem;font-weight:600;">Diaspora</span>');
+        html += reviewRow('Country of Residence', countrySel && countrySel.value ? countrySel.selectedOptions[0].text : null);
+        html += reviewRow('Nationality', document.getElementById('nationality').value || null);
+        html += reviewRow('Passport Number', document.getElementById('passport_number').value || null);
+        html += reviewRow('City / Town', document.getElementById('city').value || null);
+        html += reviewRow('Address', document.getElementById('address').value || null);
+        html += reviewRow('Postal Code', document.getElementById('postal_code').value || '<em style="color:var(--reg-gray-400)">Not provided</em>');
+        html += reviewRow('Registration Venue (Mission)', missionText || null);
+    } else {
+        var stateEl = document.getElementById('state_select');
+        var countyEl = document.getElementById('county_select');
+        var consEl = document.getElementById('constituency_select');
+        var payamEl = document.getElementById('payam_select');
+        var bomaEl = document.getElementById('boma_select');
+        var stationEl = document.getElementById('polling_station_select');
 
-    html += reviewRow('State', stateEl.selectedOptions[0]?.text !== 'Select State...' ? stateEl.selectedOptions[0]?.text : null);
-    html += reviewRow('County', countyEl.selectedOptions[0]?.text !== 'Select County...' ? countyEl.selectedOptions[0]?.text : null);
-    html += reviewRow('Constituency', consEl.selectedOptions[0]?.text !== 'Select Constituency...' ? consEl.selectedOptions[0]?.text : null);
-    html += reviewRow('Payam', payamEl.selectedOptions[0]?.text !== 'Select Payam...' ? payamEl.selectedOptions[0]?.text : null);
-    html += reviewRow('Boma', bomaEl.selectedOptions[0]?.text !== 'Select Boma...' ? bomaEl.selectedOptions[0]?.text || '<em style="color:var(--reg-gray-400)">None</em>' : '<em style="color:var(--reg-gray-400)">None</em>');
-    html += reviewRow('Polling Station', stationEl.selectedOptions[0]?.text !== 'Select Polling Station...' ? stationEl.selectedOptions[0]?.text : null);
+        html += reviewRow('Residency', '<span style="background:#ecfdf5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:0.75rem;font-weight:600;">Inside South Sudan</span>');
+        html += reviewRow('State', stateEl.selectedOptions[0]?.text !== 'Select State...' ? stateEl.selectedOptions[0]?.text : null);
+        html += reviewRow('County', countyEl.selectedOptions[0]?.text !== 'Select County...' ? countyEl.selectedOptions[0]?.text : null);
+        html += reviewRow('Constituency', consEl.selectedOptions[0]?.text !== 'Select Constituency...' ? consEl.selectedOptions[0]?.text : null);
+        html += reviewRow('Payam', payamEl.selectedOptions[0]?.text !== 'Select Payam...' ? payamEl.selectedOptions[0]?.text : null);
+        html += reviewRow('Boma', bomaEl.selectedOptions[0]?.text !== 'Select Boma...' ? bomaEl.selectedOptions[0]?.text || '<em style="color:var(--reg-gray-400)">None</em>' : '<em style="color:var(--reg-gray-400)">None</em>');
+        html += reviewRow('Polling Station', stationEl.selectedOptions[0]?.text !== 'Select Polling Station...' ? stationEl.selectedOptions[0]?.text : null);
+    }
     html += '</div>';
 
     // Registration type section

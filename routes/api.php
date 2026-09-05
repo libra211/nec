@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\ApiVerifyController;
 use App\Http\Controllers\Api\ApiVoterLookupController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::post('/contact', [ApiContactController::class, 'store']);
     Route::post('/newsletter', [ApiNewsletterController::class, 'store']);
     Route::post('/like', [ApiLikeController::class, 'store']);

@@ -8,11 +8,14 @@ use App\Http\Controllers\Admin\AdminComplaintController;
 use App\Http\Controllers\Admin\AdminConstituencyController;
 use App\Http\Controllers\Admin\AdminContactController;
 use App\Http\Controllers\Admin\AdminBallotController;
+use App\Http\Controllers\Admin\AdminCountryController;
+use App\Http\Controllers\Admin\AdminDiasporaMissionController;
 use App\Http\Controllers\Admin\AdminDownloadController;
 use App\Http\Controllers\Admin\AdminEducationController;
 use App\Http\Controllers\Admin\AdminFaqController;
 use App\Http\Controllers\Admin\AdminGalleryController;
 use App\Http\Controllers\Admin\AdminNewsController;
+use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\AdminObserverController;
 use App\Http\Controllers\Admin\AdminPartyController;
 use App\Http\Controllers\Admin\AdminPetitionController;
@@ -83,11 +86,13 @@ Route::get('/electoral-system', [ElectionController::class, 'electoralSystem'])-
 Route::prefix('voter')->name('voter.')->group(function () {
     Route::get('/', [VoterController::class, 'index'])->name('index');
     Route::get('/register', [VoterController::class, 'register'])->name('register');
-    Route::post('/register', [VoterController::class, 'store'])->name('register.submit');
+    Route::post('/register', [VoterController::class, 'store'])->middleware('throttle:registration')->name('register.submit');
+    Route::match(['get', 'post'], '/register/verify', [VoterController::class, 'verifyRegistrationOtp'])->middleware('throttle:otp')->name('register.verify-otp');
+    Route::post('/register/verify/resend', [VoterController::class, 'resendRegistrationOtp'])->middleware('throttle:otp')->name('register.resend-otp');
     Route::get('/status', [VoterController::class, 'status'])->name('status');
-    Route::post('/status', [VoterController::class, 'status'])->name('status.check');
+    Route::post('/status', [VoterController::class, 'status'])->middleware('throttle:otp')->name('status.check');
     Route::get('/verify', [VoterController::class, 'verify'])->name('verify');
-    Route::post('/verify', [VoterController::class, 'verify'])->name('verify.submit');
+    Route::post('/verify', [VoterController::class, 'verify'])->middleware('throttle:otp')->name('verify.submit');
     Route::get('/polling-finder', [VoterController::class, 'pollingFinder'])->name('polling-finder');
     Route::post('/polling-finder', [VoterController::class, 'pollingFinder'])->name('polling-finder.search');
     Route::get('/transfer', [VoterController::class, 'transfer'])->name('transfer');
@@ -95,9 +100,9 @@ Route::prefix('voter')->name('voter.')->group(function () {
     Route::get('/inquiry', [VoterController::class, 'inquiry'])->name('inquiry');
     Route::post('/inquiry', [VoterController::class, 'inquiry'])->name('inquiry.submit');
     Route::get('/forgot-id', [VoterController::class, 'forgotId'])->name('forgot-id');
-    Route::post('/forgot-id', [VoterController::class, 'forgotId'])->name('forgot-id.submit');
+    Route::post('/forgot-id', [VoterController::class, 'forgotId'])->middleware('throttle:otp')->name('forgot-id.submit');
     Route::get('/report-issue', [VoterController::class, 'reportIssue'])->name('report-issue');
-    Route::post('/report-issue', [VoterController::class, 'reportIssue'])->name('report-issue.submit');
+    Route::post('/report-issue', [VoterController::class, 'reportIssue'])->middleware('throttle:registration')->name('report-issue.submit');
     Route::get('/education', [VoterController::class, 'education'])->name('education');
     Route::get('/how-to-vote', [VoterController::class, 'howToVote'])->name('how-to-vote');
     Route::get('/id-card', [VoterController::class, 'idCard'])->name('id-card');
@@ -119,6 +124,9 @@ Route::get('/news/{slug}', [MediaController::class, 'article'])->name('news.arti
 Route::get('/events', [\App\Http\Controllers\EventController::class, 'index'])->name('events.index');
 Route::get('/events/{slug}', [\App\Http\Controllers\EventController::class, 'show'])->name('events.show');
 
+// CMS pages (mirrored from nec.gov.ss and managed internally)
+Route::get('/pages/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('pages.show');
+
 // Other public
 Route::get('/constituencies', [ConstituencyController::class, 'index'])->name('constituencies.index');
 Route::get('/parties', [PartyController::class, 'index'])->name('parties.index');
@@ -137,6 +145,8 @@ Route::post('/contact', [ContactController::class, 'index'])->name('contact.subm
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 Route::get('/search', [SearchController::class, 'index'])->name('search.results');
 Route::get('/reports/annual', [ReportController::class, 'annual'])->name('reports.annual');
+Route::get('/reports/voter-statistics', [ReportController::class, 'locationStats'])->name('reports.voter-stats');
+Route::get('/reports/voter-statistics/export', [ReportController::class, 'locationStatsCsv'])->name('reports.voter-stats.export');
 Route::get('/legal/privacy-policy', [LegalController::class, 'privacyPolicy'])->name('legal.privacy-policy');
 Route::get('/legal/terms-of-use', [LegalController::class, 'termsOfUse'])->name('legal.terms-of-use');
 Route::get('/legal/accessibility', [LegalController::class, 'accessibility'])->name('legal.accessibility');
@@ -149,14 +159,16 @@ Route::get('/gis/map', [GisController::class, 'map'])->name('gis.map');
 // Unified Auth
 Route::match(['get', 'post'], '/login', [AuthController::class, 'unifiedLogin'])->middleware('throttle:login')->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::match(['get', 'post'], '/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
+Route::match(['get', 'post'], '/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:otp')->name('forgot-password');
 
 // Voter Portal (redirect login to unified)
 Route::prefix('voter/portal')->name('voter.portal.')->group(function () {
     Route::redirect('/login', '/login')->name('login');
     Route::redirect('/forgot-password', '/forgot-password')->name('forgot-password');
     Route::get('/register', [VoterAuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [VoterAuthController::class, 'register'])->name('register.submit');
+    Route::post('/register', [VoterAuthController::class, 'register'])->middleware('throttle:registration')->name('register.submit');
+    Route::match(['get', 'post'], '/register/verify', [VoterAuthController::class, 'verifyEmailOtp'])->middleware('throttle:otp')->name('register.verify-otp');
+    Route::post('/register/verify/resend', [VoterAuthController::class, 'resendEmailOtp'])->middleware('throttle:otp')->name('register.resend-otp');
     Route::post('/logout', [VoterAuthController::class, 'logout'])->name('logout');
     Route::get('/verify', [VoterAuthController::class, 'verifyVoter'])->name('verify');
     Route::post('/verify', [VoterAuthController::class, 'verifyVoter'])->name('verify.submit');
@@ -178,6 +190,8 @@ Route::post('/newsletter/subscribe', [App\Http\Controllers\Api\ApiNewsletterCont
 
 // Geographic API (public, for cascading dropdowns and drill-down)
 Route::prefix('api/geo')->name('api.geo.')->group(function () {
+    Route::get('/countries', [GeographicController::class, 'countries'])->name('countries');
+    Route::get('/diaspora-missions', [GeographicController::class, 'diasporaMissions'])->name('diaspora-missions');
     Route::get('/states', [GeographicController::class, 'states'])->name('states');
     Route::get('/counties', [GeographicController::class, 'counties'])->name('counties');
     Route::get('/constituencies', [GeographicController::class, 'constituencies'])->name('constituencies');
@@ -232,6 +246,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('voters/{voter}/edit', [AdminVoterController::class, 'edit'])->name('voters.edit');
     Route::put('voters/{voter}', [AdminVoterController::class, 'update'])->name('voters.update');
     Route::patch('voters/{voter}/status', [AdminVoterController::class, 'updateStatus'])->name('voters.status');
+    Route::post('voters/{voter}/deceased', [AdminVoterController::class, 'markDeceased'])->name('voters.deceased');
+    Route::post('voters/{voter}/revive', [AdminVoterController::class, 'revive'])->name('voters.revive');
     Route::delete('voters/{voter}', [AdminVoterController::class, 'destroy'])->name('voters.destroy');
     Route::post('voters/{voter}/restore', [AdminVoterController::class, 'restore'])->name('voters.restore');
 
@@ -307,6 +323,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     // Reports
     Route::get('reports', [AdminReportController::class, 'index'])->name('reports.index');
+    Route::post('notifications/read-all', [AdminNotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::post('notifications/{notification}/read', [AdminNotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('reports', [AdminReportController::class, 'store'])->name('reports.store');
     Route::delete('reports/{report}', [AdminReportController::class, 'destroy'])->name('reports.destroy');
     Route::post('reports/{id}/restore', [AdminReportController::class, 'restore'])->name('reports.restore');
@@ -410,6 +428,25 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('geographic/bomas', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'storeBoma'])->name('geographic.boma.store');
     Route::put('geographic/bomas/{boma}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'updateBoma'])->name('geographic.boma.update');
     Route::delete('geographic/bomas/{boma}', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'destroyBoma'])->name('geographic.boma.destroy');
+
+    // Countries (worldwide voter reference)
+    Route::get('countries', [AdminCountryController::class, 'index'])->name('countries.index');
+    Route::get('countries/create', [AdminCountryController::class, 'create'])->name('countries.create');
+    Route::post('countries', [AdminCountryController::class, 'store'])->name('countries.store');
+    Route::get('countries/{country}/edit', [AdminCountryController::class, 'edit'])->name('countries.edit');
+    Route::put('countries/{country}', [AdminCountryController::class, 'update'])->name('countries.update');
+    Route::get('countries/{country}/toggle-status', [AdminCountryController::class, 'toggleStatus'])->name('countries.toggle-status');
+    Route::delete('countries/{country}', [AdminCountryController::class, 'destroy'])->name('countries.destroy');
+
+    // Diaspora Missions
+    Route::get('diaspora-missions', [AdminDiasporaMissionController::class, 'index'])->name('diaspora-missions.index');
+    Route::get('diaspora-missions/create', [AdminDiasporaMissionController::class, 'create'])->name('diaspora-missions.create');
+    Route::post('diaspora-missions', [AdminDiasporaMissionController::class, 'store'])->name('diaspora-missions.store');
+    Route::get('diaspora-missions/{mission}/edit', [AdminDiasporaMissionController::class, 'edit'])->name('diaspora-missions.edit');
+    Route::put('diaspora-missions/{mission}', [AdminDiasporaMissionController::class, 'update'])->name('diaspora-missions.update');
+    Route::get('diaspora-missions/{mission}/toggle-status', [AdminDiasporaMissionController::class, 'toggleStatus'])->name('diaspora-missions.toggle-status');
+    Route::get('diaspora-missions/{mission}/restore', [AdminDiasporaMissionController::class, 'restore'])->name('diaspora-missions.restore');
+    Route::delete('diaspora-missions/{mission}', [AdminDiasporaMissionController::class, 'destroy'])->name('diaspora-missions.destroy');
 
     // Subscribers
     Route::get('subscribers', [AdminSubscriberController::class, 'index'])->name('subscribers.index');

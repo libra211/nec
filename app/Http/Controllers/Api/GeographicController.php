@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Boma;
+use App\Models\Country;
 use App\Models\County;
+use App\Models\DiasporaMission;
 use App\Models\Payam;
 use App\Models\PollingStation;
 use App\Models\State;
@@ -14,6 +16,43 @@ use Illuminate\Support\Facades\DB;
 
 class GeographicController extends Controller
 {
+    protected function resolveStateName(?string $state): string
+    {
+        if (!$state) {
+            return '';
+        }
+
+        return (string) DB::table('nec_states')
+            ->where('status', 'active')
+            ->where(function ($q) use ($state) {
+                $q->where('code', $state)->orWhere('name', $state);
+            })
+            ->value('name');
+    }
+
+    public function countries(Request $request): JsonResponse
+    {
+        $countries = Country::where('status', 'active')
+            ->when($request->has('continent'), fn($q) => $q->where('continent', $request->input('continent')))
+            ->orderBy('name')
+            ->get(['id', 'name', 'code', 'iso3', 'nationality', 'continent', 'calling_code']);
+
+        return response()->json($countries);
+    }
+
+    public function diasporaMissions(Request $request): JsonResponse
+    {
+        $query = DiasporaMission::with('country:id,name,code')->where('status', 'active');
+
+        if ($request->has('country_id')) {
+            $query->where('country_id', $request->input('country_id'));
+        }
+
+        $missions = $query->orderBy('name')->get();
+
+        return response()->json($missions);
+    }
+
     public function states(Request $request): JsonResponse
     {
         $query = State::where('status', 'active')->orderBy('name');
@@ -47,9 +86,12 @@ class GeographicController extends Controller
 
         if ($request->has('state')) {
             $state = $request->input('state');
-            $query->where(function ($q) use ($state) {
-                $q->where('state', $state)
-                    ->orWhere('state', DB::raw("(SELECT name FROM nec_states WHERE code = '$state' OR name = '$state' LIMIT 1)"));
+            $resolvedName = $this->resolveStateName($state);
+            $query->where(function ($q) use ($state, $resolvedName) {
+                $q->where('state', $state);
+                if ($resolvedName !== '' && $resolvedName !== $state) {
+                    $q->orWhere('state', $resolvedName);
+                }
             });
         }
 
@@ -106,9 +148,12 @@ class GeographicController extends Controller
             }
         } elseif ($request->has('state')) {
             $state = $request->input('state');
-            $query->where(function ($q) use ($state) {
-                $q->where('state', $state)
-                    ->orWhere('state', DB::raw("(SELECT name FROM nec_states WHERE code = '$state' OR name = '$state' LIMIT 1)"));
+            $resolvedName = $this->resolveStateName($state);
+            $query->where(function ($q) use ($state, $resolvedName) {
+                $q->where('state', $state);
+                if ($resolvedName !== '' && $resolvedName !== $state) {
+                    $q->orWhere('state', $resolvedName);
+                }
             });
         }
 

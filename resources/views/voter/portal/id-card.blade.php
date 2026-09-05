@@ -160,13 +160,18 @@
 <section class="py-4">
     <div class="container">
         @php
-            $voter = Auth::guard('voter')->user();
+            $voter = $voter ?? null;
             $initials = '';
             if ($voter && $voter->full_name) {
                 $parts = explode(' ', $voter->full_name);
                 $initials = mb_substr($parts[0], 0, 1);
                 if (count($parts) > 1) $initials .= mb_substr(end($parts), 0, 1);
             }
+            [$eligibilityBadge, $eligibilityColor, $eligibilityText] = match (true) {
+                $voter && $voter->isDeceased() => ['bg-dark', 'text-black-50', 'Deceased'],
+                $voter && $voter->isPreRegistered() => ['bg-warning', 'text-dark', 'Pre-Registered'],
+                default => ['bg-success', 'text-white', 'Eligible to Vote'],
+            };
             $maskedNational = '';
             if (!empty($voter->national_id)) {
                 $maskedNational = substr($voter->national_id, 0, 3) . '****' . substr($voter->national_id, -2);
@@ -203,7 +208,7 @@
                                 <div class="name-section">
                                     <div class="voter-name">{{ $voter->full_name ?? 'N/A' }}</div>
                                     <div class="voter-id-badge">{{ $voter->voter_id ?? 'N/A' }}</div>
-                                    <div style="margin-top:6px;">
+                                    <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
                                         @php $rt = $voter->registration_type ?? 'self'; @endphp
                                         <span class="reg-type-badge {{ $rt }}">
                                             @if($rt === 'self')
@@ -211,6 +216,10 @@
                                             @else
                                                 <i class="bi bi-people"></i> Agent-Assisted
                                             @endif
+                                        </span>
+                                        <span class="reg-type-badge {{ $eligibilityBadge }}" style="background:{{ $eligibilityBadge === 'bg-warning' ? '#fef3c7' : ($eligibilityBadge === 'bg-dark' ? '#343a40' : '#d1fae5') }};color:{{ $eligibilityBadge === 'bg-warning' ? '#92400e' : ($eligibilityBadge === 'bg-dark' ? '#fff' : '#166534') }};border:none;">
+                                            <i class="bi {{ $voter->isDeceased() ? 'bi-heartbreak' : ($voter->isPreRegistered() ? 'bi-hourglass-split' : 'bi-check-circle') }}"></i>
+                                            {{ $eligibilityText }}
                                         </span>
                                     </div>
                                 </div>

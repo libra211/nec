@@ -44,7 +44,7 @@ class HomeController extends Controller
     public function index()
     {
         $autoStat = fn(string $stat) => match ($stat) {
-            'total_voters' => Voter::count(),
+            'total_voters' => Voter::whereNull('deleted_at')->where(fn($q) => $q->where('status', '!=', 'deceased')->whereNull('deceased_date'))->count(),
             'constituencies' => Constituency::count(),
             'polling_stations' => PollingStation::count(),
             'parties' => PoliticalParty::count(),

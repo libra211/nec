@@ -12,6 +12,14 @@
         </nav>
     </div>
     <div class="d-flex gap-2">
+        @if($voter->isDeceased())
+            <form action="{{ route('admin.voters.revive', $voter->id) }}" method="POST" onsubmit="return confirm('Clear the death record and return this voter to active?');">
+                @csrf
+                <button class="btn btn-outline-success"><i class="fas fa-user-check me-1"></i> Revive Voter</button>
+            </form>
+        @else
+            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#deceasedModal"><i class="fas fa-heartbeat me-1"></i> Record Death</button>
+        @endif
         <a href="{{ route('admin.voters.edit', $voter->id) }}" class="btn btn-outline-primary"><i class="fas fa-edit me-1"></i> Edit</a>
         <a href="{{ route('admin.voters.index') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i> Back</a>
     </div>
@@ -35,7 +43,7 @@
                 <h3 class="mb-1">{{ $voter->full_name }}</h3>
                 <div class="d-flex align-items-center gap-3">
                     <code class="fs-6">{{ $voter->voter_id }}</code>
-                    @php $statusColors = ['active' => 'success', 'suspended' => 'danger', 'inactive' => 'secondary']; @endphp
+                    @php $statusColors = ['active' => 'success', 'suspended' => 'danger', 'inactive' => 'secondary', 'deceased' => 'dark']; @endphp
                     <span class="badge bg-{{ $statusColors[$voter->status] ?? 'success' }} fs-6">{{ ucfirst($voter->status ?? 'Active') }}</span>
                     @if($voter->registration_type === 'agent')
                         <span class="badge" style="background:#1e40af;font-size:12px"><i class="bi bi-people me-1"></i> Agent-Assisted</span>
@@ -47,6 +55,55 @@
         </div>
     </div>
 </div>
+
+@if($voter->isDeceased())
+    <div class="card border-0 shadow-sm mb-4" style="border-left:5px solid #343a40;">
+        <div class="card-body">
+            <div class="d-flex gap-3 align-items-start">
+                <div style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#f2f4f6;flex-shrink:0;"><i class="fas fa-heart-crack" style="color:#343a40;font-size:20px;"></i></div>
+                <div class="w-100">
+                    <h5 class="mb-2">Vital Record</h5>
+                    <div class="row small">
+                        <div class="col-md-3"><span class="text-muted">Date of Death</span><br><strong>{{ $voter->deceased_date ? $voter->deceased_date->format('d M Y') : 'N/A' }}</strong></div>
+                        <div class="col-md-3"><span class="text-muted">Recorded By</span><br><strong>{{ $voter->deceased_by ?: 'N/A' }}</strong></div>
+                        <div class="col-md-3"><span class="text-muted">Recorded At</span><br><strong>{{ $voter->deceased_at ? $voter->deceased_at->format('d M Y, h:i A') : 'N/A' }}</strong></div>
+                        <div class="col-md-3"><span class="text-muted">Certificate Ref</span><br><strong>{{ $voter->death_certificate_ref ?: 'N/A' }}</strong></div>
+                    </div>
+                    <p class="small text-muted mb-0 mt-2"><i class="fas fa-info-circle me-1"></i>This voter is excluded from the electoral roll and cannot vote.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
+@if(!$voter->isDeceased())
+<div class="modal fade" id="deceasedModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="{{ route('admin.voters.deceased', $voter->id) }}" method="POST" class="modal-content">
+            @csrf
+            <div class="modal-header">
+                <h5 class="modal-title">Record Death</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-3">Recording a death removes <strong>{{ $voter->full_name }}</strong> from the electoral roll and marks them ineligible to vote.</p>
+                <div class="mb-3">
+                    <label class="form-label">Date of Death <span class="text-danger">*</span></label>
+                    <input type="date" name="deceased_date" class="form-control" required max="{{ date('Y-m-d') }}">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Death Certificate Reference</label>
+                    <input type="text" name="death_certificate_ref" class="form-control" placeholder="Optional" maxlength="100">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-dark"><i class="fas fa-heartbeat me-1"></i> Record Death</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
 
 <div class="row g-4">
     <div class="col-lg-6">

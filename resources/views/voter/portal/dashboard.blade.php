@@ -83,7 +83,7 @@
             </div>
             <div class="d-flex align-items-center gap-3">
                 <span style="color:rgba(255,255,255,0.7);font-size:13px;">
-                    <i class="fas fa-user me-1"></i> {{ Auth::guard('voter')->user()->full_name ?? 'Voter' }}
+                    <i class="fas fa-user me-1"></i> {{ ($voter->full_name ?? 'Voter') }}
                 </span>
                 <form method="POST" action="{{ route('voter.portal.logout') }}" style="display:inline;">
                     @csrf
@@ -106,16 +106,16 @@
             <div class="content">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                     <div>
-                        <h2>Welcome, {{ Auth::guard('voter')->user()->full_name ?? 'Voter' }}!</h2>
+                        <h2>Welcome, {{ ($voter->full_name ?? 'Voter') }}!</h2>
                         <p>Manage your voter registration, download your ID card, and stay informed.</p>
                         <div class="voter-badge">
                             <i class="fas fa-fingerprint"></i>
-                            Voter ID: {{ Auth::guard('voter')->user()->voter_id ?? 'N/A' }}
+                            Voter ID: {{ ($voter->voter_id ?? 'N/A') }}
                         </div>
                     </div>
                     <div class="text-center">
                         @php
-                            $voter = Auth::guard('voter')->user();
+                            $voter = $voter ?? null;
                             $initials = '';
                             if ($voter && $voter->full_name) {
                                 $initials = implode('', array_map(fn($n) => mb_substr($n, 0, 1), explode(' ', $voter->full_name)));

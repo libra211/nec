@@ -56,6 +56,23 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3" style="color: var(--nec-green);"><i class="fas fa-file-lines me-2"></i>Information & Resources</h5>
+                        <ul class="list-unstyled mb-0">
+                            @php $cmsPages = \App\Models\CmsPage::where('status', 'published')->whereNull('deleted_at')->orderBy('title')->get(); @endphp
+                            @forelse($cmsPages as $cmsPage)
+                                <li class="mb-2"><a href="{{ url('pages/' . $cmsPage->slug) }}" class="text-decoration-none">{{ $cmsPage->title }}</a></li>
+                            @empty
+                                <li class="mb-2 text-muted">No pages available.</li>
+                            @endforelse
+                            <li class="mb-2"><a href="{{ url('downloads') }}" class="text-decoration-none">Downloads</a></li>
+                            <li class="mb-2"><a href="{{ url('reports/annual') }}" class="text-decoration-none">Annual Reports</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
                         <h5 class="fw-bold mb-3" style="color: var(--nec-green);"><i class="fas fa-vote-yea me-2"></i>Elections</h5>
                         <ul class="list-unstyled mb-0">
                             <li class="mb-2"><a href="{{ url('elections/calendar') }}" class="text-decoration-none">Election Calendar</a></li>

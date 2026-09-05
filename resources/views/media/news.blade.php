@@ -105,18 +105,18 @@ $regular = array_values(array_filter($newsItems, fn($n) => !isset($n['featured']
 $selectedCat = request('category', '');
 $page = max(1, intval(request('page', 1)));
 
-function time_ago($datetime) {
+if (!function_exists('time_ago')) { function time_ago($datetime) {
     $diff = time() - strtotime($datetime);
     if ($diff < 60) return 'Just now';
     if ($diff < 3600) return floor($diff / 60) . 'm ago';
     if ($diff < 86400) return floor($diff / 3600) . 'h ago';
     if ($diff < 604800) return floor($diff / 86400) . 'd ago';
     return date('M j', strtotime($datetime));
-}
-function reading_time($text) {
+} }
+if (!function_exists('reading_time')) { function reading_time($text) {
     $words = str_word_count(strip_tags($text));
     return max(1, ceil($words / 200));
-}
+} }
 @endphp
 
 <section class="py-4">

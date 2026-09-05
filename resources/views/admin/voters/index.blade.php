@@ -4,14 +4,14 @@
     $sortCol = request('sort', 'created_at');
     $sortDir = request('direction', 'desc');
     $currentUrl = route('admin.voters.index');
-    function sortUrl($col, $currentCol, $currentDir) {
+    if (!function_exists('sortUrl')) { function sortUrl($col, $currentCol, $currentDir) {
         $params = array_merge(request()->except('sort', 'direction'), ['sort' => $col, 'direction' => ($col === $currentCol && $currentDir === 'asc') ? 'desc' : 'asc']);
         return route('admin.voters.index', $params);
-    }
-    function sortIcon($col, $currentCol, $currentDir) {
+    } }
+    if (!function_exists('sortIcon')) { function sortIcon($col, $currentCol, $currentDir) {
         if ($col !== $currentCol) return 'fa-sort';
         return $currentDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
-    }
+    } }
 @endphp
 
 @section('content')
@@ -21,7 +21,7 @@
         <p class="text-muted mb-0 small">Manage registered voters, view demographics, and track transfers</p>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('admin.voters.export') }}" class="btn btn-outline-success btn-sm px-3 rounded-3"><i class="fas fa-file-export me-1"></i> Export CSV</a>
+        <a href="{{ route('admin.voters.export', request()->only(['search','status','state','county','constituency','gender'])) }}" class="btn btn-outline-success btn-sm px-3 rounded-3"><i class="fas fa-file-export me-1"></i> Export CSV</a>
         <a href="{{ route('admin.voters.create') }}" class="btn btn-primary btn-sm px-3 rounded-3 shadow-sm">
             <i class="fas fa-plus me-1"></i> Register Voter
         </a>
@@ -50,6 +50,14 @@
             <div class="stat-row">
                 <div class="stat-icon"><i class="fas fa-ban"></i></div>
                 <div class="stat-body"><div class="stat-value">{{ number_format($stats['suspended_voters'] ?? 0) }}</div><div class="stat-label">Suspended</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="stat-slim dark">
+            <div class="stat-row">
+                <div class="stat-icon"><i class="fas fa-heartbeat"></i></div>
+                <div class="stat-body"><div class="stat-value">{{ number_format($stats['deceased_voters'] ?? 0) }}</div><div class="stat-label">Deceased</div></div>
             </div>
         </div>
     </div>
@@ -131,8 +139,10 @@
                 <select name="status" class="form-select" style="font-size:13px;border-radius:8px;" onchange="this.form.submit()">
                     <option value="">All</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                     <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}>Suspended</option>
-                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="deceased" {{ request('status') === 'deceased' ? 'selected' : '' }}>Deceased</option>
+                    <option value="trash" {{ request('status') === 'trash' ? 'selected' : '' }}>Trash</option>
                 </select>
             </div>
             <div class="col-lg-1 col-md-3">

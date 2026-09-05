@@ -50,6 +50,40 @@ class NecHelper
         return $date->age;
     }
 
+    public static function election_cutoff(): \Carbon\Carbon
+    {
+        $year = (int) config('nec.election_year', now()->year);
+        return \Carbon\Carbon::create($year, 12, 31, 23, 59, 59);
+    }
+
+    public static function voting_age(): int
+    {
+        return (int) config('nec.voting_age', 18);
+    }
+
+    public static function minimum_registration_age(): int
+    {
+        return (int) config('nec.minimum_registration_age', 16);
+    }
+
+    public static function age_at(?\Carbon\CarbonInterface $dob, ?\Carbon\CarbonInterface $at = null): int
+    {
+        if (!$dob) return 0;
+        $at = $at ?: self::election_cutoff();
+        return (int) $dob->diffInYears($at);
+    }
+
+    public static function eligibility_date(?\Carbon\CarbonInterface $dob): ?\Carbon\Carbon
+    {
+        if (!$dob) return null;
+        return $dob->copy()->addYears(self::voting_age());
+    }
+
+    public static function max_dob_for_registration(): \Carbon\Carbon
+    {
+        return self::election_cutoff()->copy()->subYears(self::minimum_registration_age())->startOfDay();
+    }
+
     public static function statusBadge($s): string
     {
         $map = [

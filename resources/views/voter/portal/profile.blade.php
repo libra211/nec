@@ -81,7 +81,7 @@
 <section class="py-4">
     <div class="container" id="profileContent">
         @php
-            $voter = Auth::guard('voter')->user();
+            $voter = $voter ?? null;
             $initials = '';
             if ($voter && $voter->full_name) {
                 $initials = implode('', array_map(fn($n) => mb_substr($n, 0, 1), explode(' ', $voter->full_name)));

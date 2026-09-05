@@ -63,8 +63,9 @@ class AdminVoterController extends Controller
 
         $stats = [
             'total_voters' => Voter::whereNull('deleted_at')->count(),
-            'active_voters' => Voter::whereNull('deleted_at')->where('status', 'active')->count(),
+            'active_voters' => Voter::whereNull('deleted_at')->where('status', 'active')->whereNull('deceased_date')->count(),
             'suspended_voters' => Voter::whereNull('deleted_at')->where('status', 'suspended')->count(),
+            'deceased_voters' => Voter::whereNull('deleted_at')->where(fn($q) => $q->where('status', 'deceased')->orWhereNotNull('deceased_date'))->count(),
             'male_voters' => Voter::whereNull('deleted_at')->where('gender', 'M')->count(),
             'female_voters' => Voter::whereNull('deleted_at')->where('gender', 'F')->count(),
             'pending_transfers' => \App\Models\VoterTransfer::where('status', 'pending')->count(),
@@ -165,7 +166,7 @@ class AdminVoterController extends Controller
         $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
 
         $validated = $request->validate([
-            'status' => 'required|in:active,inactive,suspended',
+            'status' => 'required|in:active,inactive,suspended,deceased',
         ]);
 
         $oldStatus = $voter->status;
@@ -174,6 +175,41 @@ class AdminVoterController extends Controller
         $this->logActivity('voter_status_changed', "Changed voter {$voter->full_name} status from {$oldStatus} to {$validated['status']}", $voter);
 
         return back()->with('success', 'Voter status updated.');
+    }
+
+    public function markDeceased(Request $request, $id)
+    {
+        $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
+
+        $validated = $request->validate([
+            'deceased_date' => 'required|date|before_or_equal:today',
+            'death_certificate_ref' => 'nullable|string|max:100',
+        ]);
+
+        $voter->markAsDeceased([
+            'deceased_date' => $validated['deceased_date'],
+            'deceased_by' => session('admin_user_name', session('admin_email', '')),
+            'death_certificate_ref' => $validated['death_certificate_ref'] ?? null,
+        ]);
+
+        $this->logActivity('voter_deceased', "Recorded death of voter {$voter->full_name} ({$voter->voter_id}) dated {$validated['deceased_date']}", $voter);
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Death recorded. Voter removed from the electoral roll.']);
+        }
+
+        return back()->with('success', 'Death recorded. Voter removed from the electoral roll.');
+    }
+
+    public function revive($id)
+    {
+        $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
+
+        $voter->revive();
+
+        $this->logActivity('voter_revived', "Cleared death record for voter {$voter->full_name} ({$voter->voter_id})", $voter);
+
+        return back()->with('success', 'Voter returned to active and death record cleared.');
     }
 
     public function destroy($id)

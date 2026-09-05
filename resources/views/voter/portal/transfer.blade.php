@@ -63,7 +63,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
 
-                @php $voter = Auth::guard('voter')->user(); @endphp
+                @php $voter = $voter ?? null; @endphp
 
                 {{-- Info Box --}}
                 <div class="info-box">

@@ -134,6 +134,18 @@
                     <span class="menu-text">Geographic</span>
                 </a>
             </div>
+            <div class="menu-top{{ request()->routeIs('admin.countries.*') ? ' current' : '' }}">
+                <a href="{{ route('admin.countries.index') }}" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-earth-africa"></i></span>
+                    <span class="menu-text">Countries</span>
+                </a>
+            </div>
+            <div class="menu-top{{ request()->routeIs('admin.diaspora-missions.*') ? ' current' : '' }}">
+                <a href="{{ route('admin.diaspora-missions.index') }}" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-plane-departure"></i></span>
+                    <span class="menu-text">Diaspora Missions</span>
+                </a>
+            </div>
             @endif
 
             <div class="sidebar-section-title">Content</div>
@@ -340,21 +352,39 @@
             </div>
             <div class="topbar-right">
                 <div class="dropdown">
-                    <a href="#" class="topbar-icon-btn" data-bs-toggle="dropdown">
+                    <a href="#" class="topbar-icon-btn" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-bell"></i>
-                        @php
-                            $notificationCount = session('admin_notification_count', 0);
-                        @endphp
-                        @if($notificationCount > 0)
-                            <span class="badge-count">{{ $notificationCount }}</span>
+                        @if(($adminUnreadNotifCount ?? 0) > 0)
+                            <span class="badge-count">{{ $adminUnreadNotifCount }}</span>
                         @endif
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="min-width: 280px;">
-                        <h6 class="dropdown-header">Notifications</h6>
-                        @if(session('admin_notifications') && count(session('admin_notifications', [])) > 0)
-                            @foreach(session('admin_notifications', []) as $notification)
-                                <a class="dropdown-item" href="{{ $notification['url'] ?? '#' }}">
-                                    <i class="fas fa-{{ $notification['icon'] ?? 'bell' }} text-{{ $notification['color'] ?? 'primary' }} me-2"></i>{{ $notification['message'] ?? '' }}
+                    <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="min-width: 300px;">
+                        <div class="dropdown-header d-flex align-items-center justify-content-between">
+                            <span class="fw-semibold">Notifications</span>
+                            @if(($adminNotifications ?? collect())->count())
+                            <form action="{{ route('admin.notifications.read-all') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size:11px;">
+                                    <i class="fas fa-check-double me-1"></i>Mark all read
+                                </button>
+                            </form>
+                            @endif
+                        </div>
+                        @if(($adminNotifications ?? collect())->count() > 0)
+                            @foreach($adminNotifications as $notification)
+                                <a class="dropdown-item d-flex flex-column align-items-start py-2"
+                                   href="{{ $notification->link ?? '#' }}"
+                                   data-notif-id="{{ $notification->id }}"
+                                   @if($notification->link) onclick="fetch('{{ route('admin.notifications.read', $notification->id) }}', {method:'POST', headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}});" @endif>
+                                    <span class="d-flex align-items-center w-100">
+                                        <i class="fas fa-{{ $notification->icon }} text-{{ $notification->color }} me-2"></i>
+                                        <span class="fw-semibold text-dark" style="font-size:12px;">{{ $notification->title }}</span>
+                                        @if($notification->read_at === null)
+                                            <span class="badge bg-primary ms-auto" style="font-size:9px;">NEW</span>
+                                        @endif
+                                    </span>
+                                    <span class="text-muted mt-1" style="font-size:11px;">{{ $notification->message }}</span>
+                                    <span class="text-muted mt-1" style="font-size:10px;">{{ $notification->created_at->format('d M Y, h:i A') }}</span>
                                 </a>
                             @endforeach
                         @else

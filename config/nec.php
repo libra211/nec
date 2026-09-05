@@ -29,4 +29,9 @@ return [
     'total_polling_stations' => 3284,
     'total_states' => 10,
     'election_year' => 2026,
+
+    // Voter age eligibility. Citizens may pre-register from this age (measured
+    // against 31 Dec of the election year) and become eligible to vote once 18.
+    'minimum_registration_age' => 16,
+    'voting_age' => 18,
 ];

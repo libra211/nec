@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Constituency;
+use App\Models\OtpCode;
 use App\Models\Voter;
 use App\Models\VoterAccount;
 use App\Models\VoterTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class VoterAuthController extends Controller
@@ -76,6 +78,8 @@ class VoterAuthController extends Controller
             'last_login' => now(),
         ]);
 
+        $request->session()->regenerate();
+
         session([
             'voter_logged_in' => true,
             'voter_id' => $voter->voter_id,
@@ -127,14 +131,104 @@ class VoterAuthController extends Controller
             return back()->withInput()->with('error', 'This email is already registered to another account.');
         }
 
-        VoterAccount::create([
-            'voter_id' => $voter->voter_id,
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-            'status' => 'active',
+        $email = $request->input('email');
+        $otp = OtpCode::generate($email, 'voter_account', 10);
+        Mail::to($email)->send(new \App\Mail\OtpNotification($otp->code, 'voter_account'));
+
+        session([
+            'voter_account_pending' => [
+                'voter_id' => $voter->voter_id,
+                'email' => $email,
+                'password' => Hash::make($request->input('password')),
+            ],
+            'voter_account_otp_identifier' => $email,
         ]);
 
-        return redirect()->route('voter.portal.login')->with('success', 'Account created successfully. Please log in.');
+        return response()
+            ->view('voter.portal.verify-otp', [
+                'identifier' => $email,
+                'otpSent' => true,
+            ])
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
+    }
+
+    public function verifyEmailOtp(Request $request)
+    {
+        $pending = session('voter_account_pending');
+
+        if ($request->isMethod('GET')) {
+            if (!$pending) {
+                return redirect()->route('voter.portal.register')->with('error', 'Please start account creation again.');
+            }
+            return response()
+                ->view('voter.portal.verify-otp', ['identifier' => session('voter_account_otp_identifier')])
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
+        }
+
+        if (!$pending) {
+            return redirect()->route('voter.portal.register')->with('error', 'Session expired. Please start again.');
+        }
+
+        $identifier = session('voter_account_otp_identifier');
+        $request->validate(['otp' => 'required|string|size:6']);
+
+        if (!OtpCode::verify($identifier, $request->input('otp'), 'voter_account')) {
+            return response()
+                ->view('voter.portal.verify-otp', [
+                    'identifier' => $identifier,
+                    'error' => 'Invalid or expired code. Please try again.',
+                ])
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
+        }
+
+        $voter = Voter::where('voter_id', $pending['voter_id'])->first();
+
+        $account = VoterAccount::create([
+            'voter_id' => $pending['voter_id'],
+            'email' => $pending['email'],
+            'password' => $pending['password'],
+            'status' => 'active',
+            'email_verified_at' => now(),
+        ]);
+
+        session()->forget(['voter_account_pending', 'voter_account_otp_identifier']);
+        session()->regenerate();
+
+        session([
+            'voter_logged_in' => true,
+            'voter_id' => $pending['voter_id'],
+            'voter_user_id' => $account->id,
+            'voter_name' => $voter?->full_name ?? 'Voter',
+        ]);
+
+        return redirect()->route('voter.portal.dashboard')->with('success', 'Account verified and activated successfully.');
+    }
+
+    public function resendEmailOtp(Request $request)
+    {
+        $identifier = session('voter_account_otp_identifier');
+        if (!$identifier) {
+            return redirect()->route('voter.portal.register')->with('error', 'Session expired. Please start again.');
+        }
+
+        $otp = OtpCode::generate($identifier, 'voter_account', 10);
+        Mail::to($identifier)->send(new \App\Mail\OtpNotification($otp->code, 'voter_account'));
+
+        return response()
+            ->view('voter.portal.verify-otp', [
+                'identifier' => $identifier,
+                'otpSent' => true,
+                'success' => 'A new code has been sent to your email.',
+            ])
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function logout()
@@ -264,6 +358,17 @@ class VoterAuthController extends Controller
             'reason' => $request->input('reason'),
             'status' => 'pending',
         ]);
+
+        \App\Models\Notification::notifyAdmins(
+            "Transfer request: {$voter->full_name} ({$voter->voter_id}) from {$voter->constituency} to {$toConstituency->name}",
+            [
+                'title' => 'Transfer Request',
+                'type' => 'transfer',
+                'icon' => 'exchange-alt',
+                'color' => 'info',
+                'link' => route('admin.voter-transfers.index'),
+            ]
+        );
 
         return redirect()->route('voter.portal.transfer-status')->with('success', 'Transfer request submitted successfully.');
     }

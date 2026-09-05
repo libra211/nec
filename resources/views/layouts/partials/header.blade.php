@@ -18,7 +18,7 @@
             ? (\App\Helpers\NecHelper::setting_get('public_stat_polling_stations_value', '') ?: ($autoStations ?: $ticker_stations))
             : ($autoStations ?: $ticker_stations);
     } catch (\Exception $e) {}
-    function th($n) { if ($n >= 1000000) return round($n/1000000,1).'M'; if ($n >= 1000) return round($n/1000,1).'K'; return number_format($n); }
+if (!function_exists('th')) { function th($n) { if ($n >= 1000000) return round($n/1000000,1).'M'; if ($n >= 1000) return round($n/1000,1).'K'; return number_format($n); } }
 @endphp
 
 <!-- PRELOADER -->
