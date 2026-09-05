@@ -298,6 +298,7 @@
     <div class="card-footer bg-white border-top d-flex flex-wrap justify-content-between align-items-center gap-2 px-4 py-3">
         <div class="d-flex flex-wrap align-items-center gap-2">
             <span class="text-muted" style="font-size:0.75rem;">Showing {{ $voters->firstItem() }}–{{ $voters->lastItem() }} of {{ $voters->total() }} voters</span>
+            @if($can('voters.delete'))
             <div class="dropdown">
                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-3" type="button" data-bs-toggle="dropdown" style="font-size:0.75rem;padding:4px 12px;">
                     <i class="fas fa-tasks me-1"></i> Bulk Actions
@@ -306,6 +307,7 @@
                     <li><button type="button" class="dropdown-item" onclick="bulkVoterAction('delete')"><i class="fas fa-trash text-danger me-2" style="font-size:0.7rem;"></i>Delete Selected</button></li>
                 </ul>
             </div>
+            @endif
         </div>
         <div>{{ $voters->appends(request()->except('page'))->links() }}</div>
     </div>

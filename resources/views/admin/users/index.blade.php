@@ -163,9 +163,11 @@
 {{-- Bulk Actions --}}
 <div class="d-flex justify-content-between align-items-center mt-3">
     <div class="d-flex gap-2">
+        @if($can('users.delete'))
         <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;font-size:0.75rem;" onclick="bulkAction('activate')"><i class="fas fa-check me-1"></i> Activate Selected</button>
         <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(234,179,8,0.08);color:#ca8a04;border:none;font-size:0.75rem;" onclick="bulkAction('deactivate')"><i class="fas fa-ban me-1"></i> Deactivate Selected</button>
         <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;font-size:0.75rem;" onclick="bulkAction('delete')"><i class="fas fa-trash me-1"></i> Delete Selected</button>
+        @endif
     </div>
     <div>
         @isset($users)
