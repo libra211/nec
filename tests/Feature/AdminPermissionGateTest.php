@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Observer;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
@@ -124,5 +125,53 @@ class AdminPermissionGateTest extends TestCase
             ->assertStatus(200)
             ->assertSee('Central Equatoria')
             ->assertDontSee('All States');
+    }
+
+    public function test_observer_page_is_scoped_to_coordinator_state(): void
+    {
+        Observer::create([
+            'email' => 'obs.ee@nec.gov.ss',
+            'password' => '098765',
+            'last_name' => 'EEObserver',
+            'other_names' => 'Betty',
+            'category' => 'domestic',
+            'assigned_state' => 'Eastern Equatoria',
+        ]);
+        Observer::create([
+            'email' => 'obs.ce@nec.gov.ss',
+            'password' => '098765',
+            'last_name' => 'CEObserver',
+            'other_names' => 'Alpha',
+            'category' => 'domestic',
+            'assigned_state' => 'Central Equatoria',
+        ]);
+
+        $this->loginAs('state_coordinator', 'coord.ee@nec.gov.ss');
+        $this->get('/admin/observers')
+            ->assertStatus(200)
+            ->assertSee('EEObserver')
+            ->assertDontSee('CEObserver');
+    }
+
+    public function test_superadmin_sees_all_observers_and_can_assign_state(): void
+    {
+        Observer::create([
+            'email' => 'obs.unassigned@nec.gov.ss',
+            'password' => '098765',
+            'last_name' => 'Unassigned',
+            'other_names' => 'Calvin',
+            'category' => 'domestic',
+        ]);
+
+        $this->loginAs('super_admin');
+        $this->get('/admin/observers')
+            ->assertStatus(200)
+            ->assertSee('Unassigned');
+
+        $target = Observer::where('email', 'obs.unassigned@nec.gov.ss')->firstOrFail();
+        $this->patch("/admin/observers/{$target->id}/state", ['assigned_state' => 'Warrap'])
+            ->assertStatus(302);
+
+        $this->assertSame('Warrap', $target->fresh()->assigned_state);
     }
 }

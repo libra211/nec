@@ -4,6 +4,9 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Observer Management</h2>
     <div>
+        @if($scopedState)
+        <a href="{{ route('admin.observers.index') }}" class="btn btn-outline-secondary me-1"><i class="fas fa-map-marker-alt me-1"></i> {{ $scopedState }}</a>
+        @endif
         <button class="btn btn-outline-success me-1"><i class="fas fa-file-export me-1"></i> Export</button>
     </div>
 </div>
@@ -53,6 +56,7 @@
                     <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Email</th>
                     <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Category</th>
                     <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Organization</th>
+                    <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Assigned State</th>
                     <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Status</th>
                     <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 16px 10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;text-align:right;">Actions</th>
                 </tr>
@@ -66,6 +70,13 @@
                         <td style="padding:10px 12px;color:#475569;">{{ $obs->email }}</td>
                         <td style="padding:10px 12px;"><span class="badge bg-info">{{ ucfirst($obs->category) }}</span></td>
                         <td style="padding:10px 12px;color:#475569;">{{ $obs->organisation_name ? e($obs->organisation_name) : '—' }}</td>
+                        <td style="padding:10px 12px;">
+                            @if($obs->assigned_state)
+                                <span class="badge" style="background:rgba(46,139,87,0.1);color:#2E8B57;">{{ $obs->assigned_state }}</span>
+                            @else
+                                <span class="text-muted small">Unassigned</span>
+                            @endif
+                        </td>
                         <td style="padding:10px 12px;">
                             @if($obs->status === 'accredited')
                                 <span class="badge bg-success">Accredited</span>

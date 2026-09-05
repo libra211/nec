@@ -80,4 +80,30 @@
     </div>
 </div>
 @endif
+
+@if($can('observers.review'))
+<div class="card mt-4">
+    <div class="card-header"><h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Assign to State</h5></div>
+    <div class="card-body">
+        <form action="{{ route('admin.observers.state', $observer->id) }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Assigned State</label>
+                    <select name="assigned_state" class="form-select" required>
+                        <option value="">-- Select State --</option>
+                        @foreach($states ?? [] as $st)
+                            <option value="{{ $st->name }}" {{ $observer->assigned_state === $st->name ? 'selected' : '' }}>{{ $st->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save me-1"></i> Assign</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
 @endsection

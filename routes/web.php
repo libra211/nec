@@ -291,6 +291,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('observers', [AdminObserverController::class, 'index'])->name('observers.index');
     Route::get('observers/{observer}', [AdminObserverController::class, 'show'])->name('observers.show');
     Route::patch('observers/{observer}/status', [AdminObserverController::class, 'updateStatus'])->name('observers.status');
+    Route::patch('observers/{observer}/state', [AdminObserverController::class, 'updateState'])->name('observers.state');
 
     // Contacts
     Route::get('contacts', [AdminContactController::class, 'index'])->name('contacts.index');
