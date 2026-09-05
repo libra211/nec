@@ -8,6 +8,7 @@ use App\Models\Region;
 use App\Models\State;
 use App\Models\County;
 use App\Models\Constituency;
+use App\Models\Voter;
 use Illuminate\Http\Request;
 
 class AdminPollingStationController extends Controller
@@ -41,12 +42,81 @@ class AdminPollingStationController extends Controller
             'active' => PollingStation::where('status', 'active')->count(),
             'inactive' => PollingStation::where('status', 'inactive')->count(),
             'total_voters' => PollingStation::sum('registered_voters'),
+            'staff' => \App\Models\PollingStaff::count(),
+            'states_covered' => PollingStation::where('status', 'active')->whereNotNull('state')->distinct('state')->count('state'),
         ];
+
+        $stateStats = PollingStation::where('status', 'active')
+            ->selectRaw('state, COUNT(*) as stations, SUM(registered_voters) as voters')
+            ->whereNotNull('state')
+            ->groupBy('state')
+            ->orderByDesc('voters')
+            ->limit(6)
+            ->get();
 
         $regions = Region::where('status', 'active')->orderBy('sort_order')->pluck('name', 'id');
         $states = State::where('status', 'active')->orderBy('name')->pluck('name', 'id');
 
-        return view('admin.polling-stations.index', compact('pollingStations', 'stats', 'regions', 'states'));
+        return view('admin.polling-stations.index', compact('pollingStations', 'stats', 'stateStats', 'regions', 'states'));
+    }
+
+    public function show($id)
+    {
+        $pollingStation = PollingStation::withCount('pollingStaff')
+            ->with(['pollingStaff' => fn ($q) => $q->orderByRaw("FIELD(role, 'presiding_officer', 'deputy_presiding', 'poll_clerk', 'security', 'observer', 'trainer')")])
+            ->findOrFail($id);
+
+        $linkedVoters = Voter::where('polling_station', $pollingStation->name)->count();
+
+        return view('admin.polling-stations.show', compact('pollingStation', 'linkedVoters'));
+    }
+
+    public function export(Request $request)
+    {
+        $query = PollingStation::query();
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('code', 'LIKE', "%{$search}%")
+                  ->orWhere('constituency', 'LIKE', "%{$search}%")
+                  ->orWhere('county', 'LIKE', "%{$search}%")
+                  ->orWhere('state', 'LIKE', "%{$search}%");
+            });
+        }
+
+        if ($state = $request->input('state')) {
+            $query->where('state', $state);
+        }
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        $stations = $query->orderBy('state')->orderBy('name')->get();
+
+        $csv = "Name,Code,State,County,Constituency,Payam,Registered Voters,Latitude,Longitude,Status\n";
+        foreach ($stations as $item) {
+            $csv .= implode(',', [
+                '"' . str_replace('"', '""', $item->name) . '"',
+                '"' . str_replace('"', '""', $item->code ?? '') . '"',
+                '"' . str_replace('"', '""', $item->state ?? '') . '"',
+                '"' . str_replace('"', '""', $item->county ?? '') . '"',
+                '"' . str_replace('"', '""', $item->constituency ?? '') . '"',
+                '"' . str_replace('"', '""', $item->payam ?? '') . '"',
+                $item->registered_voters ?? 0,
+                $item->latitude ?? '',
+                $item->longitude ?? '',
+                '"' . ($item->status ?? '') . '"',
+            ]) . "\n";
+        }
+
+        $this->logActivity('polling_stations_exported', 'Exported polling stations to CSV (' . $stations->count() . ' rows)', null);
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="polling_stations_' . now()->format('Y-m-d') . '.csv"',
+        ]);
     }
 
     public function create()

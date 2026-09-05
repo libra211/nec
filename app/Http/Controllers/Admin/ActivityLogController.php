@@ -28,10 +28,35 @@ class ActivityLogController extends Controller
             $query->where('action', $request->input('action'));
         }
 
-        $logs = $query->latest('created_at')->paginate(20)->appends($request->query());
-        $uniqueActions = ActivityLog::select('action')->distinct()->pluck('action');
+        if ($request->filled('entity_type')) {
+            $query->where('entity_type', $request->input('entity_type'));
+        }
 
-        return view('admin.activity-logs.index', compact('logs', 'uniqueActions'));
+        if ($request->filled('entity_id')) {
+            $query->where('entity_id', $request->input('entity_id'));
+        }
+
+        if ($request->filled('from')) {
+            $query->whereDate('created_at', '>=', $request->input('from'));
+        }
+
+        if ($request->filled('to')) {
+            $query->whereDate('created_at', '<=', $request->input('to'));
+        }
+
+        $filters = $request->only(['search', 'action', 'entity_type', 'entity_id', 'from', 'to']);
+        $logs = $query->latest('created_at')->paginate(20)->withQueryString();
+        $uniqueActions = ActivityLog::select('action')->distinct()->orderBy('action')->pluck('action');
+        $uniqueEntities = ActivityLog::select('entity_type')->whereNotNull('entity_type')->distinct()->orderBy('entity_type')->pluck('entity_type')->filter();
+
+        $stats = [
+            'total' => ActivityLog::count(),
+            'today' => ActivityLog::whereDate('created_at', today())->count(),
+            'week' => ActivityLog::where('created_at', '>=', now()->startOfWeek())->count(),
+            'unique_users' => ActivityLog::whereNotNull('user_email')->distinct('user_email')->count('user_email'),
+        ];
+
+        return view('admin.activity-logs.index', compact('logs', 'uniqueActions', 'uniqueEntities', 'stats', 'filters'));
     }
 
     public function show(ActivityLog $log)
@@ -43,8 +68,35 @@ class ActivityLogController extends Controller
     {
         $query = ActivityLog::query();
 
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('user_email', 'LIKE', "%{$search}%")
+                    ->orWhere('action', 'LIKE', "%{$search}%")
+                    ->orWhere('details', 'LIKE', "%{$search}%")
+                    ->orWhere('entity_type', 'LIKE', "%{$search}%")
+                    ->orWhere('ip_address', 'LIKE', "%{$search}%");
+            });
+        }
+
         if ($request->filled('action')) {
             $query->where('action', $request->input('action'));
+        }
+
+        if ($request->filled('entity_type')) {
+            $query->where('entity_type', $request->input('entity_type'));
+        }
+
+        if ($request->filled('entity_id')) {
+            $query->where('entity_id', $request->input('entity_id'));
+        }
+
+        if ($request->filled('from')) {
+            $query->whereDate('created_at', '>=', $request->input('from'));
+        }
+
+        if ($request->filled('to')) {
+            $query->whereDate('created_at', '<=', $request->input('to'));
         }
 
         $logs = $query->latest('created_at')->get();

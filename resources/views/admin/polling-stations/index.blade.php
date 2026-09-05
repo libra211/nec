@@ -7,6 +7,9 @@
         <p class="text-muted mb-0 small">Manage all polling stations across South Sudan</p>
     </div>
     <div class="d-flex gap-2">
+        <a href="{{ route('admin.polling-stations.export', request()->query()) }}" class="btn btn-outline-success px-3 rounded-3 shadow-sm">
+            <i class="fas fa-download me-1"></i> Export
+        </a>
         @if($can('polling-stations.create'))
         <a href="{{ route('admin.polling-stations.create') }}" class="btn btn-primary px-3 rounded-3 shadow-sm">
             <i class="fas fa-plus me-1"></i> Add Station
@@ -48,7 +51,45 @@
             </div>
         </div>
     </div>
+    <div class="col">
+        <div class="stat-slim gold">
+            <div class="stat-row">
+                <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+                <div class="stat-body"><div class="stat-value">{{ number_format($stats['staff']) }}</div><div class="stat-label">Poll Staff</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="stat-slim purple">
+            <div class="stat-row">
+                <div class="stat-icon"><i class="fas fa-flag"></i></div>
+                <div class="stat-body"><div class="stat-value">{{ number_format($stats['states_covered']) }}</div><div class="stat-label">States Covered</div></div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@if(isset($stateStats) && $stateStats->isNotEmpty())
+<div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
+    <div class="card-body py-3">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:rgba(46,139,87,0.1);color:#2E8B57;font-size:0.75rem;"><i class="fas fa-chart-bar"></i></span>
+            <span style="font-size:0.85rem;font-weight:600;color:#1e293b;">Voters by State</span>
+        </div>
+        @php $maxVoters = max($stateStats->max('voters') ?? 1, 1); @endphp
+        @foreach($stateStats as $ss)
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <span style="min-width:190px;font-size:0.8rem;font-weight:600;color:#334155;">{{ $ss->state }}</span>
+            <div class="flex-grow-1" style="background:#f1f5f9;border-radius:6px;height:14px;overflow:hidden;">
+                <div style="width:{{ round(($ss->voters / $maxVoters) * 100) }}%;height:100%;background:linear-gradient(90deg,#2E8B57,#3fb374);border-radius:6px;"></div>
+            </div>
+            <span class="small text-muted" style="min-width:110px;text-align:right;">{{ number_format($ss->voters) }}</span>
+            <span class="small text-muted" style="min-width:90px;text-align:center;">{{ $ss->stations }} stations</span>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
 
 <div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
     <div class="card-body py-3">
@@ -102,14 +143,16 @@
                     <th style="padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Constituency</th>
                     <th style="padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Voters</th>
                     <th style="padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Status</th>
+                    @if($can('polling-stations.update') || $can('polling-stations.delete'))
                     <th style="padding:10px 16px 10px 12px;text-align:right;font-size:0.75rem;letter-spacing:0.3px;text-transform:uppercase;">Actions</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
                 @forelse($pollingStations as $item)
                 <tr style="border-bottom:1px solid #f1f3f5;">
                     <td style="padding:10px 8px 10px 16px;color:#475569;">{{ $loop->iteration + ($pollingStations->currentPage() - 1) * $pollingStations->perPage() }}</td>
-                    <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $item->name }}</td>
+                    <td style="padding:10px 12px;color:#1e293b;font-weight:600;"><a href="{{ route('admin.polling-stations.show', $item->id) }}" class="text-decoration-none" style="color:#1e293b;">{{ $item->name }}</a></td>
                     <td style="padding:10px 12px;color:#475569;"><code style="font-size:0.8rem;background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#0F2042;">{{ $item->code ?? '-' }}</code></td>
                     <td style="padding:10px 12px;color:#475569;">{{ $item->state ?? '-' }}</td>
                     <td style="padding:10px 12px;color:#475569;">{{ $item->county ?? '-' }}</td>
@@ -124,6 +167,7 @@
                             <span class="badge bg-danger">Trash</span>
                         @endif
                     </td>
+                    @if($can('polling-stations.update') || $can('polling-stations.delete'))
                     <td style="padding:10px 16px 10px 12px;text-align:right;white-space:nowrap;">
                         @if($can('polling-stations.update'))
                         <a href="{{ route('admin.polling-stations.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
@@ -132,10 +176,11 @@
                         <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.polling-stations.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
                         @endif
                     </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9">
+                    <td colspan="{{ (($can('polling-stations.update') || $can('polling-stations.delete')) ? 9 : 8) }}">
                         <div class="text-center py-5">
                             <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:#f1f5f9;margin-bottom:12px;">
                                 <i class="fas fa-map-marker-alt" style="font-size:1.25rem;color:#94a3b8;"></i>

@@ -430,7 +430,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('polling-stations/counties', [AdminPollingStationController::class, 'getCounties'])->name('polling-stations.counties');
     Route::get('polling-stations/constituencies', [AdminPollingStationController::class, 'getConstituencies'])->name('polling-stations.constituencies');
     Route::get('polling-stations/generate-code', [AdminPollingStationController::class, 'generateCode'])->name('polling-stations.generate-code');
-    Route::resource('polling-stations', AdminPollingStationController::class)->except(['show']);
+    Route::get('polling-stations/export', [AdminPollingStationController::class, 'export'])->name('polling-stations.export');
+    Route::resource('polling-stations', AdminPollingStationController::class);
 
     // Geographic Management
     Route::get('geographic', [\App\Http\Controllers\Admin\AdminGeographicController::class, 'index'])->name('geographic.index');
