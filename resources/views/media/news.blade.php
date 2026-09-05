@@ -159,7 +159,12 @@ if (!function_exists('reading_time')) { function reading_time($text) {
                 @php $hero = $featured[0]; @endphp
                 <a href="{{ route('news.article', $hero['slug']) }}" class="text-decoration-none d-block mb-4">
                     <div class="card border-0 shadow-sm news-featured-card position-relative" style="background:linear-gradient(135deg,#1a3c8f 0%,#0f5e3a 100%);">
+                        @if (!empty($hero['image_url']))
+                        <img src="{{ $hero['image_url'] }}" alt="{{ $hero['title'] }}" class="position-absolute" style="inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';">
+                        <div class="card-body p-4 d-flex flex-column position-absolute" style="inset:0;background:linear-gradient(transparent 25%,rgba(0,0,0,0.9));">
+                        @else
                         <div class="card-body p-4 d-flex flex-column" style="min-height:320px;">
+                        @endif
                             <div class="mt-auto">
                                 <span class="badge mb-2" style="background:{{ $cat_colors[$hero['category']] ?? '#6c757d' }};font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:4px 12px;border-radius:20px;">
                                     <i class="fas {{ $cat_icons[$hero['category']] ?? 'fa-tag' }} me-1"></i>{{ $hero['category'] }}
@@ -215,7 +220,11 @@ if (!function_exists('reading_time')) { function reading_time($text) {
                         <div class="col-md-6">
                             <div class="card border-0 shadow-sm h-100 news-card position-relative">
                                 <div class="position-relative" style="height:160px;background:linear-gradient(135deg,{{ $cat_colors[$item['category']] ?? '#0f5e3a' }},rgba(0,0,0,0.6));overflow:hidden;">
+                                    @if (!empty($item['image_url']))
+                                    <img src="{{ $item['image_url'] }}" alt="{{ $item['title'] }}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" onerror="this.style.display='none';">
+                                    @else
                                     <i class="fas {{ $cat_icons[$item['category']] ?? 'fa-newspaper' }} text-white position-absolute top-50 start-50 translate-middle" style="font-size:2.5rem;opacity:0.2;"></i>
+                                    @endif
                                     <span class="news-cat" style="background:{{ $cat_colors[$item['category']] ?? '#6c757d' }};color:#fff;">
                                         <i class="fas {{ $cat_icons[$item['category']] ?? 'fa-tag' }} me-1"></i>{{ $item['category'] }}
                                     </span>

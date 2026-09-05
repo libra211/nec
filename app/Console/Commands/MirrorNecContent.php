@@ -40,16 +40,16 @@ class MirrorNecContent extends Command
             $this->line("  <info>{$count} pages processed</info>");
         }
 
-        if ($toggles['posts']) {
-            $this->info("Mirroring posts…");
-            $result = $mirror->mirrorPosts($force);
-            $this->line("  <info>{$result['news']} news items, {$result['events']} events</info>");
-        }
-
         if ($toggles['media']) {
             $this->info("Mirroring media library…");
             $result = $mirror->mirrorMedia($force);
             $this->line("  <info>{$result['retrieved']} media items, {$result['saved']} saved, {$result['failed']} failed</info>");
+        }
+
+        if ($toggles['posts']) {
+            $this->info("Mirroring posts…");
+            $result = $mirror->mirrorPosts($force);
+            $this->line("  <info>{$result['news']} news items, {$result['events']} events</info>");
         }
 
         if ($toggles['downloads']) {

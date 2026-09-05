@@ -426,7 +426,9 @@ class NecMirrorService
             $ext = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif']) ? $ext : 'jpg';
             $path = $this->mediaDir . '/' . $wpId . '.' . $ext;
 
-            $existing = Gallery::where('image_path', $path)->first();
+$existing = Gallery::where('image_path', $path)
+                ->orWhere('image_path', 'storage/' . $path)
+                ->first();
             if ($existing && !$force) {
                 $this->ensureManifest($sourceUrl, $path);
                 $retrieved++;
@@ -475,11 +477,13 @@ class NecMirrorService
         $title = $this->cleanTitle($m['title']['rendered'] ?? '');
         $description = Str::limit(strip_tags($m['description']['rendered'] ?? $m['caption']['rendered'] ?? ''), 490);
 
-        $existing = Gallery::where('image_path', $path)->first();
+        $existing = Gallery::where('image_path', $path)
+            ->orWhere('image_path', 'storage/' . $path)
+            ->first();
         $data = [
             'title' => $title ?: 'Photo ' . $wpId,
             'description' => $description,
-            'image_path' => $path,
+            'image_path' => 'storage/' . $path,
             'gallery_album_id' => $albumId,
             'alt_text' => $alt ?: $title,
             'status' => 'published',

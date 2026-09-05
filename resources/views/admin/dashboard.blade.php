@@ -950,9 +950,99 @@
     <div class="col-md-3"><div class="stat-slim gold"><div class="stat-row"><div class="stat-icon"><i class="fas fa-venus"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_female'] ?? 0) }}</div><div class="stat-label">Female</div></div></div></div></div>
     <div class="col-md-3"><div class="stat-slim orange"><div class="stat-row"><div class="stat-icon"><i class="fas fa-exchange-alt"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_transfers_pending'] ?? 0) }}</div><div class="stat-label">Pending Transfers</div></div></div></div></div>
 </div>
+<div class="row g-3 mb-3">
+    <div class="col-md-3"><div class="stat-slim green"><div class="stat-row"><div class="stat-icon"><i class="fas fa-calendar-day"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_today'] ?? 0) }}</div><div class="stat-label">Registered Today</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim blue"><div class="stat-row"><div class="stat-icon"><i class="fas fa-calendar-week"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_recent_registrations'] ?? 0) }}</div><div class="stat-label">This Week</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim gold"><div class="stat-row"><div class="stat-icon"><i class="fas fa-landmark"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_constituencies'] ?? 0) }}</div><div class="stat-label">Constituencies</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim red"><div class="stat-row"><div class="stat-icon"><i class="fas fa-church"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_stations'] ?? 0) }}</div><div class="stat-label">Polling Stations</div></div></div></div></div>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-3"><div class="stat-slim green"><div class="stat-row"><div class="stat-icon"><i class="fas fa-user-tie"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_registrars'] ?? 0) }}</div><div class="stat-label">Registrars</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim blue"><div class="stat-row"><div class="stat-icon"><i class="fas fa-user-tag"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_officers'] ?? 0) }}</div><div class="stat-label">Constituency Officers</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim purple"><div class="stat-row"><div class="stat-icon"><i class="fas fa-user-pen"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_data_entries'] ?? 0) }}</div><div class="stat-label">Data Entry</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim cyan"><div class="stat-row"><div class="stat-icon"><i class="fas fa-signal"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['state_capacity_pct'] ?? 0) }}%</div><div class="stat-label">Station Capacity</div></div></div></div></div>
+</div>
 <div class="row g-4 mb-4">
     <div class="col-lg-6"><div class="card chart-card"><div class="card-header border-bottom"><h6 class="mb-0 fw-bold"><i class="fas fa-chart-line me-2" style="color:var(--nec-green)"></i>Registration Trend (30 Days)</h6></div><div class="card-body"><canvas id="stateTrendChart" height="280"></canvas></div></div></div>
     <div class="col-lg-6"><div class="card chart-card"><div class="card-header border-bottom"><h6 class="mb-0 fw-bold"><i class="fas fa-map me-2" style="color:var(--nec-blue)"></i>Voters by County</h6></div><div class="card-body"><canvas id="stateCountyChart" height="280"></canvas></div></div></div>
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm mb-4"><div class="card-header border-bottom bg-white"><h6 class="mb-0 fw-bold"><i class="fas fa-exchange-alt me-2" style="color:var(--nec-gold)"></i>Pending Transfer Queue</h6></div>
+            <div class="card-body p-0">
+                @if (($stats['state_transfer_queue'] ?? collect())->count() > 0)
+                <div class="table-responsive"><table class="table table-hover table-sm mb-0 align-middle">
+                    <thead><tr><th class="ps-3">Voter</th><th>From</th><th>To</th><th>Reason</th><th class="text-end pe-3">Action</th></tr></thead>
+                    <tbody>
+                        @foreach ($stats['state_transfer_queue'] as $t)
+                        <tr>
+                            <td class="ps-3"><a href="{{ route('admin.voter-transfers.show', $t->id) }}" class="text-decoration-none fw-semibold">{{ $t->full_name }}</a></td>
+                            <td><small>{{ $t->from_state }}</small></td>
+                            <td><small>{{ $t->to_state }}</small></td>
+                            <td><small class="text-muted">{{ \Illuminate\Support\Str::limit($t->reason ?? '—', 40) }}</small></td>
+                            <td class="text-end pe-3">
+                                <form method="POST" action="{{ route('admin.voter-transfers.approve', $t->id) }}" class="d-inline">@csrf @method('PATCH')
+                                    <button class="btn btn-sm btn-success" type="submit" title="Approve"><i class="fas fa-check"></i></button></form>
+                                <form method="POST" action="{{ route('admin.voter-transfers.reject', $t->id) }}" class="d-inline ms-1">@csrf @method('PATCH')
+                                    <button class="btn btn-sm btn-outline-danger" type="submit" title="Reject"><i class="fas fa-times"></i></button></form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table></div>
+                @else
+                <div class="p-4 text-center text-muted"><i class="fas fa-check-circle text-success mb-2 d-block"></i>No pending transfers for your state.</div>
+                @endif
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header border-bottom bg-white"><h6 class="mb-0 fw-bold"><i class="fas fa-user-tie me-2" style="color:var(--nec-green)"></i>State Election Team</h6></div>
+            <div class="card-body p-0">
+                @if (($stats['state_staff'] ?? collect())->count() > 0)
+                <ul class="list-group list-group-flush">
+                    @foreach ($stats['state_staff'] as $s)
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold" style="font-size:0.85rem;">{{ $s->name }}</div>
+                            <small class="text-muted">{{ $s->position ?: $s->email }}</small>
+                        </div>
+                        <span class="badge rounded-pill" style="background:{{ $s->role === 'registration_officer' ? '#2e8b57' : ($s->role === 'constituency_officer' ? '#1a3c8f' : ($s->role === 'state_coordinator' ? '#d4af37' : '#6f42c1')) }};">{{ str_replace('_', ' ', ucwords($s->role)) }}</span>
+                    </li>
+                    @endforeach
+                </ul>
+                @else
+                <div class="p-4 text-center text-muted">No officers assigned to this state yet.</div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header border-bottom bg-white d-flex justify-content-between align-items-center"><h6 class="mb-0 fw-bold"><i class="fas fa-user-plus me-2" style="color:var(--nec-blue)"></i>Recent Registrations in State</h6><a href="{{ route('admin.voters.index') }}" class="btn btn-sm btn-outline-success">View All Voters</a></div>
+    <div class="card-body p-0">
+        @if (($stats['state_recent_voters'] ?? collect())->count() > 0)
+        <div class="table-responsive"><table class="table table-hover table-sm mb-0 align-middle">
+            <thead><tr><th class="ps-3">Voter ID</th><th>Full Name</th><th>Gender</th><th>County</th><th>Polling Station</th><th>Status</th><th class="text-end pe-3">Registered</th></tr></thead>
+            <tbody>
+                @foreach ($stats['state_recent_voters'] as $v)
+                <tr>
+                    <td class="ps-3"><code>{{ $v->voter_id }}</code></td>
+                    <td class="fw-semibold">{{ $v->full_name }}</td>
+                    <td>{{ $v->gender ?? '—' }}</td>
+                    <td>{{ $v->county ?? '—' }}</td>
+                    <td><small>{{ $v->polling_station ?? '—' }}</small></td>
+                    <td><span class="badge" style="background:{{ $v->status === 'active' ? 'rgba(46,139,87,0.15)' : 'rgba(212,175,55,0.15)' }};color:{{ $v->status === 'active' ? '#2e8b57' : '#d4af37' }};">{{ ucfirst($v->status) }}</span></td>
+                    <td class="text-end pe-3"><small>{{ optional($v->registered_at)->format('d M Y') }}</small></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table></div>
+        @else
+        <div class="p-4 text-center text-muted">No recent registrations found.</div>
+        @endif
+    </div>
 </div>
 @endif
 
@@ -960,8 +1050,193 @@
 @if($role === 'constituency_officer')
 <div class="row g-3 mb-4">
     <div class="col-md-4"><div class="card border-0 shadow-sm nec-kpi h-100" style="border-left-color:var(--nec-blue)!important;"><div class="card-body d-flex align-items-center gap-3"><div class="kpi-icon" style="background:rgba(26,60,143,0.12);"><i class="fas fa-vote-yea fa-lg" style="color:var(--nec-blue)"></i></div><div><h6 class="text-muted mb-0">Polling Stations</h6><h3 class="mb-0" style="color:var(--nec-blue);">{{ number_format($stats['constituency_stations'] ?? 0) }}</h3></div></div></div></div>
-    <div class="col-md-4"><div class="card border-0 shadow-sm nec-kpi h-100" style="border-left-color:var(--nec-green)!important;"><div class="card-body d-flex align-items-center gap-3"><div class="kpi-icon" style="background:rgba(46,139,87,0.12);"><i class="fas fa-mars fa-lg" style="color:var(--nec-green)"></i></div><div><h6 class="text-muted mb-0">Male Voters</h6><h3 class="mb-0" style="color:var(--nec-green);">{{ number_format($stats['constituency_male'] ?? 0) }}</h3></div></div></div></div>
-    <div class="col-md-4"><div class="card border-0 shadow-sm nec-kpi h-100" style="border-left-color:var(--nec-gold)!important;"><div class="card-body d-flex align-items-center gap-3"><div class="kpi-icon" style="background:rgba(212,175,55,0.12);"><i class="fas fa-venus fa-lg" style="color:var(--nec-gold)"></i></div><div><h6 class="text-muted mb-0">Female Voters</h6><h3 class="mb-0" style="color:var(--nec-gold);">{{ number_format($stats['constituency_female'] ?? 0) }}</h3></div></div></div></div>
+    <div class="col-md-4"><div class="card border-0 shadow-sm nec-kpi h-100" style="border-left-color:var(--nec-green)!important;"><div class="card-body d-flex align-items-center gap-3"><div class="kpi-icon" style="background:rgba(46,139,87,0.12);"><i class="fas fa-user-plus fa-lg" style="color:var(--nec-green)"></i></div><div><h6 class="text-muted mb-0">Registered Today</h6><h3 class="mb-0" style="color:var(--nec-green);">{{ number_format($stats['constituency_today'] ?? 0) }}</h3></div></div></div></div>
+    <div class="col-md-4"><div class="card border-0 shadow-sm nec-kpi h-100" style="border-left-color:var(--nec-gold)!important;"><div class="card-body d-flex align-items-center gap-3"><div class="kpi-icon" style="background:rgba(212,175,55,0.12);"><i class="fas fa-exchange-alt fa-lg" style="color:var(--nec-gold)"></i></div><div><h6 class="text-muted mb-0">Pending Transfers</h6><h3 class="mb-0" style="color:var(--nec-gold);">{{ number_format($stats['constituency_pending_transfers'] ?? 0) }}</h3></div></div></div></div>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="stat-slim blue"><div class="stat-row"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['constituency_voters'] ?? 0) }}</div><div class="stat-label">Total Voters</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim green"><div class="stat-row"><div class="stat-icon"><i class="fas fa-mars"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['constituency_male'] ?? 0) }}</div><div class="stat-label">Male</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim gold"><div class="stat-row"><div class="stat-icon"><i class="fas fa-venus"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['constituency_female'] ?? 0) }}</div><div class="stat-label">Female</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim orange"><div class="stat-row"><div class="stat-icon"><i class="fas fa-church"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['constituency_active_stations'] ?? $stats['constituency_stations'] ?? 0) }}</div><div class="stat-label">Active Stations</div></div></div></div></div>
+</div>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header border-bottom bg-white d-flex justify-content-between align-items-center"><h6 class="mb-0 fw-bold"><i class="fas fa-user-plus me-2" style="color:var(--nec-blue)"></i>Recent Registrations</h6><a href="{{ route('admin.voters.index') }}" class="btn btn-sm btn-outline-success">View All Voters</a></div>
+    <div class="card-body p-0">
+        @if (($stats['constituency_recent'] ?? collect())->count() > 0)
+        <div class="table-responsive"><table class="table table-hover table-sm mb-0 align-middle">
+            <thead><tr><th class="ps-3">Voter ID</th><th>Full Name</th><th>Gender</th><th>Polling Station</th><th>Status</th><th class="text-end pe-3">Registered</th></tr></thead>
+            <tbody>
+                @foreach ($stats['constituency_recent'] as $v)
+                <tr>
+                    <td class="ps-3"><code>{{ $v->voter_id }}</code></td>
+                    <td class="fw-semibold">{{ $v->full_name }}</td>
+                    <td>{{ $v->gender ?? '—' }}</td>
+                    <td><small>{{ $v->polling_station ?? '—' }}</small></td>
+                    <td><span class="badge" style="background:rgba(46,139,87,0.15);color:#2e8b57;">{{ ucfirst($v->status) }}</span></td>
+                    <td class="text-end pe-3"><small>{{ optional($v->registered_at)->format('d M Y') }}</small></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table></div>
+        @else
+        <div class="p-4 text-center text-muted">No recent registrations found.</div>
+        @endif
+    </div>
+</div>
+@endif
+
+{{-- Registrar Dashboard --}}
+@if($role === 'registration_officer')
+<div class="row g-3 mb-3">
+    <div class="col-md-3"><div class="stat-slim green"><div class="stat-row"><div class="stat-icon"><i class="fas fa-user-plus"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['reg_my_today'] ?? 0) }}</div><div class="stat-label">Registrations Today</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim blue"><div class="stat-row"><div class="stat-icon"><i class="fas fa-calendar-week"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['reg_my_week'] ?? 0) }}</div><div class="stat-label">This Week</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim gold"><div class="stat-row"><div class="stat-icon"><i class="fas fa-clipboard-list"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['reg_my_total'] ?? 0) }}</div><div class="stat-label">My Total Registrations</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim orange"><div class="stat-row"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['reg_state_voters'] ?? 0) }}</div><div class="stat-label">Voters{{ session('admin_state') ? ' in ' . explode(' ', session('admin_state'))[0] : '' }}</div></div></div></div></div>
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-lg-6"><div class="card chart-card"><div class="card-header border-bottom"><h6 class="mb-0 fw-bold"><i class="fas fa-chart-line me-2" style="color:var(--nec-green)"></i>State Registrations (30 Days)</h6></div><div class="card-body"><canvas id="regTrendChart" height="280"></canvas></div></div></div>
+    <div class="col-lg-3">
+        <div class="card chart-card"><div class="card-header border-bottom"><h6 class="mb-0 fw-bold"><i class="fas fa-venus-mars me-2" style="color:var(--nec-blue)"></i>Gender Split</h6></div><div class="card-body"><canvas id="regGenderChart" height="280"></canvas></div></div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
+                <i class="fas fa-user-plus mb-2" style="color:var(--nec-green);font-size:2rem;"></i>
+                <h5 class="fw-bold mb-1">Register a Voter</h5>
+                <p class="text-muted" style="font-size:0.82rem;">Add a new voter record or update an existing one.</p>
+                <div class="d-grid gap-2 w-100">
+                    <a href="{{ route('admin.voters.create') }}" class="btn btn-success btn-sm" style="border-radius:8px;"><i class="fas fa-plus me-1"></i>New Registration</a>
+                    <a href="{{ route('admin.voters.index') }}" class="btn btn-outline-success btn-sm" style="border-radius:8px;"><i class="fas fa-list me-1"></i>Manage Voters</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header border-bottom bg-white d-flex justify-content-between align-items-center"><h6 class="mb-0 fw-bold"><i class="fas fa-user-plus me-2" style="color:var(--nec-blue)"></i>Recent Registrations</h6><a href="{{ route('admin.voters.index') }}" class="btn btn-sm btn-outline-success">View All Voters</a></div>
+    <div class="card-body p-0">
+        @if (($stats['reg_recent'] ?? collect())->count() > 0)
+        <div class="table-responsive"><table class="table table-hover table-sm mb-0 align-middle">
+            <thead><tr><th class="ps-3">Voter ID</th><th>Full Name</th><th>Gender</th><th>County</th><th>Polling Station</th><th>Status</th><th class="text-end pe-3">Registered</th></tr></thead>
+            <tbody>
+                @foreach ($stats['reg_recent'] as $v)
+                <tr>
+                    <td class="ps-3"><code>{{ $v->voter_id }}</code></td>
+                    <td class="fw-semibold">{{ $v->full_name }}</td>
+                    <td>{{ $v->gender ?? '—' }}</td>
+                    <td>{{ $v->county ?? '—' }}</td>
+                    <td><small>{{ $v->polling_station ?? '—' }}</small></td>
+                    <td><span class="badge" style="background:{{ $v->status === 'active' ? 'rgba(46,139,87,0.15)' : 'rgba(212,175,55,0.15)' }};color:{{ $v->status === 'active' ? '#2e8b57' : '#d4af37' }};">{{ ucfirst($v->status) }}</span></td>
+                    <td class="text-end pe-3"><small>{{ optional($v->registered_at)->format('d M Y') }}</small></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table></div>
+        @else
+        <div class="p-4 text-center text-muted">No registrations found yet.</div>
+        @endif
+    </div>
+</div>
+@endif
+
+{{-- Polling Officer Dashboard --}}
+@if($role === 'polling_officer')
+<div class="row g-3 mb-3">
+    <div class="col-md-3"><div class="stat-slim blue"><div class="stat-row"><div class="stat-icon"><i class="fas fa-church"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['po_stations'] ?? 0) }}</div><div class="stat-label">Polling Stations</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim green"><div class="stat-row"><div class="stat-icon"><i class="fas fa-power-off"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['po_stations_active'] ?? 0) }}</div><div class="stat-label">Active Stations</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim gold"><div class="stat-row"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['po_state_voters'] ?? 0) }}</div><div class="stat-label">Registered Voters</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim orange"><div class="stat-row"><div class="stat-icon"><i class="fas fa-ballot-check"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['po_results'] ?? 0) }}</div><div class="stat-label">Results Entries</div></div></div></div></div>
+</div>
+<div class="row g-4 mb-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header border-bottom bg-white"><h6 class="mb-0 fw-bold"><i class="fas fa-church me-2" style="color:var(--nec-blue)"></i>Station Load (Top)</h6></div>
+            <div class="card-body p-0">
+                @if (($stats['po_station_load'] ?? collect())->count() > 0)
+                <div class="list-group list-group-flush">
+                    @foreach ($stats['po_station_load'] as $st)
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div><div class="fw-semibold" style="font-size:0.85rem;">{{ $st->name }}</div><small class="text-muted">{{ $st->county }}</small></div>
+                        <div class="text-end"><span class="badge" style="background:rgba(46,139,87,0.15);color:#2e8b57;">{{ number_format($st->registered_voters) }}</span></div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="p-4 text-center text-muted">No stations found.</div>
+                @endif
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header border-bottom bg-white"><h6 class="mb-0 fw-bold"><i class="fas fa-ballot-check me-2" style="color:var(--nec-gold)"></i>Recent Results</h6></div>
+            <div class="card-body p-0">
+                @if (($stats['po_recent_results'] ?? collect())->count() > 0)
+                <ul class="list-group list-group-flush">
+                    @foreach ($stats['po_recent_results'] as $r)
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div><div class="fw-semibold" style="font-size:0.85rem;">{{ $r->election_name }}</div><small class="text-muted">{{ $r->election_type }}</small></div>
+                        <span class="badge" style="background:{{ $r->status === 'published' ? 'rgba(46,139,87,0.15)' : 'rgba(212,175,55,0.15)' }};color:{{ $r->status === 'published' ? '#2e8b57' : '#d4af37' }};">{{ ucfirst($r->status ?? 'draft') }}</span>
+                    </li>
+                    @endforeach
+                </ul>
+                @else
+                <div class="p-4 text-center text-muted">No results entered yet.</div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
+{{-- Data Entry Dashboard --}}
+@if($role === 'data_entry')
+<div class="row g-3 mb-3">
+    <div class="col-md-3"><div class="stat-slim green"><div class="stat-row"><div class="stat-icon"><i class="fas fa-user-plus"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['de_my_today'] ?? 0) }}</div><div class="stat-label">Registrations Today</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim blue"><div class="stat-row"><div class="stat-icon"><i class="fas fa-calendar-week"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['de_my_week'] ?? 0) }}</div><div class="stat-label">This Week</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim gold"><div class="stat-row"><div class="stat-icon"><i class="fas fa-clipboard-list"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['de_my_total'] ?? 0) }}</div><div class="stat-label">My Total Entries</div></div></div></div></div>
+    <div class="col-md-3"><div class="stat-slim orange"><div class="stat-row"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-body"><div class="stat-value">{{ number_format($stats['de_state_voters'] ?? 0) }}</div><div class="stat-label">State Voters</div></div></div></div></div>
+</div>
+<div class="row g-3 mb-3">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
+                <i class="fas fa-user-plus mb-2" style="color:var(--nec-green);font-size:2rem;"></i>
+                <h5 class="fw-bold mb-1">Quick Actions</h5>
+                <div class="d-grid gap-2 w-100">
+                    <a href="{{ route('admin.voters.create') }}" class="btn btn-success btn-sm" style="border-radius:8px;"><i class="fas fa-plus me-1"></i>Register Voter</a>
+                    <a href="{{ route('admin.news.create') }}" class="btn btn-outline-primary btn-sm" style="border-radius:8px;"><i class="fas fa-newspaper me-1"></i>New News</a>
+                    <a href="{{ route('admin.voters.index') }}" class="btn btn-outline-success btn-sm" style="border-radius:8px;"><i class="fas fa-list me-1"></i>Manage Voters</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header border-bottom bg-white"><h6 class="mb-0 fw-bold"><i class="fas fa-user-plus me-2" style="color:var(--nec-blue)"></i>Recent Registrations</h6></div>
+            <div class="card-body p-0">
+                @if (($stats['de_recent'] ?? collect())->count() > 0)
+                <div class="table-responsive"><table class="table table-hover table-sm mb-0 align-middle">
+                    <thead><tr><th class="ps-3">Voter ID</th><th>Full Name</th><th>Gender</th><th>County</th><th>Status</th><th class="text-end pe-3">Registered</th></tr></thead>
+                    <tbody>
+                        @foreach ($stats['de_recent'] as $v)
+                        <tr>
+                            <td class="ps-3"><code>{{ $v->voter_id }}</code></td>
+                            <td class="fw-semibold">{{ $v->full_name }}</td>
+                            <td>{{ $v->gender ?? '—' }}</td>
+                            <td>{{ $v->county ?? '—' }}</td>
+                            <td><span class="badge" style="background:rgba(46,139,87,0.15);color:#2e8b57;">{{ ucfirst($v->status) }}</span></td>
+                            <td class="text-end pe-3"><small>{{ optional($v->registered_at)->format('d M Y') }}</small></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table></div>
+                @else
+                <div class="p-4 text-center text-muted">No registrations found yet.</div>
+                @endif
+            </div>
+        </div>
+    </div>
 </div>
 @endif
 
@@ -999,6 +1274,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (stCtx) { var stData = {!! json_encode($stats['state_registration_trend'] ?? collect()) !!}; new Chart(stCtx.getContext('2d'), { type: 'line', data: { labels: stData.map(d => { var dt = new Date(d.date); return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}); }), datasets: [{ label: 'Registrations', data: stData.map(d => d.total), borderColor: necGreen, backgroundColor: necLightGreen, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } } } } }); }
     var scCtx = document.getElementById('stateCountyChart');
     if (scCtx) { var scData = {!! json_encode($stats['state_by_county'] ?? collect()) !!}; new Chart(scCtx.getContext('2d'), { type: 'bar', data: { labels: Object.keys(scData), datasets: [{ label: 'Voters', data: Object.values(scData), backgroundColor: necBlue, borderRadius: 6 }] }, options: { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true }, y: { grid: { display: false } } } } }); }
+    @endif
+
+    @if(($role ?? '') === 'registration_officer')
+    var rtCtx = document.getElementById('regTrendChart');
+    if (rtCtx) { var rtData = {!! json_encode($stats['reg_state_trend'] ?? collect()) !!}; new Chart(rtCtx.getContext('2d'), { type: 'line', data: { labels: rtData.map(d => { var dt = new Date(d.date); return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}); }), datasets: [{ label: 'Registrations', data: rtData.map(d => d.total), borderColor: necGreen, backgroundColor: necLightGreen, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } } } } }); }
+    var rgCtx = document.getElementById('regGenderChart');
+    if (rgCtx) { var rgData = {!! json_encode(($stats['reg_gender'] ?? collect())->toArray() ?: []) !!}; new Chart(rgCtx.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(rgData).map(k => k === 'M' ? 'Male' : k === 'F' ? 'Female' : k), datasets: [{ data: Object.values(rgData), backgroundColor: [necBlue, necGreen, '#6c757d'], borderWidth: 2, borderColor: '#fff' }] }, options: { cutout: '62%', plugins: { legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, font: { size: 11 } } } } } }); }
     @endif
 });
 </script>

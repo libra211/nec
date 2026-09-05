@@ -90,7 +90,7 @@ class HomeController extends Controller
         $showDownloads = $section('homepage_section_downloads');
 
         $latestNews = $showNews
-            ? News::where('status', 'published')->orderByDesc('created_at')->limit($homeCount('homepage_news_count', 3))->get()
+            ? News::where('status', 'published')->orderByRaw('published_at IS NULL ASC, published_at DESC, created_at DESC')->limit($homeCount('homepage_news_count', 3))->get()
             : collect();
 
         $latestAnnouncements = $showAnnouncements

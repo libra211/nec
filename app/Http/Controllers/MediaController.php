@@ -14,7 +14,7 @@ class MediaController extends Controller
     public function news()
     {
         $articles = News::where('status', 'published')
-            ->orderByDesc('created_at')
+            ->orderByRaw('published_at IS NULL ASC, published_at DESC, created_at DESC')
             ->paginate(\App\Helpers\NecHelper::pageLimit('paginate_news', 12));
 
         return view('media.news', compact('articles'));

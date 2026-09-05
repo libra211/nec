@@ -31,6 +31,7 @@ use App\Models\Media;
 use App\Models\Faq;
 use App\Models\Complaint;
 use App\Models\Report;
+use App\Models\Result;
 use App\Models\State;
 use App\Models\County;
 use App\Helpers\NecHelper;
@@ -480,24 +481,83 @@ class DashboardController extends Controller
             $stats['alerts'] = $alerts->take(8);
         }
 
+        $userId = (int) session('admin_user_id', 0);
+        $userState = trim((string) session('admin_state'));
+        $userConstituency = trim((string) session('admin_constituency'));
+        $now = Carbon::now();
+
         if ($role === 'state_coordinator') {
-            $userState = session('admin_state') ?? '';
             $stats['state_voters'] = Voter::where('state', $userState)->count();
             $stats['state_constituencies'] = DB::table('nec_constituencies')->where('state', $userState)->count();
-            $stats['state_transfers_pending'] = VoterTransfer::where('from_state', $userState)->orWhere('to_state', $userState)->where('status', 'pending')->count();
-            $stats['state_recent_registrations'] = Voter::where('state', $userState)->where('registered_at', '>=', Carbon::now()->subDays(7))->count();
+            $stats['state_transfers_pending'] = VoterTransfer::where(function ($q) use ($userState) {
+                $q->where('from_state', $userState)->orWhere('to_state', $userState);
+            })->where('status', 'pending')->count();
+            $stats['state_recent_registrations'] = Voter::where('state', $userState)->where('registered_at', '>=', $now->copy()->subDays(7))->count();
+            $stats['state_today'] = Voter::where('state', $userState)->where('registered_at', '>=', $now->copy()->startOfDay())->count();
             $stats['state_male'] = Voter::where('state', $userState)->where('gender', 'M')->count();
             $stats['state_female'] = Voter::where('state', $userState)->where('gender', 'F')->count();
             $stats['state_by_county'] = Voter::selectRaw('county, COUNT(*) as total')->where('state', $userState)->whereNotNull('county')->groupBy('county')->pluck('total', 'county');
-            $stats['state_registration_trend'] = Voter::where('state', $userState)->where('registered_at', '>=', Carbon::now()->subDays(30))->selectRaw('DATE(registered_at) as date, COUNT(*) as total')->groupBy('date')->orderBy('date')->get();
+            $stats['state_registration_trend'] = Voter::where('state', $userState)->where('registered_at', '>=', $now->copy()->subDays(30))->selectRaw('DATE(registered_at) as date, COUNT(*) as total')->groupBy('date')->orderBy('date')->get();
+            $stateStations = DB::table('nec_polling_stations')->where('state', $userState);
+            $stats['state_stations'] = (clone $stateStations)->count();
+            $stats['state_stations_active'] = (clone $stateStations)->where('status', 'active')->count();
+            $stats['state_capacity_pct'] = max(0, $stats['state_stations']) > 0 ? round(($stats['state_voters'] / ($stats['state_stations'] * 1000)) * 100, 1) : 0;
+            $stats['state_transfer_queue'] = VoterTransfer::where(function ($q) use ($userState) {
+                $q->where('from_state', $userState)->orWhere('to_state', $userState);
+            })->where('status', 'pending')->orderByDesc('created_at')->limit(8)->get();
+            $stats['state_recent_voters'] = Voter::where('state', $userState)->orderByDesc('registered_at')->limit(8)->get(['voter_id', 'full_name', 'gender', 'county', 'polling_station', 'status', 'registered_at']);
+            $stateStaff = User::where('state', $userState)->whereIn('role', ['state_coordinator', 'constituency_officer', 'registration_officer', 'data_entry'])->get(['name', 'email', 'role', 'position']);
+            $stats['state_staff'] = $stateStaff;
+            $stats['state_registrars'] = $stateStaff->where('role', 'registration_officer')->count();
+            $stats['state_officers'] = $stateStaff->where('role', 'constituency_officer')->count();
+            $stats['state_data_entries'] = $stateStaff->where('role', 'data_entry')->count();
         }
 
         if ($role === 'constituency_officer') {
-            $userConstituency = session('admin_constituency') ?? '';
             $stats['constituency_voters'] = Voter::where('constituency', $userConstituency)->count();
             $stats['constituency_stations'] = DB::table('nec_polling_stations')->where('constituency', $userConstituency)->count();
             $stats['constituency_male'] = Voter::where('constituency', $userConstituency)->where('gender', 'M')->count();
             $stats['constituency_female'] = Voter::where('constituency', $userConstituency)->where('gender', 'F')->count();
+            $stats['constituency_today'] = Voter::where('constituency', $userConstituency)->where('registered_at', '>=', $now->copy()->startOfDay())->count();
+            $stats['constituency_pending_transfers'] = VoterTransfer::where(function ($q) use ($userConstituency) {
+                $q->where('from_constituency', $userConstituency)->orWhere('to_constituency', $userConstituency);
+            })->where('status', 'pending')->count();
+            $stats['constituency_recent'] = Voter::where('constituency', $userConstituency)->orderByDesc('registered_at')->limit(8)->get(['voter_id', 'full_name', 'gender', 'polling_station', 'status', 'registered_at']);
+            $stats['constituency_active_stations'] = DB::table('nec_polling_stations')->where('constituency', $userConstituency)->where('status', 'active')->count();
+        }
+
+        if ($role === 'registration_officer') {
+            $mine = function () use ($userId) {
+                return Voter::where('registered_by_user_id', $userId);
+            };
+            $stats['reg_my_today'] = (clone $mine())->where('registered_at', '>=', $now->copy()->startOfDay())->count();
+            $stats['reg_my_week'] = (clone $mine())->where('registered_at', '>=', $now->copy()->startOfWeek())->count();
+            $stats['reg_my_total'] = (clone $mine())->count();
+            $stats['reg_state_voters'] = $userState ? Voter::where('state', $userState)->count() : Voter::count();
+            $stats['reg_state_today'] = Voter::when($userState, fn ($q) => $q->where('state', $userState))->where('registered_at', '>=', $now->copy()->startOfDay())->count();
+            $stats['reg_gender'] = Voter::when($userState, fn ($q) => $q->where('state', $userState))->selectRaw('gender, COUNT(*) as total')->whereNotNull('gender')->groupBy('gender')->pluck('total', 'gender');
+            $stats['reg_state_trend'] = Voter::when($userState, fn ($q) => $q->where('state', $userState))->where('registered_at', '>=', $now->copy()->subDays(30))->selectRaw('DATE(registered_at) as date, COUNT(*) as total')->groupBy('date')->orderBy('date')->get();
+            $stats['reg_recent'] = Voter::when($userState, fn ($q) => $q->where('state', $userState))->orderByDesc('registered_at')->limit(8)->get(['voter_id', 'full_name', 'gender', 'county', 'polling_station', 'status', 'registered_at', 'registered_by_user_id']);
+        }
+
+        if ($role === 'polling_officer') {
+            $stationQ = DB::table('nec_polling_stations')->when($userState, fn ($q) => $q->where('state', $userState));
+            $stats['po_stations'] = (clone $stationQ)->count();
+            $stats['po_stations_active'] = (clone $stationQ)->where('status', 'active')->count();
+            $stats['po_station_voters'] = (clone $stationQ)->sum('registered_voters');
+            $stats['po_state_voters'] = $userState ? Voter::where('state', $userState)->count() : Voter::count();
+            $stats['po_results'] = Result::count();
+            $stats['po_results_pending'] = Result::where('status', 'pending')->count();
+            $stats['po_station_load'] = (clone $stationQ)->orderByDesc('registered_voters')->limit(8)->get(['name', 'county', 'registered_voters', 'status']);
+            $stats['po_recent_results'] = Result::orderByDesc('created_at')->limit(5)->get(['election_name', 'election_type', 'total_votes', 'turnout', 'status']);
+        }
+
+        if ($role === 'data_entry') {
+            $stats['de_my_today'] = Voter::where('registered_by_user_id', $userId)->where('registered_at', '>=', $now->copy()->startOfDay())->count();
+            $stats['de_my_week'] = Voter::where('registered_by_user_id', $userId)->where('registered_at', '>=', $now->copy()->startOfWeek())->count();
+            $stats['de_my_total'] = Voter::where('registered_by_user_id', $userId)->count();
+            $stats['de_state_voters'] = $userState ? Voter::where('state', $userState)->count() : Voter::count();
+            $stats['de_recent'] = Voter::when($userState, fn ($q) => $q->where('state', $userState))->orderByDesc('registered_at')->limit(8)->get(['voter_id', 'full_name', 'gender', 'county', 'status', 'registered_at', 'registered_by_user_id']);
         }
 
         return view('admin.dashboard', compact('stats', 'recentActivity', 'role'));
