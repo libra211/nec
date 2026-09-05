@@ -17,7 +17,7 @@
         @php
         $cards = [
             ['label' => 'States', 'value' => $totals['states'], 'color' => '#00914c', 'icon' => 'fa-map'],
-            ['label' => 'Admin Areas', 'value' => $totals['admin_areas'], 'color' => '#fd7e14', 'icon' => 'fa-map'],
+            ['label' => 'Administrative Areas', 'value' => $totals['admin_areas'], 'color' => '#fd7e14', 'icon' => 'fa-map'],
             ['label' => 'Counties', 'value' => $totals['counties'], 'color' => '#0d6efd', 'icon' => 'fa-building'],
             ['label' => 'Constituencies', 'value' => $totals['constituencies'], 'color' => '#198754', 'icon' => 'fa-vote-yea'],
             ['label' => 'Payams', 'value' => $totals['payams'], 'color' => '#ffc107', 'icon' => 'fa-sitemap'],
@@ -96,7 +96,7 @@
         </div>
     </div>
 
-    {{-- Admin Areas Table --}}
+    {{-- Administrative Areas Table --}}
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white border-bottom">
             <h5 class="mb-0 fw-bold">Administrative Areas ({{ $totals['admin_areas'] }})</h5>

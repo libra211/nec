@@ -36,9 +36,13 @@
                     <div class="card border-0 shadow-sm h-100">
                         <div class="row g-0 h-100">
                             <div class="col-4 d-flex align-items-center justify-content-center bg-white p-3">
-                                <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--nec-green), #1a3c8f); display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-user" style="font-size: 2.2rem; color: rgba(255,255,255,0.8);"></i>
-                                </div>
+                                @if($c->photo)
+                                    <img src="{{ asset($c->photo) }}" alt="{{ $c->name }}" loading="lazy" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; object-position: center 20%; border: 3px solid #eef7f0;">
+                                @else
+                                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--nec-green), #1a3c8f); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user" style="font-size: 2.2rem; color: rgba(255,255,255,0.8);"></i>
+                                    </div>
+                                @endif
                             </div>
                             <div class="col-8 p-3">
                                 <span class="badge bg-success mb-1" style="background: var(--nec-green) !important; font-size: 0.7rem;">{{ $c->position }}</span>

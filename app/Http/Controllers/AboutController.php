@@ -86,9 +86,8 @@ class AboutController extends Controller
 
     public function legalFramework()
     {
-        $documents = Download::where('status', 'published')
-            ->whereIn('category', ['constitution', 'legislation', 'legal', 'regulations'])
-            ->orderByRaw("FIELD(category, 'constitution','legislation','legal','regulations'), id")
+        $documents = Download::whereIn('id', [22, 45, 8, 26, 28])
+            ->orderByRaw('FIELD(id, 22, 45, 8, 26, 28)')
             ->get();
 
         return view('about.legal-framework', compact('documents'));
@@ -104,7 +103,7 @@ class AboutController extends Controller
                        COUNT(c.id) * 80000 AS estimated_population,
                        80000 AS avg_voters
                 FROM nec_states s
-                LEFT JOIN nec_constituencies c ON c.state = s.code
+                LEFT JOIN nec_constituencies c ON c.state = s.name
                 WHERE s.status = 'active'
                 GROUP BY s.name
                 ORDER BY s.name

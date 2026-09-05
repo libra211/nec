@@ -188,7 +188,7 @@
                         <tr>
                             <td class="ps-4 text-center fw-bold text-muted" style="font-size:0.82rem;">3</td>
                             <td class="fw-semibold" style="font-size:0.88rem;"><i class="fas fa-city me-2" style="color:var(--nec-gold);"></i>State Legislative</td>
-                            <td style="font-size:0.85rem;">State / Admin Area</td>
+                            <td style="font-size:0.85rem;">State / Administrative Area</td>
                             <td style="font-size:0.85rem;">State Legislative Assemblies</td>
                             <td style="font-size:0.85rem;">Varies by state electoral law</td>
                             <td class="text-center pe-4"><span class="badge rounded-pill px-3 py-1 bg-success" style="font-size:0.7rem;font-weight:600;">5 years</span></td>

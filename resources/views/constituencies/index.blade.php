@@ -120,7 +120,7 @@ $stateBounds = [
                     <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <div class="d-flex gap-2 flex-wrap align-items-center">
                             <select id="stateFilter" class="form-select form-select-sm" style="width:auto;min-width:200px;">
-                                <option value="">All States / Admin Areas</option>
+                                <option value="">All States / Administrative Areas</option>
                                 @foreach($byState as $s)
                                 <option value="{{ $s['name'] }}">{{ $s['name'] }} ({{ $s['constituencies'] }})</option>
                                 @endforeach
@@ -239,7 +239,7 @@ $stateBounds = [
                             <div class="col-6">
                                 <div class="p-3 rounded text-center border" style="background:#fff;">
                                     <span class="fw-bold fs-4 d-block" style="color:#0d6efd;">{{ $totalAdminAreas }}</span>
-                                    <small class="text-muted">Admin Areas</small>
+                                    <small class="text-muted">Administrative Areas</small>
                                 </div>
                             </div>
                             <div class="col-6">
