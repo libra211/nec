@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\AdminGalleryController;
 use App\Http\Controllers\Admin\AdminNewsController;
 use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\AdminObserverController;
+use App\Http\Controllers\Admin\AdminObserverApplicationController;
 use App\Http\Controllers\Admin\AdminPartyController;
 use App\Http\Controllers\Admin\AdminPetitionController;
 use App\Http\Controllers\Admin\AdminPollingStationController;
@@ -137,6 +138,7 @@ Route::get('/observers/apply', [ObserverController::class, 'apply'])->name('obse
 Route::post('/observers/apply', [ObserverController::class, 'applySubmit'])->name('observers.apply.submit');
 Route::get('/observers/apply/success/{id}', [ObserverController::class, 'applySuccess'])->name('observers.apply.success');
 Route::post('/observers/accredit', [ObserverController::class, 'accredit'])->name('observers.accredit.submit');
+Route::get('/verify/accreditation/{token}', [ObserverController::class, 'verifyAccreditation'])->name('observers.accreditation.verify');
 Route::get('/downloads', [DownloadController::class, 'index'])->name('downloads.index');
 Route::get('/downloads/forms', [DownloadController::class, 'forms'])->name('downloads.forms');
 Route::get('/downloads/serve/{type}/{id}', [DownloadController::class, 'serve'])->name('downloads.serve');
@@ -268,6 +270,19 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::resource('parties', AdminPartyController::class);
 
     // Observers
+    // Observer Applications & Accreditation (public applications, batches, certificates)
+    Route::get('observers/applications', [AdminObserverApplicationController::class, 'index'])->name('observers.applications');
+    Route::post('observers/batches', [AdminObserverApplicationController::class, 'batchStore'])->name('observers.batches.store');
+    Route::get('observers/applications/{id}/badge', [AdminObserverApplicationController::class, 'badge'])->name('observers.applications.badge');
+    Route::post('observers/applications/{id}/generate', [AdminObserverApplicationController::class, 'generate'])->name('observers.applications.generate');
+    Route::get('observers/applications/{id}', [AdminObserverApplicationController::class, 'show'])->name('observers.applications.show');
+    Route::patch('observers/applications/{id}/status', [AdminObserverApplicationController::class, 'updateStatus'])->name('observers.applications.status');
+    Route::post('observers/applications/{id}/revoke', [AdminObserverApplicationController::class, 'revoke'])->name('observers.applications.revoke');
+    Route::get('observers/batches', [AdminObserverApplicationController::class, 'batchIndex'])->name('observers.batches');
+    Route::get('observers/batches/{id}', [AdminObserverApplicationController::class, 'batchShow'])->name('observers.batches.show');
+    Route::post('observers/batches/{id}/assign', [AdminObserverApplicationController::class, 'batchAssign'])->name('observers.batches.assign');
+    Route::post('observers/batches/{id}/generate', [AdminObserverApplicationController::class, 'batchGenerate'])->name('observers.batches.generate');
+    Route::post('observers/print', [AdminObserverApplicationController::class, 'badgePrint'])->name('observers.badge-print');
     Route::get('observers', [AdminObserverController::class, 'index'])->name('observers.index');
     Route::get('observers/{observer}', [AdminObserverController::class, 'show'])->name('observers.show');
     Route::patch('observers/{observer}/status', [AdminObserverController::class, 'updateStatus'])->name('observers.status');

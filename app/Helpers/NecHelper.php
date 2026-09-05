@@ -185,6 +185,58 @@ class NecHelper
 
         return 'NEC' . $shortYear . $genderCode . $serial;
     }
+
+    public static function generate_accreditation_number(): string
+    {
+        $prefix = config('observer.accreditation_prefix', 'NEC-OBS');
+        $shortYear = substr((string) date('Y'), -2);
+
+        $nextId = DB::transaction(function () {
+            $seqName = 'OBSACCRED';
+
+            $seq = Sequence::where('seq_name', $seqName)->lockForUpdate()->first();
+            if (!$seq) {
+                $seq = Sequence::create(['seq_name' => $seqName, 'seq_value' => 1]);
+                $nextId = 1;
+            } else {
+                $nextId = $seq->seq_value;
+                $seq->increment('seq_value');
+            }
+
+            return $nextId;
+        });
+
+        return strtoupper($prefix) . $shortYear . str_pad((string) $nextId, 6, '0', STR_PAD_LEFT);
+    }
+
+    public static function qr_svg(?string $text, int $size = 160): string
+    {
+        if (! $text) {
+            return '';
+        }
+
+        try {
+            $generator = new \SimpleSoftwareIO\QrCode\Generator();
+            $svg = @$generator->size($size)->errorCorrection('M')->generate((string) $text);
+
+            return is_string($svg) ? $svg : '';
+        } catch (\Throwable) {
+            return '';
+        }
+    }
+
+    public static function accreditation_verify_url(object|array $application): string
+    {
+        $token = is_object($application)
+            ? ($application->verification_token ?? '')
+            : ($application['verification_token'] ?? '');
+
+        if (! $token) {
+            return url('/');
+        }
+
+        return route('observers.accreditation.verify', $token);
+    }
 }
 }
 

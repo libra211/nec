@@ -54,15 +54,24 @@ class AdminMiddleware
 
         $parts = explode('.', $routeName);
         $module = $parts[1] ?? '';
-        $action = $parts[2] ?? 'index';
+        $action = count($parts) > 2 ? $parts[count($parts) - 1] : 'index';
 
-        if ($action === 'index') $slug = "{$module}.view";
-        elseif ($action === 'create' || $action === 'store') $slug = "{$module}.create";
-        elseif (in_array($action, ['edit', 'update'])) $slug = "{$module}.update";
-        elseif (in_array($action, ['destroy', 'force-delete'])) $slug = "{$module}.delete";
-        elseif ($action === 'restore') $slug = "{$module}.restore";
-        elseif ($action === 'export') $slug = "{$module}.export";
-        else $slug = "{$module}.{$action}";
+        // The observers module holds only view/review permissions: every
+        // management action (approve, batch, generate, revoke, ...) maps to review.
+        if ($module === 'observers') {
+            $slug = in_array($action, ['index', 'show', 'applications', 'batches', 'badge', 'certificate', 'print', 'export'])
+                ? 'observers.view'
+                : 'observers.review';
+        } else {
+            if ($action === 'index') $slug = "{$module}.view";
+            elseif ($action === 'create' || $action === 'store') $slug = "{$module}.create";
+            elseif (in_array($action, ['edit', 'update'])) $slug = "{$module}.update";
+            elseif (in_array($action, ['destroy', 'force-delete'])) $slug = "{$module}.delete";
+            elseif ($action === 'restore') $slug = "{$module}.restore";
+            elseif ($action === 'export') $slug = "{$module}.export";
+            elseif (in_array($action, ['show'])) $slug = "{$module}.view";
+            else $slug = "{$module}.{$action}";
+        }
 
         if (!in_array($slug, $userPermissions)) {
             if ($request->expectsJson()) {

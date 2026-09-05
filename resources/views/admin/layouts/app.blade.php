@@ -106,10 +106,22 @@
             </div>
             @endif
             @if($has('observers.view'))
-            <div class="menu-top{{ request()->routeIs('admin.observers.*') ? ' current' : '' }}">
+            <div class="menu-top{{ request()->routeIs('admin.observers.index') || request()->routeIs('admin.observers.show') || request()->routeIs('admin.observers.status') ? ' current' : '' }}">
                 <a href="{{ route('admin.observers.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-eye"></i></span>
                     <span class="menu-text">Observers</span>
+                </a>
+            </div>
+            <div class="menu-top{{ request()->routeIs('admin.observers.applications*') ? ' current' : '' }}">
+                <a href="{{ route('admin.observers.applications') }}" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-clipboard-list"></i></span>
+                    <span class="menu-text">Observer Applications</span>
+                </a>
+            </div>
+            <div class="menu-top{{ request()->routeIs('admin.observers.batches*') || request()->routeIs('admin.observers.badge-print') ? ' current' : '' }}">
+                <a href="{{ route('admin.observers.batches') }}" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-layer-group"></i></span>
+                    <span class="menu-text">Accreditation Batches</span>
                 </a>
             </div>
             @endif

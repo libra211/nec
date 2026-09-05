@@ -107,6 +107,13 @@
     .info-banner i { color:#1a3c8f; font-size:0.9rem; margin-top:0.1rem; flex-shrink:0; }
     .info-banner p { margin:0; font-size:0.82rem; color:#475569; line-height:1.5; }
 
+    .type-card { border:2px solid #e2e8f0; border-radius:14px; cursor:pointer; transition:all 0.25s; background:#f8fafc; position:relative; overflow:hidden; }
+    .type-card:hover { border-color:#1a3c8f; transform:translateY(-2px); box-shadow:0 8px 20px rgba(26,60,143,0.08); }
+    .type-card.active { border-color:#1a3c8f; background:rgba(26,60,143,0.04); box-shadow:0 8px 20px rgba(26,60,143,0.12); }
+    .type-card .type-check { position:absolute; top:12px; right:12px; width:22px; height:22px; border-radius:50%; border:2px solid #cbd5e1; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.7rem; }
+    .type-card.active .type-check { background:#1a3c8f; border-color:#1a3c8f; }
+
+    .lang-select { min-height:130px; }
     @media(max-width:768px) {
         .wizard-progress .step-label { display:none; }
         .wizard-progress .step-circle { width:34px; height:34px; font-size:0.78rem; }
@@ -170,6 +177,54 @@
         <form method="POST" action="{{ route('observers.apply.submit') }}" enctype="multipart/form-data" id="observerForm" novalidate>
             @csrf
 
+            {{-- STEP 0: Application Category --}}
+            <div class="step-card mb-4">
+                <div class="step-card-header">
+                    <h4><i class="fas fa-arrows-to-circle me-2"></i>Application Category</h4>
+                    <p>Choose which accreditation form applies to you. The form fields adapt to your selection.</p>
+                </div>
+                <div class="step-card-body">
+                    <div class="row g-3">
+                        <input type="hidden" name="form_type" id="formTypeHidden" value="{{ $type }}">
+                        <input type="hidden" name="observer_type" id="observerTypeHidden" value="{{ $type }}">
+                        <div class="col-md-6">
+                            <div class="type-card p-4 text-center {{ $type === 'domestic' ? 'active' : '' }}" id="typeDomesticCard" onclick="selectFormType('domestic')">
+                                <div class="type-check" id="typeDomesticCheck"><i class="fas fa-check"></i></div>
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;background:rgba(26,60,143,0.1);color:#1a3c8f;font-size:1.6rem;">
+                                    <i class="fas fa-flag"></i>
+                                </div>
+                                <h5 class="fw-bold mb-1" style="color:#1e293b;">Domestic Observer</h5>
+                                <p class="text-muted mb-3" style="font-size:0.83rem;">South Sudanese citizens observing on behalf of local CSOs, media or political parties.</p>
+                                <div class="d-flex flex-wrap justify-content-center gap-2" style="font-size:0.72rem;">
+                                    <span class="badge text-bg-light border"><i class="fas fa-id-card me-1"></i>National ID required</span>
+                                    <span class="badge text-bg-light border"><i class="fas fa-phone me-1"></i>+211 format</span>
+                                    <span class="badge text-bg-light border"><i class="fas fa-language me-1"></i>South Sudanese languages</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="type-card p-4 text-center {{ $type === 'international' ? 'active' : '' }}" id="typeInternationalCard" onclick="selectFormType('international')">
+                                <div class="type-check" id="typeInternationalCheck"><i class="fas fa-check"></i></div>
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;background:rgba(22,163,74,0.1);color:#16a34a;font-size:1.6rem;">
+                                    <i class="fas fa-earth-americas"></i>
+                                </div>
+                                <h5 class="fw-bold mb-1" style="color:#1e293b;">International Observer</h5>
+                                <p class="text-muted mb-3" style="font-size:0.83rem;">Foreign observers from embassies, international organisations or partner states.</p>
+                                <div class="d-flex flex-wrap justify-content-center gap-2" style="font-size:0.72rem;">
+                                    <span class="badge text-bg-light border"><i class="fas fa-passport me-1"></i>Passport required</span>
+                                    <span class="badge text-bg-light border"><i class="fas fa-globe me-1"></i>Any nationality</span>
+                                    <span class="badge text-bg-light border"><i class="fas fa-language me-1"></i>World languages</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-banner mt-3 mb-0">
+                        <i class="fas fa-circle-info"></i>
+                        <p><strong>Domestic observers</strong> must be South Sudanese citizens with a national ID. <strong>International observers</strong> must hold a valid passport and will be accredited with a passport-linked accreditation number. Regional bodies (AU, IGAD, EAC) that are not South Sudanese should use the <em>International</em> category.</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- STEP 1: Personal Information --}}
             <div class="wizard-step active" data-step="1">
                 <div class="step-card">
@@ -188,13 +243,9 @@
                                 <label class="form-label-custom">Title</label>
                                 <select name="title" class="form-select nec-input @error('title') is-invalid @enderror">
                                     <option value="">Select</option>
-                                    <option value="Mr" {{ old('title') === 'Mr' ? 'selected' : '' }}>Mr</option>
-                                    <option value="Mrs" {{ old('title') === 'Mrs' ? 'selected' : '' }}>Mrs</option>
-                                    <option value="Ms" {{ old('title') === 'Ms' ? 'selected' : '' }}>Ms</option>
-                                    <option value="Dr" {{ old('title') === 'Dr' ? 'selected' : '' }}>Dr</option>
-                                    <option value="Prof" {{ old('title') === 'Prof' ? 'selected' : '' }}>Prof</option>
-                                    <option value="Hon" {{ old('title') === 'Hon' ? 'selected' : '' }}>Hon</option>
-                                    <option value="Other" {{ old('title') === 'Other' ? 'selected' : '' }}>Other</option>
+                                    @foreach(['Mr','Mrs','Ms','Dr','Prof','Hon','Other'] as $t)
+                                    <option value="{{ $t }}" {{ old('title') === $t ? 'selected' : '' }}>{{ $t }}</option>
+                                    @endforeach
                                 </select>
                                 @error('title')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
@@ -213,7 +264,7 @@
                                 <input type="text" name="other_names" class="form-control nec-input @error('other_names') is-invalid @enderror" value="{{ old('other_names') }}" placeholder="e.g. Michael" maxlength="150">
                                 @error('other_names')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 domestic-only">
                                 <label class="form-label-custom">Gender <span class="required">*</span></label>
                                 <div class="d-flex gap-3 mt-1">
                                     <div class="form-check flex-fill" style="background:{{ old('gender') === 'male' ? 'rgba(26,60,143,0.06)' : '#f8fafc' }};border:1.5px solid {{ old('gender') === 'male' ? '#1a3c8f' : '#e2e8f0' }};border-radius:10px;padding:0.65rem 0.85rem;transition:all 0.2s;cursor:pointer;" onclick="selectGender(this,'male')">
@@ -232,15 +283,41 @@
                                 <input type="date" name="dob" class="form-control nec-input @error('dob') is-invalid @enderror" value="{{ old('dob') }}" max="{{ date('Y-m-d', strtotime('-18 years')) }}" required>
                                 @error('dob')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-md-6">
+
+                            {{-- DOMESTIC: nationality locked + national ID --}}
+                            <div class="col-md-6 domestic-only" id="domesticIdentityBlock">
                                 <label class="form-label-custom">Nationality <span class="required">*</span></label>
-                                <input type="text" name="nationality" class="form-control nec-input @error('nationality') is-invalid @enderror" value="{{ old('nationality', 'South Sudanese') }}" maxlength="100" required>
+                                <input type="text" name="nationality" class="form-control nec-input bg-white @error('nationality') is-invalid @enderror" value="{{ old('nationality', config('observer.domestic_nationality')) }}" readonly>
                                 @error('nationality')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label-custom">National ID / Passport No. <span class="required">*</span></label>
-                                <input type="text" name="national_id" class="form-control nec-input @error('national_id') is-invalid @enderror" value="{{ old('national_id') }}" placeholder="e.g. SS-12345678" maxlength="100" required>
+                            <div class="col-md-6 domestic-only" id="domesticNatIdBlock">
+                                <label class="form-label-custom">National ID Number <span class="required">*</span></label>
+                                <input type="text" name="national_id" class="form-control nec-input @error('national_id') is-invalid @enderror" value="{{ old('national_id') }}" placeholder="e.g. SS-12345678" maxlength="100">
+                                <small class="text-muted">South Sudanese National ID as issued by the National Civil Registry.</small>
                                 @error('national_id')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            </div>
+
+                            {{-- INTERNATIONAL: nationality from reference list + passport --}}
+                            <div class="col-md-6 international-only" id="intlNationalityBlock" style="display:none;">
+                                <label class="form-label-custom">Nationality <span class="required">*</span></label>
+                                <select name="nationality_id" id="nationalitySelect" class="form-select nec-input @error('nationality_id') is-invalid @enderror">
+                                    <option value="">Select your nationality...</option>
+                                    @foreach($countries as $continent => $countryGroup)
+                                    <optgroup label="{{ $continent }}">
+                                        @foreach($countryGroup as $country)
+                                        <option value="{{ $country->id }}" data-calling="{{ $country->calling_code }}" {{ (string) old('nationality_id') === (string) $country->id ? 'selected' : '' }}>{{ $country->name }}</option>
+                                        @endforeach
+                                    </optgroup>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Nationalities are grouped by continent.</small>
+                                @error('nationality_id')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6 international-only" id="intlPassportBlock" style="display:none;">
+                                <label class="form-label-custom">Passport Number <span class="required">*</span></label>
+                                <input type="text" name="passport_number" class="form-control nec-input @error('passport_number') is-invalid @enderror" value="{{ old('passport_number') }}" placeholder="e.g. P1234567 or 123456789" maxlength="100">
+                                <small class="text-muted">Valid passport number for your nationality.</small>
+                                @error('passport_number')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                         </div>
                     </div>
@@ -273,7 +350,7 @@
                                     <span class="input-group-text nec-input" style="border-right:none;background:#f1f5f9;"><i class="fas fa-phone text-muted"></i></span>
                                     <input type="tel" name="phone" class="form-control nec-input @error('phone') is-invalid @enderror" style="border-left:none;" value="{{ old('phone', '+211') }}" placeholder="+211XXXXXXXXX" maxlength="20" required>
                                 </div>
-                                <small class="text-muted">Include country code (e.g. +211 for South Sudan)</small>
+                                <small class="text-muted" id="phoneHint">{{ $type === 'domestic' ? 'Domestic: use the South Sudanese format +211 followed by 9 digits.' : 'International: use the international E.164 format e.g. +254 712 345 678.' }}</small>
                                 @error('phone')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-12">
@@ -332,9 +409,26 @@
                                 @error('employment_duration')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label-custom">Languages Spoken</label>
-                                <input type="text" name="languages" class="form-control nec-input @error('languages') is-invalid @enderror" value="{{ old('languages') }}" placeholder="e.g. English, Arabic, Dinka" maxlength="500">
-                                <small class="text-muted">Separate multiple languages with commas</small>
+                                <label class="form-label-custom">Languages Spoken <span class="required">*</span></label>
+
+                                <div class="domestic-only" id="langDomesticBlock">
+                                    <select name="languages[]" id="langDomestic" class="form-select nec-input lang-select @error('languages') is-invalid @enderror" multiple>
+                                        @foreach(config('observer.south_sudanese_languages') as $lang)
+                                        <option value="{{ $lang }}" {{ in_array($lang, old('languages', [])) ? 'selected' : '' }}>{{ $lang }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-muted">South Sudanese languages. Hold <strong>Ctrl/Cmd</strong> to select multiple.</small>
+                                </div>
+
+                                <div class="international-only" id="langIntlBlock" style="display:none;">
+                                    <select name="languages[]" id="langInternational" class="form-select nec-input lang-select @error('languages') is-invalid @enderror" multiple>
+                                        @foreach(config('observer.world_languages') as $lang)
+                                        <option value="{{ $lang }}" {{ in_array($lang, old('languages', [])) ? 'selected' : '' }}>{{ $lang }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-muted">World languages. Hold <strong>Ctrl/Cmd</strong> to select multiple.</small>
+                                </div>
+
                                 @error('languages')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                         </div>
@@ -351,48 +445,20 @@
                 <div class="step-card">
                     <div class="step-card-header">
                         <h4><i class="fas fa-binoculars me-2"></i>Observer Details</h4>
-                        <p>Select your observer type and provide organizational information if applicable.</p>
+                        <p>Provide your organization and deployment details.</p>
                     </div>
                     <div class="step-card-body">
+                        <div class="info-banner">
+                            <i class="fas fa-circle-info"></i>
+                            <p><strong id="observerTypeSummary">Domestic Observer</strong> — your application category is set. Go back to change it if needed.</p>
+                        </div>
                         <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label-custom">Observer Type <span class="required">*</span></label>
-                                <div class="row g-2">
-                                    <div class="col-md-4">
-                                        <div class="observer-type-card p-3 text-center rounded-3" style="border:2px solid {{ old('observer_type') === 'domestic' ? '#1a3c8f' : '#e2e8f0' }};background:{{ old('observer_type') === 'domestic' ? 'rgba(26,60,143,0.04)' : '#f8fafc' }};cursor:pointer;transition:all 0.2s;" onclick="selectObserverType(this,'domestic')">
-                                            <input type="radio" name="observer_type" value="domestic" class="d-none" {{ old('observer_type') === 'domestic' ? 'checked' : '' }} required>
-                                            <i class="fas fa-flag text-primary mb-2" style="font-size:1.5rem;"></i>
-                                            <div class="fw-bold" style="font-size:0.88rem;">Domestic</div>
-                                            <div class="text-muted" style="font-size:0.72rem;">Local CSO / Media / Party</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="observer-type-card p-3 text-center rounded-3" style="border:2px solid {{ old('observer_type') === 'international' ? '#1a3c8f' : '#e2e8f0' }};background:{{ old('observer_type') === 'international' ? 'rgba(26,60,143,0.04)' : '#f8fafc' }};cursor:pointer;transition:all 0.2s;" onclick="selectObserverType(this,'international')">
-                                            <input type="radio" name="observer_type" value="international" class="d-none" {{ old('observer_type') === 'international' ? 'checked' : '' }}>
-                                            <i class="fas fa-globe text-success mb-2" style="font-size:1.5rem;"></i>
-                                            <div class="fw-bold" style="font-size:0.88rem;">International</div>
-                                            <div class="text-muted" style="font-size:0.72rem;">Foreign Org / Embassy</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="observer-type-card p-3 text-center rounded-3" style="border:2px solid {{ old('observer_type') === 'regional' ? '#1a3c8f' : '#e2e8f0' }};background:{{ old('observer_type') === 'regional' ? 'rgba(26,60,143,0.04)' : '#f8fafc' }};cursor:pointer;transition:all 0.2s;" onclick="selectObserverType(this,'regional')">
-                                            <input type="radio" name="observer_type" value="regional" class="d-none" {{ old('observer_type') === 'regional' ? 'checked' : '' }}>
-                                            <i class="fas fa-earth-africa text-warning mb-2" style="font-size:1.5rem;"></i>
-                                            <div class="fw-bold" style="font-size:0.88rem;">Regional</div>
-                                            <div class="text-muted" style="font-size:0.72rem;">AU / IGAD / Regional Body</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                @error('observer_type')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
-                            </div>
-
                             <div class="col-md-6">
                                 <label class="form-label-custom">Number of Observers</label>
                                 <input type="number" name="observer_count" class="form-control nec-input @error('observer_count') is-invalid @enderror" value="{{ old('observer_count', 1) }}" min="1" max="100">
                                 @error('observer_count')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
-
-                            <div class="col-12" id="orgFields">
+                            <div class="col-12">
                                 <h6 class="fw-bold text-muted small text-uppercase mb-3" style="letter-spacing:0.5px;">Organization Information</h6>
                                 <div class="row g-3">
                                     <div class="col-md-6">
@@ -417,7 +483,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-12">
                                 <h6 class="fw-bold text-muted small text-uppercase mb-3" style="letter-spacing:0.5px;">Deployment & Experience</h6>
                             </div>
@@ -525,11 +590,12 @@
                     <div class="step-card-body">
                         <div class="review-section" id="reviewPersonal">
                             <h6><i class="fas fa-user me-2"></i>Personal Information</h6>
+                            <div class="review-row"><span class="review-label">Category:</span><span class="review-value" id="rvCategory">-</span></div>
                             <div class="review-row"><span class="review-label">Name:</span><span class="review-value" id="rvName">-</span></div>
                             <div class="review-row"><span class="review-label">Gender:</span><span class="review-value" id="rvGender">-</span></div>
                             <div class="review-row"><span class="review-label">Date of Birth:</span><span class="review-value" id="rvDob">-</span></div>
                             <div class="review-row"><span class="review-label">Nationality:</span><span class="review-value" id="rvNationality">-</span></div>
-                            <div class="review-row"><span class="review-label">National ID:</span><span class="review-value" id="rvNatId">-</span></div>
+                            <div class="review-row"><span class="review-label">National ID / Passport:</span><span class="review-value" id="rvNatId">-</span></div>
                         </div>
 
                         <div class="review-section" id="reviewContact">
@@ -550,7 +616,6 @@
 
                         <div class="review-section" id="reviewObserver">
                             <h6><i class="fas fa-binoculars me-2"></i>Observer Details</h6>
-                            <div class="review-row"><span class="review-label">Type:</span><span class="review-value" id="rvType">-</span></div>
                             <div class="review-row"><span class="review-label">Organization:</span><span class="review-value" id="rvOrg">-</span></div>
                             <div class="review-row"><span class="review-label">Observers:</span><span class="review-value" id="rvCount">-</span></div>
                             <div class="review-row"><span class="review-label">Deployment:</span><span class="review-value" id="rvDeploy">-</span></div>
@@ -623,15 +688,8 @@
 (function(){
     let currentStep = 1;
     const totalSteps = 6;
-
-    const stepFields = {
-        1: ['first_name','last_name','gender','dob','nationality','national_id'],
-        2: ['email','phone'],
-        3: [],
-        4: ['observer_type'],
-        5: [],
-        6: ['agree_code']
-    };
+    let formType = @json($type);
+    if (formType !== 'domestic' && formType !== 'international') formType = 'domestic';
 
     const stepLabels = {
         1: 'Personal Information',
@@ -640,6 +698,47 @@
         4: 'Observer Details',
         5: 'Documents',
         6: 'Review & Submit'
+    };
+
+    window.selectFormType = function(type) {
+        formType = type;
+        document.getElementById('observerTypeHidden').value = type;
+
+        const cards = {
+            domestic: document.getElementById('typeDomesticCard'),
+            international: document.getElementById('typeInternationalCard')
+        };
+        Object.keys(cards).forEach(k => {
+            cards[k].classList.toggle('active', k === type);
+        });
+
+        const isDom = type === 'domestic';
+
+        // identity fields
+        document.getElementById('domesticIdentityBlock').style.display = isDom ? '' : 'none';
+        document.getElementById('domesticNatIdBlock').style.display = isDom ? '' : 'none';
+        document.getElementById('intlNationalityBlock').style.display = isDom ? 'none' : '';
+        document.getElementById('intlPassportBlock').style.display = isDom ? 'none' : '';
+
+        // language blocks + enable only the active one for submission
+        const domLang = document.getElementById('langDomestic');
+        const intlLang = document.getElementById('langInternational');
+        document.getElementById('langDomesticBlock').style.display = isDom ? '' : 'none';
+        document.getElementById('langIntlBlock').style.display = isDom ? 'none' : '';
+        domLang.disabled = !isDom;
+        intlLang.disabled = isDom;
+
+        // phone hint
+        document.getElementById('phoneHint').textContent = isDom
+            ? 'Domestic: use the South Sudanese format +211 followed by 9 digits.'
+            : 'International: use the international E.164 format e.g. +254 712 345 678.';
+
+        // observer summary line
+        document.getElementById('observerTypeSummary').textContent = isDom ? 'Domestic Observer' : 'International Observer';
+
+        // hidden form_type field
+        const hidden = document.getElementById('formTypeHidden');
+        if (hidden) hidden.value = type;
     };
 
     window.nextStep = function(from) {
@@ -669,30 +768,52 @@
         window.scrollTo({top:document.querySelector('.wizard-progress').offsetTop - 80, behavior:'smooth'});
     }
 
+    function isVisible(el) {
+        return el && el.offsetParent !== null && el.type !== 'hidden';
+    }
+
     function validateStep(n) {
-        const fields = stepFields[n] || [];
+        const stepEl = document.querySelector(`.wizard-step[data-step="${n}"]`);
+        if (!stepEl) return true;
+
         let valid = true;
         let firstInvalid = null;
 
-        fields.forEach(name => {
-            const el = document.querySelector(`[name="${name}"]`);
-            if (!el) return;
+        stepEl.querySelectorAll('input, select, textarea').forEach(el => {
+            if (el.disabled || !isVisible(el)) return;
+            if (el.type === 'file' || el.tagName === 'BUTTON') return;
 
-            if (name === 'agree_code') {
-                if (!el.checked) {
+            const required = el.hasAttribute('required') || el.name === 'languages';
+
+            if (el.type === 'radio') {
+                const group = stepEl.querySelectorAll(`input[name="${el.name}"]`);
+                const anyChecked = Array.from(group).some(r => r.checked);
+                if (required && !anyChecked) {
                     valid = false;
-                    el.closest('.form-check, .mt-4').style.outline = '2px solid #ef4444';
-                    el.closest('.form-check, .mt-4').style.outlineOffset = '2px';
-                    el.closest('.form-check, .mt-4').style.borderRadius = '12px';
-                    if (!firstInvalid) firstInvalid = el;
+                    if (!firstInvalid) firstInvalid = group[0];
                 } else {
-                    el.closest('.form-check, .mt-4').style.outline = '';
+                    group.forEach(r => {
+                        const card = r.closest('.form-check');
+                        if (card) { card.style.outline = anyChecked ? '' : '2px solid #ef4444'; card.style.outlineOffset = '2px'; card.style.borderRadius = '10px'; }
+                    });
                 }
                 return;
             }
 
-            if (el.tagName === 'SELECT') {
-                if (!el.value) {
+            if (el.type === 'checkbox') {
+                if (required && !el.checked) {
+                    valid = false;
+                    el.closest('.form-check').style.outline = '2px solid #ef4444';
+                    el.closest('.form-check').style.outlineOffset = '2px';
+                    if (!firstInvalid) firstInvalid = el;
+                } else {
+                    el.closest('.form-check').style.outline = '';
+                }
+                return;
+            }
+
+            if (el.multiple) {
+                if (required && el.selectedOptions.length === 0) {
                     valid = false;
                     el.classList.add('is-invalid');
                     if (!firstInvalid) firstInvalid = el;
@@ -700,15 +821,23 @@
                     el.classList.remove('is-invalid');
                     el.classList.add('is-valid');
                 }
-            } else {
-                if (!el.value.trim()) {
+                return;
+            }
+
+            if (el.name === 'nationality' || new Set(['first_name','last_name','gender','dob','email','phone','nationality','national_id','passport_number','nationality_id']).has(el.name)) {
+                const empty = !el.value || !el.value.trim();
+                if (required && empty) {
                     valid = false;
                     el.classList.add('is-invalid');
                     if (!firstInvalid) firstInvalid = el;
-                } else {
-                    el.classList.remove('is-invalid');
-                    el.classList.add('is-valid');
+                    return;
                 }
+            }
+
+            if (el.tagName === 'SELECT' && required && !el.value) {
+                valid = false;
+                el.classList.add('is-invalid');
+                if (!firstInvalid) firstInvalid = el;
             }
         });
 
@@ -734,12 +863,25 @@
         const oNames = v('other_names');
         const lName = v('last_name');
         const fullName = [title, fName, oNames, lName].filter(Boolean).join(' ');
+        document.getElementById('rvCategory').textContent = formType === 'domestic' ? 'Domestic Observer' : 'International Observer';
         document.getElementById('rvName').textContent = fullName || '-';
-        document.getElementById('rvGender').textContent = v('gender') === 'male' ? 'Male' : v('gender') === 'female' ? 'Female' : '-';
+        document.getElementById('rvGender').textContent = v('gender') === 'male' ? 'Male' : v('gender') === 'female' ? 'Female' : v('gender') === 'other' ? 'Other' : '-';
         const dob = v('dob');
         document.getElementById('rvDob').textContent = dob ? new Date(dob).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : '-';
-        document.getElementById('rvNationality').textContent = v('nationality') || '-';
-        document.getElementById('rvNatId').textContent = v('national_id') || '-';
+
+        let nationality = '-';
+        let idVal = '-';
+        if (formType === 'domestic') {
+            nationality = v('nationality') || 'South Sudanese';
+            idVal = v('national_id');
+        } else {
+            const sel = document.getElementById('nationalitySelect');
+            nationality = sel && sel.selectedOptions.length ? sel.selectedOptions[0].textContent : '-';
+            idVal = v('passport_number');
+        }
+        document.getElementById('rvNationality').textContent = nationality;
+        document.getElementById('rvNatId').textContent = idVal || '-';
+
         document.getElementById('rvEmail').textContent = v('email') || '-';
         document.getElementById('rvPhone').textContent = v('phone') || '-';
         document.getElementById('rvAddress').textContent = v('residential_address') || v('postal_address') || '-';
@@ -748,10 +890,12 @@
         document.getElementById('rvEmployer').textContent = v('employer') || '-';
         document.getElementById('rvJobTitle').textContent = v('job_title') || '-';
         document.getElementById('rvExp').textContent = v('employment_duration') || '-';
-        document.getElementById('rvLang').textContent = v('languages') || '-';
 
-        const typeMap = {domestic:'Domestic Observer',international:'International Observer',regional:'Regional Observer'};
-        document.getElementById('rvType').textContent = typeMap[v('observer_type')] || '-';
+        const langSel = formType === 'domestic' ? document.getElementById('langDomestic') : document.getElementById('langInternational');
+        document.getElementById('rvLang').textContent = langSel && langSel.selectedOptions.length
+            ? Array.from(langSel.selectedOptions).map(o => o.textContent).join(', ')
+            : '-';
+
         document.getElementById('rvOrg').textContent = v('organization_name') || '-';
         document.getElementById('rvCount').textContent = v('observer_count') || '1';
         document.getElementById('rvDeploy').textContent = v('deployment_areas') || '-';
@@ -767,7 +911,6 @@
         });
     }
 
-    /* Gender radio card selection */
     window.selectGender = function(el, val) {
         el.querySelector('input').checked = true;
         document.querySelectorAll('[name="gender"]').forEach(r => {
@@ -779,17 +922,6 @@
         });
     };
 
-    /* Observer type card selection */
-    window.selectObserverType = function(el, val) {
-        el.querySelector('input').checked = true;
-        document.querySelectorAll('.observer-type-card').forEach(card => {
-            const input = card.querySelector('input');
-            card.style.borderColor = input.checked ? '#1a3c8f' : '#e2e8f0';
-            card.style.background = input.checked ? 'rgba(26,60,143,0.04)' : '#f8fafc';
-        });
-    };
-
-    /* File upload handling */
     window.handleFileSelect = function(input, zoneId, previewId) {
         const zone = document.getElementById(zoneId);
         if (input.files.length) {
@@ -831,14 +963,12 @@
         }
     };
 
-    /* Drag & drop visual */
     document.querySelectorAll('.file-upload-zone').forEach(zone => {
         zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
         zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
         zone.addEventListener('drop', () => zone.classList.remove('dragover'));
     });
 
-    /* Character counters */
     document.querySelectorAll('textarea[maxlength]').forEach(ta => {
         const counter = ta.parentElement.querySelector('.char-count span');
         if (counter) {
@@ -847,7 +977,6 @@
         }
     });
 
-    /* Live validation feedback */
     document.querySelectorAll('.nec-input[required], .nec-input[name="email"]').forEach(input => {
         input.addEventListener('blur', function() {
             if (this.hasAttribute('required') && !this.value.trim()) {
@@ -863,7 +992,6 @@
         });
     });
 
-    /* Submit handler */
     document.getElementById('observerForm').addEventListener('submit', function(e) {
         if (!validateStep(6)) {
             e.preventDefault();
@@ -874,9 +1002,25 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Submitting...';
     });
 
-    /* Init phone field */
     const phoneInput = document.querySelector('[name="phone"]');
     if (phoneInput && !phoneInput.value) phoneInput.value = '+211';
+
+    // Pre-populate calling code for international selections
+    const natSel = document.getElementById('nationalitySelect');
+    if (natSel) {
+        natSel.addEventListener('change', function() {
+            if (!this.value) return;
+            const opt = this.selectedOptions[0];
+            const cc = opt ? opt.dataset.calling : '';
+            const phoneEl = document.querySelector('[name="phone"]');
+            if (cc && phoneEl) {
+                phoneEl.value = '+' + cc.replace(/\D/g, '') + ' ';
+            }
+        });
+    }
+
+    // Initialize UI based on current form type
+    selectFormType(formType);
 })();
 </script>
 @endpush

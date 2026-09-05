@@ -54,7 +54,7 @@
                                 <div class="col-sm-6"><span class="text-muted">Name:</span> <strong>{{ $application->title }} {{ $application->first_name }} {{ $application->other_names }} {{ $application->last_name }}</strong></div>
                                 <div class="col-sm-6"><span class="text-muted">Email:</span> <strong>{{ $application->email }}</strong></div>
                                 <div class="col-sm-6"><span class="text-muted">Phone:</span> <strong>{{ $application->phone }}</strong></div>
-                                <div class="col-sm-6"><span class="text-muted">Type:</span> <strong>{{ ucfirst($application->observer_type) }} Observer</strong></div>
+                                <div class="col-sm-6"><span class="text-muted">Category:</span> <strong>{{ ucfirst($application->form_type) }} Observer</strong></div>
                                 @if($application->organization_name)
                                 <div class="col-12"><span class="text-muted">Organization:</span> <strong>{{ $application->organization_name }}</strong></div>
                                 @endif
