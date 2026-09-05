@@ -175,4 +175,25 @@ class AdminPermissionGateTest extends TestCase
 
         $this->assertSame('Warrap', $target->fresh()->assigned_state);
     }
+
+    public function test_polling_stations_page_is_scoped_to_coordinator_state(): void
+    {
+        $this->loginAs('state_coordinator', 'coord.ee@nec.gov.ss');
+        $this->get('/admin/polling-stations')
+            ->assertStatus(200)
+            ->assertSee('Torit Cathedral')
+            ->assertSee('Eastern Equatoria')
+            ->assertDontSee('Juba Primary School')
+            ->assertDontSee('Central Equatoria');
+    }
+
+    public function test_superadmin_polling_stations_page_shows_all_states(): void
+    {
+        $this->loginAs('super_admin');
+        $this->get('/admin/polling-stations')
+            ->assertStatus(200)
+            ->assertSee('Juba Primary School')
+            ->assertSee('Torit Cathedral')
+            ->assertSee('All States');
+    }
 }

@@ -74,12 +74,12 @@
     <div class="card-body py-3">
         <div class="d-flex align-items-center gap-2 mb-3">
             <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:rgba(46,139,87,0.1);color:#2E8B57;font-size:0.75rem;"><i class="fas fa-chart-bar"></i></span>
-            <span style="font-size:0.85rem;font-weight:600;color:#1e293b;">Voters by State</span>
+            <span style="font-size:0.85rem;font-weight:600;color:#1e293b;">{{ ($stateStatsByConstituency ?? false) ? 'Voters by Constituency' : 'Voters by State' }}</span>
         </div>
         @php $maxVoters = max($stateStats->max('voters') ?? 1, 1); @endphp
         @foreach($stateStats as $ss)
         <div class="d-flex align-items-center gap-3 mb-2">
-            <span style="min-width:190px;font-size:0.8rem;font-weight:600;color:#334155;">{{ $ss->state }}</span>
+            <span style="min-width:190px;font-size:0.8rem;font-weight:600;color:#334155;">{{ $ss->group_label }}</span>
             <div class="flex-grow-1" style="background:#f1f5f9;border-radius:6px;height:14px;overflow:hidden;">
                 <div style="width:{{ round(($ss->voters / $maxVoters) * 100) }}%;height:100%;background:linear-gradient(90deg,#2E8B57,#3fb374);border-radius:6px;"></div>
             </div>
@@ -107,12 +107,17 @@
             </div>
             <div class="col-md-3">
                 <label style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;color:#475569;margin-bottom:4px;display:block;">State</label>
+                @if($scopedState)
+                    <input type="hidden" name="state" value="{{ $scopedState }}">
+                    <input type="text" class="form-control" value="{{ $scopedState }}" disabled style="border-radius:8px;background:#eef2f6;color:#495057;">
+                @else
                 <select name="state" class="form-select" style="border-radius:8px;">
                     <option value="">All States</option>
                     @foreach($states as $sid => $sname)
                         <option value="{{ $sname }}" {{ request('state') === $sname ? 'selected' : '' }}>{{ $sname }}</option>
                     @endforeach
                 </select>
+                @endif
             </div>
             <div class="col-md-3">
                 <label style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;color:#475569;margin-bottom:4px;display:block;">Status</label>
