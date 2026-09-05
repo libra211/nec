@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0"><i class="fas fa-hard-hat text-primary me-2"></i>Polling Staff</h1>
+    @if($can('polling-staff.create'))
     <a href="{{ route('admin.polling-staff.create') }}" class="btn" style="background:var(--nec-green);color:#fff;"><i class="fas fa-plus me-1"></i> Add Staff</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
@@ -83,10 +85,14 @@
                             <form method="POST" action="{{ route('admin.polling-staff.status', $s) }}" class="d-inline">@csrf @method('PATCH')
                                 <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:{{ $s->status==='active' ? 'rgba(239,68,68,0.08)' : 'rgba(46,139,87,0.08)' }};color:{{ $s->status==='active' ? '#ef4444' : '#2E8B57' }};border:none;" title="{{ $s->status==='active'?'Deactivate':'Activate' }}"><i class="fas fa-toggle-{{ $s->status==='active'?'on':'off' }}"></i></button>
                             </form>
+                            @if($can('polling-staff.update'))
                             <a href="{{ route('admin.polling-staff.edit', $s) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                            @endif
+                            @if($can('polling-staff.delete'))
                             <form method="POST" action="{{ route('admin.polling-staff.destroy', $s) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
                                 <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" title="Delete"><i class="fas fa-trash"></i></button>
                             </form>
+                            @endif
                         </td>
                     </tr>
                 @empty

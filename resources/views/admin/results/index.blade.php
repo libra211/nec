@@ -6,7 +6,9 @@
         <h2 class="mb-1" style="font-weight:700;"><i class="fas fa-poll text-primary me-2"></i>Election Results</h2>
         <p class="text-muted mb-0 small">Manage election results and vote counts across all constituencies</p>
     </div>
+    @if($can('results.create'))
     <a href="{{ route('admin.results.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Result</a>
+    @endif
 </div>
 
 <div class="row g-3 mb-4">
@@ -174,8 +176,12 @@
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
                             <div class="d-flex gap-1 justify-content-end">
                                 <a href="{{ route('admin.results.show', $item->id) }}" class="btn btn-sm rounded-3" title="View" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;"><i class="fas fa-eye"></i></a>
+                                @if($can('results.update'))
                                 <a href="{{ route('admin.results.edit', $item->id) }}" class="btn btn-sm rounded-3" title="Edit" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;"><i class="fas fa-edit"></i></a>
+                                @endif
+                                @if($can('results.delete'))
                                 <button class="btn btn-sm rounded-3" title="Delete" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.results.destroy', $item->id) }}')"><i class="fas fa-trash"></i></button>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -187,7 +193,9 @@
                             </div>
                             <p class="text-muted mb-1" style="font-size:0.85rem;">No results found</p>
                             <p class="text-muted mb-3" style="font-size:0.7rem;">Try adjusting your search or filter criteria</p>
+                            @if($can('results.create'))
                             <a href="{{ route('admin.results.create') }}" class="btn btn-sm btn-success rounded-3 px-3"><i class="fas fa-plus me-1"></i>Add Your First Result</a>
+                            @endif
                         </td>
                     </tr>
                     @endforelse

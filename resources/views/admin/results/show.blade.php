@@ -28,7 +28,9 @@
     </div>
     <div class="d-flex gap-2">
         <a href="{{ route('admin.results.index') }}" class="btn btn-outline-secondary" style="border-radius:10px;padding:0.5rem 1.2rem;"><i class="fas fa-arrow-left me-1"></i> Back</a>
+        @if($can('results.update'))
         <a href="{{ route('admin.results.edit', $result->id) }}" class="btn btn-primary" style="border-radius:10px;padding:0.5rem 1.2rem;"><i class="fas fa-edit me-1"></i> Edit</a>
+        @endif
     </div>
 </div>
 

@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminBallotController;
 use App\Http\Controllers\Admin\AdminCountryController;
 use App\Http\Controllers\Admin\AdminDiasporaMissionController;
 use App\Http\Controllers\Admin\AdminDownloadController;
+use App\Http\Controllers\Admin\DashboardVisibilityController;
 use App\Http\Controllers\Admin\AdminEducationController;
 use App\Http\Controllers\Admin\AdminFaqController;
 use App\Http\Controllers\Admin\AdminGalleryController;
@@ -219,6 +220,10 @@ Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.log
 Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Dashboard visibility (superadmin only via middleware)
+    Route::get('dashboard-visibility', [DashboardVisibilityController::class, 'index'])->name('dashboard-visibility.index');
+    Route::put('dashboard-visibility', [DashboardVisibilityController::class, 'update'])->name('dashboard-visibility.update');
 
     // News CRUD
     Route::resource('news', AdminNewsController::class)->except(['show']);

@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Videos</h2>
+    @if($can('videos.create'))
     <a href="{{ route('admin.videos.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Video</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
@@ -76,8 +78,12 @@
                         </td>
                         <td style="padding:10px 12px;color:#64748b;">{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}</td>
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
+                            @if($can('videos.update'))
                             <a href="{{ route('admin.videos.edit', $item->id) }}" class="btn btn-sm rounded-3" title="Edit" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;"><i class="fas fa-edit"></i></a>
+                            @endif
+                            @if($can('videos.delete'))
                             <button class="btn btn-sm rounded-3" title="Delete" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.videos.destroy', $item->id) }}')"><i class="fas fa-trash"></i></button>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -88,7 +94,9 @@
                             </div>
                             <p class="text-muted mb-1" style="font-size:0.85rem;">No videos found</p>
                             <p class="text-muted mb-3" style="font-size:0.7rem;">Try adjusting your search or filter criteria</p>
+                            @if($can('videos.create'))
                             <a href="{{ route('admin.videos.create') }}" class="btn btn-sm btn-success rounded-3 px-3"><i class="fas fa-plus me-1"></i>Add Video</a>
+                            @endif
                         </td>
                     </tr>
                     @endforelse

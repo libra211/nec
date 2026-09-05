@@ -6,7 +6,9 @@
         <h2 class="mb-1">Political Parties Management</h2>
         <p class="text-muted mb-0 small">Manage registered political parties and their details</p>
     </div>
+    @if($can('parties.create'))
     <a href="{{ route('admin.parties.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Party</a>
+    @endif
 </div>
 
 <div class="row g-3 mb-4">
@@ -123,8 +125,12 @@
                         </td>
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
                             <a href="{{ route('admin.parties.show', $party->id) }}" class="btn btn-sm rounded-3" title="View" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;"><i class="fas fa-eye"></i></a>
+                            @if($can('parties.update'))
                             <a href="{{ route('admin.parties.edit', $party->id) }}" class="btn btn-sm rounded-3" title="Edit" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;"><i class="fas fa-edit"></i></a>
+                            @endif
+                            @if($can('parties.delete'))
                             <button class="btn btn-sm rounded-3" title="Delete" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.parties.destroy', $party->id) }}')"><i class="fas fa-trash"></i></button>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -135,7 +141,9 @@
                             </div>
                             <p class="text-muted mb-1" style="font-size:0.85rem;">No political parties found</p>
                             <p class="text-muted mb-3" style="font-size:0.7rem;">Try adjusting your search or filter criteria</p>
+                            @if($can('parties.create'))
                             <a href="{{ route('admin.parties.create') }}" class="btn btn-sm btn-success rounded-3 px-3"><i class="fas fa-plus me-1"></i>Add Your First Party</a>
+                            @endif
                         </td>
                     </tr>
                     @endforelse

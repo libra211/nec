@@ -5,7 +5,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0"><i class="fas fa-earth-africa me-2"></i>Countries</h2>
+    @if($can('countries.create'))
     <a href="{{ route('admin.countries.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Country</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
@@ -60,7 +62,11 @@
                 @forelse($countries as $item)
                 <tr style="border-bottom:1px solid #f1f3f5;">
                     <td style="padding:10px 8px 10px 16px;">
+                        @if($can('countries.update'))
                         <a href="{{ route('admin.countries.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ $item->name }}</a>
+                        @else
+                        <span class="fw-semibold" style="color:#1e293b;">{{ $item->name }}</span>
+                        @endif
                         @if($item->status === 'inactive') <span class="badge bg-danger ms-1">Inactive</span> @endif
                     </td>
                     <td style="padding:10px 12px;"><span class="text-uppercase fw-semibold">{{ $item->code }}</span></td>
@@ -73,9 +79,13 @@
                         @else <span class="badge bg-danger">Inactive</span> @endif
                     </td>
                     <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
+                        @if($can('countries.update'))
                         <a href="{{ route('admin.countries.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                        @endif
                         <a href="{{ route('admin.countries.toggle-status', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba({{ $item->status === 'active' ? '6,182,212' : '46,139,87' }},0.08);color:{{ $item->status === 'active' ? '#0891b2' : '#2E8B57' }};border:none;" title="{{ $item->status === 'active' ? 'Deactivate' : 'Activate' }}"><i class="fas fa-{{ $item->status === 'active' ? 'eye-slash' : 'eye' }}"></i></a>
+                        @if($can('countries.delete'))
                         <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.countries.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        @endif
                     </td>
                 </tr>
                 @empty

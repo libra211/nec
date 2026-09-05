@@ -3,9 +3,11 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Registration Agents</h2>
+    @if($can('agents.create'))
     <a href="{{ route('admin.agents.create') }}" class="btn" style="background:var(--nec-green);color:#fff;border:none;">
         <i class="fas fa-plus me-1"></i> Add Agent
     </a>
+    @endif
 </div>
 
 <div class="row g-3 mb-4">
@@ -171,13 +173,17 @@
                         <td style="padding:10px 12px;color:#475569;">{{ $agent->voters_count ?? 0 }}</td>
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
                             <a href="{{ route('admin.agents.voters', $agent) }}" class="btn btn-sm rounded-3" title="View Voters" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;"><i class="fas fa-users"></i></a>
+                            @if($can('agents.update'))
                             <a href="{{ route('admin.agents.edit', $agent) }}" class="btn btn-sm rounded-3" title="Edit" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;"><i class="fas fa-edit"></i></a>
+                            @endif
                             @php
                                 $toggleBg = $agent->status === 'active' ? 'rgba(245,158,11,0.08)' : 'rgba(34,197,94,0.08)';
                                 $toggleColor = $agent->status === 'active' ? '#f59e0b' : '#22c55e';
                             @endphp
                             <button type="button" class="btn btn-sm rounded-3" title="{{ $agent->status === 'active' ? 'Suspend' : 'Activate' }}" style="padding:3px 8px;background:{{ $toggleBg }};color:{{ $toggleColor }};border:none;" onclick="toggleStatus('{{ route('admin.agents.status', $agent) }}', {{ $agent->status === 'active' ? 'false' : 'true' }})"><i class="fas fa-{{ $agent->status === 'active' ? 'ban' : 'check' }}"></i></button>
+                            @if($can('agents.delete'))
                             <button type="button" class="btn btn-sm rounded-3" title="Delete" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.agents.destroy', $agent) }}')"><i class="fas fa-trash"></i></button>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -188,7 +194,9 @@
                             </div>
                             <p class="text-muted mb-1" style="font-size:0.85rem;">No registration agents found</p>
                             <p class="text-muted mb-3" style="font-size:0.7rem;">Try adjusting your search or filter criteria</p>
+                            @if($can('agents.create'))
                             <a href="{{ route('admin.agents.create') }}" class="btn btn-sm btn-success rounded-3 px-3"><i class="fas fa-plus me-1"></i>Add Agent</a>
+                            @endif
                         </td>
                     </tr>
                     @endforelse

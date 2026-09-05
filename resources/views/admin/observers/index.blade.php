@@ -81,7 +81,7 @@
                         </td>
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
                             <a href="{{ route('admin.observers.show', $obs->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;" title="View"><i class="fas fa-eye"></i></a>
-                            @if($obs->status === 'pending')
+                            @if($obs->status === 'pending' && $can('observers.review'))
                             <form action="{{ route('admin.observers.status', $obs->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Accredit this observer?')">
                                 @csrf
                                 @method('PATCH')

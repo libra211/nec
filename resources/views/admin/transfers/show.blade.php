@@ -4,9 +4,9 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="h3 mb-0"><i class="fas fa-exchange-alt text-primary me-2"></i>Transfer Request Details</h1>
-        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0"><li class="breadcrumb-item"><a href="{{ route('admin.transfers.index') }}">Transfers</a></li><li class="breadcrumb-item active">Details</li></ol></nav>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0"><li class="breadcrumb-item"><a href="{{ route('admin.voter-transfers.index') }}">Transfers</a></li><li class="breadcrumb-item active">Details</li></ol></nav>
     </div>
-    <a href="{{ route('admin.transfers.index') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back</a>
+    <a href="{{ route('admin.voter-transfers.index') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back</a>
 </div>
 
 <div class="row g-4">
@@ -33,7 +33,7 @@
                     @endif
                     <div class="col-md-4"><strong class="text-muted d-block mb-1">Submitted</strong><p>{{ $transfer->created_at?->format('d M Y, H:i') ?? 'N/A' }}</p></div>
                     <div class="col-md-4"><strong class="text-muted d-block mb-1">Reviewed By</strong><p>{{ $transfer->reviewed_by ?? 'Pending' }}</p></div>
-                    <div class="col-md-4"><strong class="text-muted d-block mb-1">Processed Date</strong><p>{{ $transfer->processed_date?->format('d M Y, H:i') ?? 'Pending' }}</p></div>
+                    <div class="col-md-4"><strong class="text-muted d-block mb-1">Reviewed At</strong><p>{{ $transfer->reviewed_at?->format('d M Y, H:i') ?? 'Pending' }}</p></div>
                 </div>
             </div>
         </div>
@@ -43,14 +43,18 @@
             <div class="card-header bg-white"><h6 class="mb-0 fw-bold">Actions</h6></div>
             <div class="card-body d-grid gap-2">
                 @if($transfer->status === 'pending')
-                    <form method="POST" action="{{ route('admin.transfers.approve', $transfer) }}">
+                    @if($can('voter-transfers.approve'))
+                    <form method="POST" action="{{ route('admin.voter-transfers.approve', $transfer) }}">
                         @csrf @method('PATCH')
                         <button type="submit" class="btn btn-success w-100" onclick="return confirm('Approve this transfer?')"><i class="fas fa-check me-1"></i>Approve Transfer</button>
                     </form>
-                    <form method="POST" action="{{ route('admin.transfers.reject', $transfer) }}">
+                    @endif
+                    @if($can('voter-transfers.reject'))
+                    <form method="POST" action="{{ route('admin.voter-transfers.reject', $transfer) }}">
                         @csrf @method('PATCH')
                         <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Reject this transfer?')"><i class="fas fa-times me-1"></i>Reject Transfer</button>
                     </form>
+                    @endif
                 @else
                     <div class="alert alert-info mb-0"><i class="fas fa-info-circle me-1"></i>This transfer has been {{ $transfer->status }}.</div>
                 @endif

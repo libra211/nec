@@ -5,7 +5,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Events Management</h2>
+    @if($can('events.create'))
     <a href="{{ route('admin.events.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Event</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
@@ -62,7 +64,11 @@
                 <tr style="border-bottom:1px solid #f1f3f5;">
                     <td style="padding:10px 8px 10px 16px;"><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="row-checkbox"></td>
                     <td style="padding:10px 12px;">
+                        @if($can('events.update'))
                         <a href="{{ route('admin.events.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ $item->title }}</a>
+                        @else
+                        <span class="fw-semibold" style="color:#1e293b;">{{ $item->title }}</span>
+                        @endif
                     </td>
                     <td style="padding:10px 12px;"><span class="badge bg-info">{{ $item->event_type ?? 'public' }}</span></td>
                     <td style="padding:10px 12px;color:#475569;">{{ $item->location ?? '—' }}</td>
@@ -75,12 +81,20 @@
                     <td style="padding:10px 12px;color:#64748b;">{{ \Carbon\Carbon::parse($item->start_date)->format('d M Y') }}</td>
                     <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
                         @if($item->status !== 'trash')
+                        @if($can('events.update'))
                         <a href="{{ route('admin.events.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                        @endif
                         <a href="{{ route('admin.events.toggle-status', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba({{ $item->status === 'published' ? '6,182,212' : '46,139,87' }},0.08);color:{{ $item->status === 'published' ? '#0891b2' : '#2E8B57' }};border:none;" title="{{ $item->status === 'published' ? 'Unpublish' : 'Publish' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
+                        @if($can('events.delete'))
                         <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.events.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        @endif
                         @else
+                        @if($can('events.update'))
                         <a href="{{ route('admin.events.restore', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;" title="Restore"><i class="fas fa-undo"></i></a>
+                        @endif
+                        @if($can('events.delete'))
                         <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.events.force-delete', $item->id) }}')" title="Delete"><i class="fas fa-times"></i></button>
+                        @endif
                         @endif
                     </td>
                 </tr>

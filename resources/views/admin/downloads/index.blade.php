@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0"><i class="fas fa-download text-success me-2"></i>Downloads Management</h1>
+    @if($can('downloads.create'))
     <a href="{{ route('admin.downloads.create') }}" class="btn" style="background:var(--nec-green);color:#fff;"><i class="fas fa-plus me-1"></i> Add Download</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
@@ -62,10 +64,14 @@
                             <td style="padding:10px 12px;color:#475569;">{{ $d->file_size ? round(intval($d->file_size) / 1024, 1) . ' KB' : '-' }}</td>
                             <td style="padding:10px 12px;"><span class="badge bg-info">{{ $d->download_count ?? 0 }}</span></td>
                             <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
+                                @if($can('downloads.update'))
                                 <a href="{{ route('admin.downloads.edit', $d) }}" class="btn btn-sm rounded-3" title="Edit" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;"><i class="fas fa-edit"></i></a>
+                                @endif
+                                @if($can('downloads.delete'))
                                 <form method="POST" action="{{ route('admin.downloads.destroy', $d) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
                                     <button class="btn btn-sm rounded-3" title="Delete" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;"><i class="fas fa-trash"></i></button>
                                 </form>
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -76,7 +82,9 @@
                                 </div>
                                 <p class="text-muted mb-1" style="font-size:0.85rem;">No downloads found</p>
                                 <p class="text-muted mb-3" style="font-size:0.7rem;">Try adjusting your search or filter criteria</p>
+                                @if($can('downloads.create'))
                                 <a href="{{ route('admin.downloads.create') }}" class="btn btn-sm btn-success rounded-3 px-3"><i class="fas fa-plus me-1"></i>Add Download</a>
+                                @endif
                             </td>
                         </tr>
                     @endforelse

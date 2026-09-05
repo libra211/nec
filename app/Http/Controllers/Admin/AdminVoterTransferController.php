@@ -41,7 +41,7 @@ class AdminVoterTransferController extends Controller
         $transfer->update([
             'status' => 'approved',
             'reviewed_by' => session('admin_user_name'),
-            'processed_date' => now(),
+            'reviewed_at' => now(),
             'admin_notes' => 'Approved by ' . session('admin_user_name'),
         ]);
 
@@ -55,7 +55,7 @@ class AdminVoterTransferController extends Controller
         $transfer->update([
             'status' => 'rejected',
             'reviewed_by' => session('admin_user_name'),
-            'processed_date' => now(),
+            'reviewed_at' => now(),
             'admin_notes' => 'Rejected by ' . session('admin_user_name'),
         ]);
 
@@ -80,7 +80,7 @@ class AdminVoterTransferController extends Controller
             $transfer->update([
                 'status' => $request->input('action') === 'approve' ? 'approved' : 'rejected',
                 'reviewed_by' => session('admin_user_name'),
-                'processed_date' => now(),
+                'reviewed_at' => now(),
             ]);
         }
 

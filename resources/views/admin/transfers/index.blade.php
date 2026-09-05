@@ -73,14 +73,18 @@
                             <td style="padding:10px 12px;color:#64748b;">{{ $transfer->created_at->format('M d, Y') }}</td>
                             <td style="padding:10px 16px 10px 12px;text-align:right;white-space:nowrap;">
                                 @if($transfer->status == 'pending')
+                                    @if($can('voter-transfers.approve'))
                                     <form method="POST" action="{{ route('admin.voter-transfers.approve', $transfer) }}" class="d-inline">
                                         @csrf @method('PATCH')
                                         <button type="submit" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;"><i class="fas fa-check"></i></button>
                                     </form>
+                                    @endif
+                                    @if($can('voter-transfers.reject'))
                                     <form method="POST" action="{{ route('admin.voter-transfers.reject', $transfer) }}" class="d-inline">
                                         @csrf @method('PATCH')
                                         <button type="submit" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;"><i class="fas fa-times"></i></button>
                                     </form>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

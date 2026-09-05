@@ -29,10 +29,12 @@
                         <td style="padding:10px 12px;color:#475569;">{{ $voter->state ?? 'N/A' }}</td>
                         <td style="padding:10px 12px;color:#64748b;">{{ $voter->deleted_at ? $voter->deleted_at->format('d M Y H:i') : 'N/A' }}</td>
                         <td style="padding:10px 16px 10px 12px;text-align:right;">
+                            @if($can('voters.restore'))
                             <form action="{{ route('admin.voters.restore', $voter->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;" title="Restore"><i class="fas fa-undo"></i></button>
                             </form>
+                            @endif
                         </td>
                     </tr>
                     @empty

@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Commissioners Management</h2>
+    @if($can('commissioners.create'))
     <a href="{{ route('admin.commissioners.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Commissioner</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
@@ -33,8 +35,12 @@
                         <td style="padding:10px 12px;color:#475569;">{{ $c->position }}</td>
                         <td style="padding:10px 12px;color:#475569;">{{ $c->state ?? 'N/A' }}</td>
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
+                            @if($can('commissioners.update'))
                             <a href="{{ route('admin.commissioners.edit', $c->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                            @endif
+                            @if($can('commissioners.delete'))
                             <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.commissioners.destroy', $c->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                            @endif
                         </td>
                     </tr>
                     @endforeach

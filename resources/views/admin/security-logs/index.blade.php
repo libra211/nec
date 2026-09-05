@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0"><i class="fas fa-shield-alt text-danger me-2"></i>Security Logs</h1>
-    @if(in_array($adminRole ?? '', ['super_admin', 'admin']))
+    @if($can('security-logs.delete'))
         <form method="POST" action="{{ route('admin.security-logs.clear') }}" onsubmit="return confirm('Clear all security logs? This cannot be undone.')">
             @csrf
             <button class="btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt me-1"></i> Clear All</button>
@@ -79,9 +79,11 @@
                             <td style="padding:10px 12px;color:#475569;"><small class="text-truncate d-inline-block" style="max-width:200px;">{{ $log->details ?? '-' }}</small></td>
                             <td style="padding:10px 16px 10px 12px;text-align:right;white-space:nowrap;">
                                 <a href="{{ route('admin.security-logs.show', $log) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;" title="View"><i class="fas fa-eye"></i></a>
+                                @if($can('security-logs.delete'))
                                 <form method="POST" action="{{ route('admin.security-logs.destroy', $log) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
                                     <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" title="Delete"><i class="fas fa-trash"></i></button>
                                 </form>
+                                @endif
                             </td>
                         </tr>
                     @empty

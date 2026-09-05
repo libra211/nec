@@ -10,6 +10,23 @@ use Illuminate\Support\Str;
 
 class NecHelper
 {
+    /**
+     * Resolve the post-login landing route for a staff/admin role.
+     *
+     * All staff roles share a single role-scoped /admin dashboard which renders
+     * different content per role (state coordinators see state stats, etc.).
+     * Returning a single route keeps URLs stable and non-role-specific, which is
+     * the recommended practice over distinct per-role paths.
+     */
+    public static function adminLandingRoute(?string $role = null): string
+    {
+        $role = $role ?: (string) session('admin_role', 'viewer');
+
+        return match ($role) {
+            'voter', 'observer' => 'voter.portal.dashboard',
+            default => 'admin.dashboard',
+        };
+    }
     public static function base_url($path = ''): string
     {
         $base = rtrim(config('app.url', ''), '/');

@@ -7,9 +7,11 @@
         <p class="text-muted mb-0 small">Manage all polling stations across South Sudan</p>
     </div>
     <div class="d-flex gap-2">
+        @if($can('polling-stations.create'))
         <a href="{{ route('admin.polling-stations.create') }}" class="btn btn-primary px-3 rounded-3 shadow-sm">
             <i class="fas fa-plus me-1"></i> Add Station
         </a>
+        @endif
     </div>
 </div>
 
@@ -123,8 +125,12 @@
                         @endif
                     </td>
                     <td style="padding:10px 16px 10px 12px;text-align:right;white-space:nowrap;">
+                        @if($can('polling-stations.update'))
                         <a href="{{ route('admin.polling-stations.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                        @endif
+                        @if($can('polling-stations.delete'))
                         <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.polling-stations.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        @endif
                     </td>
                 </tr>
                 @empty

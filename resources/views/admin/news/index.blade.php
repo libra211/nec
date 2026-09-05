@@ -8,7 +8,9 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0"><i class="fas fa-newspaper me-2"></i>News Management</h2>
     <div>
+        @if($can('news.create'))
         <a href="{{ route('admin.news.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Article</a>
+        @endif
     </div>
 </div>
 
@@ -80,7 +82,11 @@
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;"><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="row-checkbox"></td>
                         <td style="padding:10px 12px;color:#1e293b;">
+                            @if($can('news.update'))
                             <a href="{{ route('admin.news.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ $item->title }}</a>
+                            @else
+                            <span class="fw-semibold" style="color:#1e293b;">{{ $item->title }}</span>
+                            @endif
                             @if($item->featured_image)
                                 <i class="fas fa-image text-muted ms-1 small" title="Has featured image"></i>
                             @endif
@@ -123,12 +129,20 @@
                         </td>
                         <td class="text-center" style="padding:10px 16px 10px 12px;white-space:nowrap;">
                             @if($item->status !== 'trash')
+                            @if($can('news.update'))
                             <a href="{{ route('admin.news.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                            @endif
                             <a href="{{ route('admin.news.toggle-status', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba({{ $item->status === 'published' ? '234,179,8' : '46,139,87' }},0.08);color:{{ $item->status === 'published' ? '#ca8a04' : '#2E8B57' }};border:none;" title="{{ $item->status === 'published' ? 'Move to Draft' : 'Publish' }}"><i class="fas fa-{{ $item->status === 'published' ? 'eye-slash' : 'eye' }}"></i></a>
+                            @if($can('news.delete'))
                             <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmTrash('{{ route('admin.news.destroy', $item->id) }}')" title="Trash"><i class="fas fa-trash"></i></button>
+                            @endif
                             @else
+                            @if($can('news.update'))
                             <a href="{{ route('admin.news.restore', $item->id) }}" class="btn btn-sm" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;border-radius:8px;" title="Restore"><i class="fas fa-undo"></i></a>
+                            @endif
+                            @if($can('news.delete'))
                             <button type="button" class="btn btn-sm" style="padding:3px 8px;background:rgba(220,38,38,0.08);color:#dc2626;border:none;border-radius:8px;" onclick="confirmForceDelete('{{ route('admin.news.force-delete', $item->id) }}')" title="Delete Permanently"><i class="fas fa-times"></i></button>
+                            @endif
                             @endif
                         </td>
                     </tr>

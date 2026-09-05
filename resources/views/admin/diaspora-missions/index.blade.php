@@ -5,7 +5,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0"><i class="fas fa-plane-departure me-2"></i>Diaspora Missions</h2>
+    @if($can('diaspora-missions.create'))
     <a href="{{ route('admin.diaspora-missions.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Mission</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
@@ -59,7 +61,11 @@
                 @forelse($missions as $item)
                 <tr style="border-bottom:1px solid #f1f3f5;">
                     <td style="padding:10px 8px 10px 16px;">
+                        @if($can('diaspora-missions.update'))
                         <a href="{{ route('admin.diaspora-missions.edit', $item->id) }}" class="fw-semibold text-decoration-none" style="color:#1e293b;">{{ $item->name }}</a>
+                        @else
+                        <span class="fw-semibold" style="color:#1e293b;">{{ $item->name }}</span>
+                        @endif
                         @if($item->address)
                         <div class="small text-muted" style="color:#64748b;">{{ Str::limit($item->address, 80) }}</div>
                         @endif
@@ -78,11 +84,17 @@
                     </td>
                     <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
                         @if($item->trashed())
+                            @if($can('diaspora-missions.update'))
                             <a href="{{ route('admin.diaspora-missions.restore', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;" title="Restore"><i class="fas fa-undo"></i></a>
+                            @endif
                         @else
+                        @if($can('diaspora-missions.update'))
                         <a href="{{ route('admin.diaspora-missions.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                        @endif
                         <a href="{{ route('admin.diaspora-missions.toggle-status', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba({{ $item->status === 'active' ? '6,182,212' : '46,139,87' }},0.08);color:{{ $item->status === 'active' ? '#0891b2' : '#2E8B57' }};border:none;" title="{{ $item->status === 'active' ? 'Deactivate' : 'Activate' }}"><i class="fas fa-{{ $item->status === 'active' ? 'eye-slash' : 'eye' }}"></i></a>
+                        @if($can('diaspora-missions.delete'))
                         <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.diaspora-missions.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        @endif
                         @endif
                     </td>
                 </tr>

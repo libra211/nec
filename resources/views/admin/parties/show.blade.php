@@ -27,7 +27,9 @@
     </div>
     <div class="d-flex gap-2">
         <a href="{{ route('admin.parties.index') }}" class="btn btn-outline-secondary" style="border-radius:10px;padding:0.5rem 1.2rem;"><i class="fas fa-arrow-left me-1"></i> Back to Parties</a>
+        @if($can('parties.update'))
         <a href="{{ route('admin.parties.edit', $party->id) }}" class="btn btn-primary" style="border-radius:10px;padding:0.5rem 1.2rem;"><i class="fas fa-edit me-1"></i> Edit Party</a>
+        @endif
     </div>
 </div>
 

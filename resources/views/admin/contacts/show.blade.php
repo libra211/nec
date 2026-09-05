@@ -72,10 +72,12 @@
                 <a href="mailto:{{ $contact->email }}?subject=Re: {{ urlencode($contact->subject ?? '') }}" class="btn btn-sm btn-outline-primary w-100 mb-2">
                     <i class="fas fa-reply me-1"></i> Reply via Email
                 </a>
+                @if($can('contacts.delete'))
                 <form action="{{ route('admin.contacts.destroy', $contact->id) }}" method="POST" onsubmit="return confirm('Delete this message?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-outline-danger w-100"><i class="fas fa-trash me-1"></i> Delete</button>
                 </form>
+                @endif
             </div>
         </div>
     </div>

@@ -46,10 +46,12 @@
                         </td>
                         <td style="padding:10px 16px 10px 12px;text-align:right;">
                             <a href="{{ route('admin.contacts.show', $msg->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;" title="View"><i class="fas fa-eye"></i></a>
+                            @if($can('contacts.delete'))
                             <form action="{{ route('admin.contacts.destroy', $msg->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this message?')">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" title="Delete"><i class="fas fa-trash"></i></button>
                             </form>
+                            @endif
                         </td>
                     </tr>
                     @endforeach

@@ -40,9 +40,23 @@
 
         <div class="sidebar-nav">
             @php
-                $perms = $adminPermissions ?? [];
                 $role = $adminRole ?? 'viewer';
-                $has = fn(string $slug) => $role === 'super_admin' || in_array($slug, $perms);
+                $has = $can ?? fn(string $slug) => $role === 'super_admin';
+            @endphp
+
+            @php
+                $sElections = $has('parties.view') || $has('constituencies.view') || $has('candidates.view')
+                    || $has('results.view') || $has('voters.view') || $has('agents.view')
+                    || $has('observers.view') || $has('commissioners.view') || $has('polling-stations.view')
+                    || $has('geographic.view') || $has('countries.view') || $has('diaspora-missions.view');
+                $sContent = $has('news.view') || $has('announcements.view') || $has('events.view')
+                    || $has('gallery.view') || $has('videos.view') || $has('speeches.view')
+                    || $has('faqs.view') || $has('education.view') || $has('subscribers.view');
+                $sData = $has('voter-transfers.view') || $has('contacts.view')
+                    || $has('complaints.view') || $has('reports.view') || $has('downloads.view');
+                $sOps = $has('polling-staff.view') || $has('ballots.view') || $has('petitions.view');
+                $sSystem = $has('users.view') || $has('staff.view') || $has('permissions.view')
+                    || $has('activity-logs.view') || $has('security-logs.view') || $has('settings.view');
             @endphp
 
             <div class="menu-sep"></div>
@@ -56,7 +70,9 @@
             </div>
             @endif
 
+            @if($sElections)
             <div class="sidebar-section-title">Elections</div>
+            @endif
             @if($has('parties.view'))
             <div class="menu-top{{ request()->routeIs('admin.parties.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.parties.index') }}" class="menu-link">
@@ -140,18 +156,24 @@
                     <span class="menu-text">Polling Stations</span>
                 </a>
             </div>
+            @endif
+            @if($has('geographic.view'))
             <div class="menu-top{{ request()->routeIs('admin.geographic.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.geographic.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-map-marked-alt"></i></span>
                     <span class="menu-text">Geographic</span>
                 </a>
             </div>
+            @endif
+            @if($has('countries.view'))
             <div class="menu-top{{ request()->routeIs('admin.countries.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.countries.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-earth-africa"></i></span>
                     <span class="menu-text">Countries</span>
                 </a>
             </div>
+            @endif
+            @if($has('diaspora-missions.view'))
             <div class="menu-top{{ request()->routeIs('admin.diaspora-missions.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.diaspora-missions.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-plane-departure"></i></span>
@@ -160,7 +182,9 @@
             </div>
             @endif
 
+            @if($sContent)
             <div class="sidebar-section-title">Content</div>
+            @endif
             @if($has('news.view'))
             <div class="menu-top{{ request()->routeIs('admin.news.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.news.index') }}" class="menu-link">
@@ -234,7 +258,9 @@
             </div>
             @endif
 
+            @if($sData)
             <div class="sidebar-section-title">Data Management</div>
+            @endif
             @if($has('voter-transfers.view'))
             <div class="menu-top{{ request()->routeIs('admin.voter-transfers.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.voter-transfers.index') }}" class="menu-link">
@@ -251,46 +277,62 @@
                 </a>
             </div>
             @endif
+            @if($has('complaints.view'))
             <div class="menu-top{{ request()->routeIs('admin.complaints.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.complaints.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-exclamation-triangle"></i></span>
                     <span class="menu-text">Complaints</span>
                 </a>
             </div>
+            @endif
+            @if($has('reports.view'))
             <div class="menu-top{{ request()->routeIs('admin.reports.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.reports.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-file-alt"></i></span>
                     <span class="menu-text">Reports</span>
                 </a>
             </div>
+            @endif
+            @if($has('downloads.view'))
             <div class="menu-top{{ request()->routeIs('admin.downloads.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.downloads.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-download"></i></span>
                     <span class="menu-text">Downloads</span>
                 </a>
             </div>
+            @endif
 
+            @if($sOps)
             <div class="sidebar-section-title">Election Operations</div>
+            @endif
+            @if($has('polling-staff.view'))
             <div class="menu-top{{ request()->routeIs('admin.polling-staff.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.polling-staff.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-users-cog"></i></span>
                     <span class="menu-text">Polling Staff</span>
                 </a>
             </div>
+            @endif
+            @if($has('ballots.view'))
             <div class="menu-top{{ request()->routeIs('admin.ballots.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.ballots.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-box-open"></i></span>
                     <span class="menu-text">Ballot Management</span>
                 </a>
             </div>
+            @endif
+            @if($has('petitions.view'))
             <div class="menu-top{{ request()->routeIs('admin.petitions.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.petitions.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-gavel"></i></span>
                     <span class="menu-text">Election Petitions</span>
                 </a>
             </div>
+            @endif
 
+            @if($sSystem || $role === 'super_admin')
             <div class="sidebar-section-title">System</div>
+            @endif
             @if($has('users.view'))
             <div class="menu-top{{ request()->routeIs('admin.users.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.users.index') }}" class="menu-link">
@@ -323,12 +365,22 @@
                 </a>
             </div>
             @endif
+            @if($has('security-logs.view'))
             <div class="menu-top{{ request()->routeIs('admin.security-logs.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.security-logs.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-shield-alt"></i></span>
                     <span class="menu-text">Security Logs</span>
                 </a>
             </div>
+            @endif
+            @if($role === 'super_admin')
+            <div class="menu-top{{ request()->routeIs('admin.dashboard-visibility.*') ? ' current' : '' }}">
+                <a href="{{ route('admin.dashboard-visibility.index') }}" class="menu-link">
+                    <span class="menu-icon"><i class="fas fa-gauge-high"></i></span>
+                    <span class="menu-text">Dashboard Visibility</span>
+                </a>
+            </div>
+            @endif
             @if($has('settings.view'))
             <div class="menu-top{{ request()->routeIs('admin.settings.*') ? ' current' : '' }}">
                 <a href="{{ route('admin.settings.index') }}" class="menu-link">

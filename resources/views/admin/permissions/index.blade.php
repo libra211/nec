@@ -8,9 +8,11 @@
         </h2>
         <p class="text-muted mb-0">Manage what each role can access in the admin panel</p>
     </div>
+    @if($can('permissions.manage'))
     <a href="{{ route('admin.permissions.sync') }}" class="btn btn-outline-primary" onclick="return confirm('This will scan all routes and create new permissions. Continue?')">
         <i class="fas fa-sync-alt me-1"></i>Sync from Routes
     </a>
+    @endif
 </div>
 
 <ul class="nav nav-tabs mb-4" id="roleTabs" role="tablist">

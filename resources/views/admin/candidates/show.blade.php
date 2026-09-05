@@ -27,7 +27,9 @@
     </div>
     <div class="d-flex gap-2">
         <a href="{{ route('admin.candidates.index') }}" class="btn btn-outline-secondary" style="border-radius:10px;padding:0.5rem 1.2rem;"><i class="fas fa-arrow-left me-1"></i> Back to Candidates</a>
+        @if($can('candidates.update'))
         <a href="{{ route('admin.candidates.edit', $candidate->id) }}" class="btn btn-primary" style="border-radius:10px;padding:0.5rem 1.2rem;"><i class="fas fa-edit me-1"></i> Edit Candidate</a>
+        @endif
     </div>
 </div>
 

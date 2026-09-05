@@ -151,14 +151,17 @@
                         <a href="{{ $verifyUrl }}" target="_blank" class="btn btn-outline-secondary"><i class="fas fa-external-link me-1"></i> Public Verify Page</a>
                     </div>
                 @else
+                    @if($can('observers.review'))
                     <form method="POST" action="{{ route('admin.observers.applications.generate', $app->id) }}">
                         @csrf
                         <button class="btn btn-success w-100" {{ $app->revoked_at ? 'disabled' : '' }}><i class="fas fa-magic me-1"></i> Generate Accreditation</button>
                     </form>
+                    @endif
                 @endif
             </div>
         </div>
 
+        @if($can('observers.review'))
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-header bg-white"><h5 class="mb-0"><i class="fas fa-sync-alt me-2 text-muted"></i>Update Status</h5></div>
             <div class="card-body">
@@ -181,7 +184,9 @@
                 </form>
             </div>
         </div>
+        @endif
 
+        @if($can('observers.review'))
         <div class="card border-0 shadow-sm rounded-3 mb-4">
             <div class="card-header bg-white text-danger"><h5 class="mb-0"><i class="fas fa-ban me-2"></i>Revoke Accreditation</h5></div>
             <div class="card-body">
@@ -195,6 +200,7 @@
                 </form>
             </div>
         </div>
+        @endif
     </div>
 </div>
 @endsection

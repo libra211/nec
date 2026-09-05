@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Constituencies</h2>
+    @if($can('constituencies.create'))
     <a href="{{ route('admin.constituencies.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Constituency</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
@@ -77,8 +79,12 @@
                         @endif
                     </td>
                     <td style="padding:10px 16px 10px 12px;text-align:right;white-space:nowrap;">
+                        @if($can('constituencies.update'))
                         <a href="{{ route('admin.constituencies.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                        @endif
+                        @if($can('constituencies.delete'))
                         <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.constituencies.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        @endif
                     </td>
                 </tr>
                 @empty

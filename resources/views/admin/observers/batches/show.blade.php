@@ -52,6 +52,7 @@
 </div>
 
 <div class="d-flex gap-2 mb-3">
+    @if($can('observers.review'))
     <form method="POST" action="{{ route('admin.observers.batches.generate', $batch->id) }}" onsubmit="return confirm('Generate accreditation numbers for all non-revoked observers in this batch?');">
         @csrf
         <button class="btn btn-success"><i class="fas fa-magic me-1"></i> Generate Accreditations</button>
@@ -61,9 +62,10 @@
         <input type="hidden" name="ids" value="{{ $batch->applications->where('accreditation_number', '!=', null)->where('revoked_at', null)->pluck('id')->implode(',') }}">
         <button class="btn btn-outline-success"><i class="fas fa-print me-1"></i> Print All Badges</button>
     </form>
+    @endif
 </div>
 
-@if($pending->count() > 0)
+@if($pending->count() > 0 && $can('observers.review'))
 <div class="card border-0 shadow-sm rounded-3 mb-4">
     <div class="card-header bg-white"><h5 class="mb-0"><i class="fas fa-user-plus me-2 text-muted"></i>Add Approved Observers</h5></div>
     <div class="card-body">

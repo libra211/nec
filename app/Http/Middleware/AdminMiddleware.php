@@ -42,6 +42,7 @@ class AdminMiddleware
 
         view()->share('adminRole', $role);
         view()->share('adminPermissions', $userPermissions);
+        view()->share('can', fn(string $slug) => $role === 'super_admin' || in_array($slug, $userPermissions));
 
         if ($role === 'super_admin') {
             return $next($request);
@@ -55,6 +56,12 @@ class AdminMiddleware
         $parts = explode('.', $routeName);
         $module = $parts[1] ?? '';
         $action = count($parts) > 2 ? $parts[count($parts) - 1] : 'index';
+
+        // Dashboard visibility is a superadmin-only configuration surface.
+        if ($module === 'dashboard-visibility') {
+            return redirect()->route('admin.dashboard')
+                ->with('error', "You don't have permission to access: {$module} {$action}");
+        }
 
         // The observers module holds only view/review permissions: every
         // management action (approve, batch, generate, revoke, ...) maps to review.

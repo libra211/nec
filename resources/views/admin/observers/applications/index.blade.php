@@ -108,11 +108,13 @@
     <div class="card-header bg-white py-3">
         <div class="d-flex justify-content-between align-items-center">
             <h5 class="mb-0"><i class="fas fa-list me-2 text-muted"></i>Applications <span class="badge bg-light text-dark">{{ $applications->total() }}</span></h5>
+            @if($can('observers.review'))
             <form method="POST" action="{{ route('admin.observers.badge-print') }}" id="bulkPrintForm">
                 @csrf
                 <input type="hidden" name="ids" id="bulkPrintIds" value="">
                 <button type="submit" class="btn btn-success btn-sm" id="bulkPrintBtn" disabled><i class="fas fa-id-card me-1"></i> Print Badges (0)</button>
             </form>
+            @endif
         </div>
     </div>
     <div class="table-responsive">

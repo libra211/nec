@@ -4,9 +4,11 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">User Management</h2>
     <div class="d-flex gap-2">
+        @if($can('users.create'))
         <a href="{{ route('admin.users.create') }}" class="btn" style="background:var(--nec-green);color:#fff;border:none;">
             <i class="fas fa-plus me-1"></i> Add New User
         </a>
+        @endif
     </div>
 </div>
 
@@ -132,10 +134,14 @@
                             </td>
                             <td style="padding:10px 12px;color:#64748b;">{{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}</td>
                             <td style="padding:10px 16px 10px 12px;text-align:right;white-space:nowrap;">
+                                    @if($can('users.update'))
                                     <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                                    @endif
                                     <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba({{ ($user->is_active ?? true) ? '234,179,8' : '46,139,87' }},0.08);color:{{ ($user->is_active ?? true) ? '#ca8a04' : '#2E8B57' }};border:none;" title="{{ ($user->is_active ?? true) ? 'Deactivate' : 'Activate' }}" onclick="toggleStatus('{{ route('admin.users.status', $user->id) }}', {{ ($user->is_active ?? true) ? 'false' : 'true' }})"><i class="fas fa-{{ ($user->is_active ?? true) ? 'ban' : 'check' }}"></i></button>
                                     <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;" title="Reset Password" onclick="resetPassword('{{ route('admin.users.reset-password', $user->id) }}')"><i class="fas fa-key"></i></button>
+                                    @if($can('users.delete'))
                                     <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" title="Delete" onclick="confirmDelete('{{ route('admin.users.destroy', $user->id) }}')"><i class="fas fa-trash"></i></button>
+                                    @endif
                             </td>
                         </tr>
                         @endforeach

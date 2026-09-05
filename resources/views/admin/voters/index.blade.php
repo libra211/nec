@@ -21,11 +21,17 @@
         <p class="text-muted mb-0 small">Manage registered voters, view demographics, and track transfers</p>
     </div>
     <div class="d-flex gap-2">
+        @if($can('voters.export'))
         <a href="{{ route('admin.voters.export', request()->only(['search','status','state','county','constituency','gender'])) }}" class="btn btn-outline-success btn-sm px-3 rounded-3"><i class="fas fa-file-export me-1"></i> Export CSV</a>
+        @endif
+        @if($can('voters.import'))
         <button type="button" class="btn btn-outline-dark btn-sm px-3 rounded-3" data-bs-toggle="modal" data-bs-target="#importVotersModal"><i class="fas fa-file-import me-1"></i> Import CSV</button>
+        @endif
+        @if($can('voters.create'))
         <a href="{{ route('admin.voters.create') }}" class="btn btn-primary btn-sm px-3 rounded-3 shadow-sm">
             <i class="fas fa-plus me-1"></i> Register Voter
         </a>
+        @endif
     </div>
 </div>
 
@@ -256,9 +262,13 @@
                                 <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
                                     <div class="d-flex gap-1 justify-content-end">
                                         <a href="{{ route('admin.voters.show', $voter->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;" title="View"><i class="fas fa-eye" style="font-size:0.7rem;"></i></a>
+                                        @if($can('voters.update'))
                                         <a href="{{ route('admin.voters.edit', $voter->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit" style="font-size:0.7rem;"></i></a>
+                                        @endif
                                         <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:{{ ($voter->status ?? 'active') === 'active' ? 'rgba(245,158,11,0.08)' : 'rgba(46,139,87,0.08)' }};color:{{ ($voter->status ?? 'active') === 'active' ? '#d97706' : '#2E8B57' }};border:none;" title="{{ ($voter->status ?? 'active') === 'active' ? 'Suspend' : 'Activate' }}" onclick="toggleVoterStatus('{{ route('admin.voters.status', $voter->id) }}', '{{ ($voter->status ?? 'active') === 'active' ? 'suspended' : 'active' }}')"><i class="fas fa-{{ ($voter->status ?? 'active') === 'active' ? 'ban' : 'check' }}" style="font-size:0.7rem;"></i></button>
+                                        @if($can('voters.delete'))
                                         <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" title="Delete" onclick="confirmDelete('{{ route('admin.voters.destroy', $voter->id) }}')"><i class="fas fa-trash" style="font-size:0.7rem;"></i></button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -270,7 +280,9 @@
                                     </div>
                                     <p class="text-muted mb-1" style="font-size:0.9rem;">No voters found</p>
                                     <p class="text-muted mb-3" style="font-size:0.7rem;">Try adjusting your search or filter criteria</p>
+                                    @if($can('voters.create'))
                                     <a href="{{ route('admin.voters.create') }}" class="btn btn-primary btn-sm rounded-3 px-3"><i class="fas fa-plus me-1"></i>Register a Voter</a>
+                                    @endif
                                 </td>
                             </tr>
                             @endforelse
@@ -301,6 +313,7 @@
     @endisset
 </div>
 
+@if($can('voters.import'))
 <div class="modal fade" id="importVotersModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 rounded-4" style="box-shadow:0 20px 60px rgba(0,0,0,.15);">
@@ -362,6 +375,7 @@
         </div>
     </div>
 </div>
+@endif
 
 @if(session('import_summary') || session('import_errors') || session('success'))
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1080;">

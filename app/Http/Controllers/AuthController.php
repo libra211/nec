@@ -92,7 +92,11 @@ class AuthController extends Controller
 
             session()->forget(['otp_identifier', 'otp_verified', 'pending_admin_id', 'pending_remember']);
 
-            return redirect()->route('admin.dashboard');
+            $landing = \App\Helpers\NecHelper::adminLandingRoute($user->role ?? 'admin');
+
+            return redirect()
+                ->intended(route($landing))
+                ->with('success', 'Welcome, ' . ($user->name ?: '') . '.');
         }
 
         // ==================== RESEND OTP ====================

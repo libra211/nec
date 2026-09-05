@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $now = now();
-        $password = Hash::make('password');
+        $password = Hash::make('098765');
 
         $users = [
             ['email' => 'admin@nec.gov.ss', 'name' => 'Administrator', 'password' => $password, 'role' => 'super_admin', 'department' => 'Administration', 'state' => 'Central Equatoria', 'position' => 'System Administrator', 'employee_id' => 'NEC-001', 'status' => 'active', 'phone' => '+211912000001', 'created_at' => $now],

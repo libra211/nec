@@ -3,9 +3,11 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Staff Management</h2>
+@if($can('staff.create'))
     <a href="{{ route('admin.staff.create') }}" class="btn" style="background:var(--nec-green);color:#fff;border:none;">
-        <i class="fas fa-plus me-1"></i> Add Staff
+        <i class="fas fa-plus me-1"></i> Add Staff Member
     </a>
+    @endif
 </div>
 
 {{-- Stats Cards --}}
@@ -147,7 +149,9 @@
                         <td style="padding:10px 12px;color:#64748b;">{{ $member->last_login_at ? $member->last_login_at->diffForHumans() : 'Never' }}</td>
                         <td style="padding:10px 16px 10px 12px;text-align:right;white-space:nowrap;">
                             <a href="{{ route('admin.staff.show', $member->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;" title="View"><i class="fas fa-eye"></i></a>
+                            @if($can('staff.update'))
                             <a href="{{ route('admin.staff.edit', $member->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                            @endif
                             <button type="button" class="btn btn-sm rounded-3" style="padding:3px 8px;background:{{ ($member->is_active ?? true) ? 'rgba(239,68,68,0.08)' : 'rgba(46,139,87,0.08)' }};color:{{ ($member->is_active ?? true) ? '#ef4444' : '#2E8B57' }};border:none;" title="Toggle Status" onclick="toggleStaffStatus('{{ route('admin.staff.status', $member->id) }}', {{ ($member->is_active ?? true) ? 'false' : 'true' }})"><i class="fas fa-{{ ($member->is_active ?? true) ? 'ban' : 'check' }}"></i></button>
                         </td>
                     </tr>

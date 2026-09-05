@@ -21,6 +21,7 @@
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-header bg-white"><h5 class="mb-0"><i class="fas fa-plus-circle me-2 text-muted"></i>Create Batch</h5></div>
             <div class="card-body">
+                @if($can('observers.review'))
                 <form method="POST" action="{{ route('admin.observers.batches.store') }}">
                     @csrf
                     <div class="mb-3">
@@ -46,6 +47,7 @@
                     </div>
                     <button class="btn btn-primary w-100"><i class="fas fa-plus me-1"></i> Create Batch</button>
                 </form>
+                @endif
             </div>
         </div>
     </div>

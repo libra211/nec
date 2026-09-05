@@ -6,7 +6,9 @@
         <h2 class="mb-1" style="font-weight:700;"><i class="fas fa-users text-primary me-2"></i>Candidates Management</h2>
         <p class="text-muted mb-0 small">Manage election candidates and their party affiliations</p>
     </div>
+    @if($can('candidates.create'))
     <a href="{{ route('admin.candidates.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add Candidate</a>
+    @endif
 </div>
 
 <div class="row g-3 mb-4">
@@ -138,8 +140,12 @@
                         </td>
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
                             <a href="{{ route('admin.candidates.show', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(6,182,212,0.08);color:#0891b2;border:none;" title="View"><i class="fas fa-eye"></i></a>
+                            @if($can('candidates.update'))
                             <a href="{{ route('admin.candidates.edit', $item->id) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                            @endif
+                            @if($can('candidates.delete'))
                             <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.candidates.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                            @endif
                         </td>
                     </tr>
                 @empty
@@ -149,7 +155,9 @@
                                 <i class="fas fa-user-slash" style="color:#94a3b8;font-size:20px;"></i>
                             </div>
                             <p style="color:#64748b;margin-bottom:8px;font-size:0.9rem;">No candidates found</p>
+                            @if($can('candidates.create'))
                             <a href="{{ route('admin.candidates.create') }}" class="btn btn-primary rounded-3 px-3" style="font-size:0.85rem;">Add Your First Candidate</a>
+                            @endif
                         </td>
                     </tr>
                 @endforelse

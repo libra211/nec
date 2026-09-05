@@ -487,17 +487,36 @@ class DashboardController extends Controller
         $now = Carbon::now();
 
         if ($role === 'state_coordinator') {
-            $stats['state_voters'] = Voter::where('state', $userState)->count();
+            $stateBase = Voter::where('state', $userState);
+            $stats['state_voters'] = (clone $stateBase)->count();
+            $stats['state_active'] = (clone $stateBase)->where('status', 'active')->count();
+            $stats['state_inactive'] = (clone $stateBase)->where('status', 'inactive')->count();
+            $stats['state_diaspora'] = (clone $stateBase)->where('is_diaspora', true)->count();
             $stats['state_constituencies'] = DB::table('nec_constituencies')->where('state', $userState)->count();
             $stats['state_transfers_pending'] = VoterTransfer::where(function ($q) use ($userState) {
                 $q->where('from_state', $userState)->orWhere('to_state', $userState);
             })->where('status', 'pending')->count();
-            $stats['state_recent_registrations'] = Voter::where('state', $userState)->where('registered_at', '>=', $now->copy()->subDays(7))->count();
-            $stats['state_today'] = Voter::where('state', $userState)->where('registered_at', '>=', $now->copy()->startOfDay())->count();
-            $stats['state_male'] = Voter::where('state', $userState)->where('gender', 'M')->count();
-            $stats['state_female'] = Voter::where('state', $userState)->where('gender', 'F')->count();
-            $stats['state_by_county'] = Voter::selectRaw('county, COUNT(*) as total')->where('state', $userState)->whereNotNull('county')->groupBy('county')->pluck('total', 'county');
-            $stats['state_registration_trend'] = Voter::where('state', $userState)->where('registered_at', '>=', $now->copy()->subDays(30))->selectRaw('DATE(registered_at) as date, COUNT(*) as total')->groupBy('date')->orderBy('date')->get();
+            $stats['state_recent_registrations'] = (clone $stateBase)->where('registered_at', '>=', $now->copy()->subDays(7))->count();
+            $stats['state_this_month'] = (clone $stateBase)->where('registered_at', '>=', $now->copy()->startOfMonth())->count();
+            $stats['state_today'] = (clone $stateBase)->where('registered_at', '>=', $now->copy()->startOfDay())->count();
+            $stats['state_male'] = (clone $stateBase)->where('gender', 'M')->count();
+            $stats['state_female'] = (clone $stateBase)->where('gender', 'F')->count();
+            $stats['state_other_gender'] = (clone $stateBase)->whereNotIn('gender', ['M', 'F'])->count();
+            $stats['state_by_county'] = (clone $stateBase)->selectRaw('county, COUNT(*) as total, SUM(status = "active") as active')
+                ->whereNotNull('county')->groupBy('county')->orderByDesc('total')->get();
+            $stats['state_registration_trend'] = (clone $stateBase)->where('registered_at', '>=', $now->copy()->subDays(30))
+                ->selectRaw('DATE(registered_at) as date, COUNT(*) as total')->groupBy('date')->orderBy('date')->get();
+
+            // Age band distribution for the state.
+            $nowDate = $now->toDateString();
+            $stats['state_age_18_29'] = (clone $stateBase)->whereNotNull('dob')->where('dob', '>', $now->copy()->subYears(30)->toDateString())
+                ->where('dob', '<=', $now->copy()->subYears(18)->toDateString())->count();
+            $stats['state_age_30_44'] = (clone $stateBase)->whereNotNull('dob')->where('dob', '>', $now->copy()->subYears(45)->toDateString())
+                ->where('dob', '<=', $now->copy()->subYears(30)->toDateString())->count();
+            $stats['state_age_45_59'] = (clone $stateBase)->whereNotNull('dob')->where('dob', '>', $now->copy()->subYears(60)->toDateString())
+                ->where('dob', '<=', $now->copy()->subYears(45)->toDateString())->count();
+            $stats['state_age_60'] = (clone $stateBase)->where('dob', '<=', $now->copy()->subYears(60)->toDateString())->count();
+
             $stateStations = DB::table('nec_polling_stations')->where('state', $userState);
             $stats['state_stations'] = (clone $stateStations)->count();
             $stats['state_stations_active'] = (clone $stateStations)->where('status', 'active')->count();
@@ -505,7 +524,10 @@ class DashboardController extends Controller
             $stats['state_transfer_queue'] = VoterTransfer::where(function ($q) use ($userState) {
                 $q->where('from_state', $userState)->orWhere('to_state', $userState);
             })->where('status', 'pending')->orderByDesc('created_at')->limit(8)->get();
-            $stats['state_recent_voters'] = Voter::where('state', $userState)->orderByDesc('registered_at')->limit(8)->get(['voter_id', 'full_name', 'gender', 'county', 'polling_station', 'status', 'registered_at']);
+            $stats['state_recent_voters'] = (clone $stateBase)->orderByDesc('registered_at')
+                ->limit(12)->get(['voter_id', 'full_name', 'gender', 'dob', 'county', 'polling_station', 'status', 'is_diaspora', 'registered_at']);
+            $stats['state_registration_types'] = (clone $stateBase)->selectRaw('COALESCE(registration_type, "self") as registration_type, COUNT(*) as total')
+                ->groupBy('registration_type')->pluck('total', 'registration_type');
             $stateStaff = User::where('state', $userState)->whereIn('role', ['state_coordinator', 'constituency_officer', 'registration_officer', 'data_entry'])->get(['name', 'email', 'role', 'position']);
             $stats['state_staff'] = $stateStaff;
             $stats['state_registrars'] = $stateStaff->where('role', 'registration_officer')->count();
@@ -560,6 +582,11 @@ class DashboardController extends Controller
             $stats['de_recent'] = Voter::when($userState, fn ($q) => $q->where('state', $userState))->orderByDesc('registered_at')->limit(8)->get(['voter_id', 'full_name', 'gender', 'county', 'status', 'registered_at', 'registered_by_user_id']);
         }
 
-        return view('admin.dashboard', compact('stats', 'recentActivity', 'role'));
+        return view('admin.dashboard', [
+            'stats' => $stats,
+            'recentActivity' => $recentActivity,
+            'role' => $role,
+            'visible' => \App\Helpers\DashboardItems::enabledKeys($role ?? ''),
+        ]);
     }
 }

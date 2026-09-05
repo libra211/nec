@@ -52,6 +52,7 @@
     </div>
 </div>
 
+@if($can('observers.review'))
 <div class="card mt-4">
     <div class="card-header"><h5 class="mb-0"><i class="fas fa-sync-alt me-2"></i>Update Status</h5></div>
     <div class="card-body">
@@ -78,4 +79,5 @@
         </form>
     </div>
 </div>
+@endif
 @endsection

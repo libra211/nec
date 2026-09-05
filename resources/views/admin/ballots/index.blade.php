@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0"><i class="fas fa-box-open text-info me-2"></i>Ballot Management</h1>
+    @if($can('ballots.create'))
     <a href="{{ route('admin.ballots.create') }}" class="btn" style="background:var(--nec-green);color:#fff;"><i class="fas fa-plus me-1"></i> Add Ballot</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
@@ -75,10 +77,14 @@
                             <span class="badge bg-{{ $colors[$b->status] ?? 'secondary' }}">{{ ucfirst($b->status) }}</span>
                         </td>
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
+                            @if($can('ballots.update'))
                             <a href="{{ route('admin.ballots.edit', $b) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                            @endif
+                            @if($can('ballots.delete'))
                             <form method="POST" action="{{ route('admin.ballots.destroy', $b) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
                                 <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" title="Delete"><i class="fas fa-trash"></i></button>
                             </form>
+                            @endif
                         </td>
                     </tr>
                 @empty

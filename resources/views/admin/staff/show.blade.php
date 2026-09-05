@@ -4,7 +4,9 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0"><i class="fas fa-user text-primary me-2"></i>{{ $staff->name }}</h1>
     <div>
+        @if($can('staff.update'))
         <a href="{{ route('admin.staff.edit', $staff) }}" class="btn btn-warning"><i class="fas fa-edit me-1"></i> Edit</a>
+        @endif
         <a href="{{ route('admin.staff.index') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i> Back</a>
     </div>
 </div>
@@ -46,7 +48,9 @@
             <div class="card-header"><h5 class="mb-0">Quick Actions</h5></div>
             <div class="card-body d-flex flex-column gap-2">
                 <a href="{{ route('admin.staff.activity', $staff) }}" class="btn btn-outline-primary"><i class="fas fa-history me-1"></i> View Activity Log</a>
+                @if($can('staff.update'))
                 <a href="{{ route('admin.staff.edit', $staff) }}" class="btn btn-outline-warning"><i class="fas fa-edit me-1"></i> Edit Profile</a>
+                @endif
                 @if($staff->status == 'active')
                     <form method="POST" action="{{ route('admin.staff.status', $staff) }}">
                         @csrf @method('PATCH')

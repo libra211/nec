@@ -29,15 +29,19 @@
                         <td style="padding:10px 12px;color:#475569;"><span class="badge bg-primary">{{ ucwords(str_replace('_', ' ', $user->role)) }}</span></td>
                         <td style="padding:10px 12px;color:#64748b;">{{ $user->deleted_at ? $user->deleted_at->format('d M Y H:i') : 'N/A' }}</td>
                         <td style="padding:10px 16px 10px 12px;text-align:right;">
+                            @if($can('users.restore'))
                             <form action="{{ route('admin.users.restore', $user->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(46,139,87,0.08);color:#2E8B57;border:none;" title="Restore"><i class="fas fa-undo"></i></button>
                             </form>
+                            @endif
+                            @if($can('users.delete'))
                             <form action="{{ route('admin.users.force-delete', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('This will permanently delete the user. Are you sure?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(220,38,38,0.08);color:#dc2626;border:none;" title="Force Delete"><i class="fas fa-times"></i></button>
                             </form>
+                            @endif
                         </td>
                     </tr>
                     @empty

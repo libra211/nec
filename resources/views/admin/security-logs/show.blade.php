@@ -60,10 +60,12 @@
         <div class="card shadow-sm">
             <div class="card-header bg-white"><h6 class="mb-0 fw-bold">Actions</h6></div>
             <div class="card-body">
+                @if($can('security-logs.delete'))
                 <form method="POST" action="{{ route('admin.security-logs.destroy', $log) }}" onsubmit="return confirm('Delete this log entry?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-outline-danger w-100"><i class="fas fa-trash me-1"></i> Delete Log Entry</button>
                 </form>
+                @endif
             </div>
         </div>
     </div>

@@ -17,7 +17,7 @@ class UserSystemSeeder extends Seeder
         ];
 
         $now = now();
-        $password = Hash::make('password');
+        $password = Hash::make('098765');
 
         // Update existing admin user
         DB::table('nec_users')->where('email', 'admin@nec.gov.ss')->update([

@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0"><i class="fas fa-gavel text-danger me-2"></i>Election Petitions</h1>
+    @if($can('petitions.create'))
     <a href="{{ route('admin.petitions.create') }}" class="btn" style="background:var(--nec-green);color:#fff;"><i class="fas fa-plus me-1"></i> File Petition</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
@@ -68,10 +70,14 @@
                             <span class="badge bg-{{ $colors[$p->status] ?? 'secondary' }}">{{ ucfirst($p->status) }}</span>
                         </td>
                         <td style="padding:10px 16px 10px 12px;white-space:nowrap;text-align:right;">
+                            @if($can('petitions.update'))
                             <a href="{{ route('admin.petitions.edit', $p) }}" class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(59,130,246,0.08);color:#3b82f6;border:none;" title="Edit"><i class="fas fa-edit"></i></a>
+                            @endif
+                            @if($can('petitions.delete'))
                             <form method="POST" action="{{ route('admin.petitions.destroy', $p) }}" class="d-inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')
                                 <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" title="Delete"><i class="fas fa-trash"></i></button>
                             </form>
+                            @endif
                         </td>
                     </tr>
                 @empty
@@ -81,7 +87,9 @@
                                 <i class="fas fa-gavel" style="color:#94a3b8;font-size:20px;"></i>
                             </div>
                             <p style="color:#64748b;margin-bottom:8px;font-size:0.9rem;">No petitions found</p>
+                            @if($can('petitions.create'))
                             <a href="{{ route('admin.petitions.create') }}" class="btn btn-primary rounded-3 px-3" style="font-size:0.85rem;">File Your First Petition</a>
+                            @endif
                         </td>
                     </tr>
                 @endforelse

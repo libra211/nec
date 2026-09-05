@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Subscribers</h2>
+    @if($can('subscribers.export'))
     <a href="{{ route('admin.subscribers.export') }}" class="btn btn-primary"><i class="fas fa-download me-1"></i> Export CSV</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm rounded-3 mb-4" style="background:#f8fafc;border:1px solid #e9edf2;">
@@ -68,7 +70,9 @@
                     </td>
                     <td style="padding:10px 12px;color:#64748b;">{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('d M Y') : '-' }}</td>
                     <td style="padding:10px 16px 10px 12px;text-align:right;white-space:nowrap;">
+                        @if($can('subscribers.delete'))
                         <button class="btn btn-sm rounded-3" style="padding:3px 8px;background:rgba(239,68,68,0.08);color:#ef4444;border:none;" onclick="confirmDelete('{{ route('admin.subscribers.destroy', $item->id) }}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        @endif
                     </td>
                 </tr>
                 @empty

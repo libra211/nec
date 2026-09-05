@@ -20,7 +20,9 @@
         @else
             <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#deceasedModal"><i class="fas fa-heartbeat me-1"></i> Record Death</button>
         @endif
+        @if($can('voters.update'))
         <a href="{{ route('admin.voters.edit', $voter->id) }}" class="btn btn-outline-primary"><i class="fas fa-edit me-1"></i> Edit</a>
+        @endif
         <a href="{{ route('admin.voters.index') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i> Back</a>
     </div>
 </div>
