@@ -326,10 +326,15 @@ class GeographicSeeder extends Seeder
         ];
 
         foreach ($pollingStations as $ps) {
+            do {
+                $code = 'PS' . strtoupper(substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 6));
+            } while (DB::table('nec_polling_stations')->where('code', $code)->exists());
+
             DB::table('nec_polling_stations')->updateOrInsert(
                 ['name' => $ps['name']],
                 [
                     'name' => $ps['name'],
+                    'code' => $code,
                     'constituency' => $ps['constituency'],
                     'state' => $ps['state'],
                     'county' => $ps['county'],
