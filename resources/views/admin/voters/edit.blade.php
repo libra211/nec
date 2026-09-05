@@ -105,8 +105,17 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Polling Station</label>
-                    <input type="text" name="polling_station" class="form-control @error('polling_station') is-invalid @enderror" value="{{ old('polling_station', $voter->polling_station) }}">
-                    @error('polling_station') <small class="text-danger">{{ $message }}</small> @enderror
+                    <select name="polling_station_id" class="form-select @error('polling_station_id') is-invalid @enderror">
+                        <option value="">-- Select Polling Station --</option>
+                        @foreach($pollingStations->groupBy('state') as $stName => $group)
+                        <optgroup label="{{ $stName ?? 'N/A' }}">
+                            @foreach($group as $ps)
+                            <option value="{{ $ps->id }}" {{ old('polling_station_id', $voter->polling_station_id) == $ps->id ? 'selected' : '' }}>{{ $ps->code }} — {{ $ps->name }}</option>
+                            @endforeach
+                        </optgroup>
+                        @endforeach
+                    </select>
+                    @error('polling_station_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Registration Center</label>

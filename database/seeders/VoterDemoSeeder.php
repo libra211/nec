@@ -42,6 +42,23 @@ class VoterDemoSeeder extends Seeder
         $now = now();
         $states = $this->states;
 
+        $stationsByState = DB::table('nec_polling_stations')
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name', 'state', 'constituency'])
+            ->groupBy('state');
+
+        $resolveStation = function (string $state, string $constituency) use ($stationsByState) {
+            $stateStations = $stationsByState->get($state, collect());
+            if ($stateStations->isEmpty()) {
+                return null;
+            }
+            $exact = $stateStations->first(fn ($st) => strcasecmp((string) $st->constituency, $constituency) === 0);
+            $pick = $exact ?? $stateStations->random();
+
+            return (object) ['id' => $pick->id, 'name' => $pick->name];
+        };
+
         for ($i = 1; $i <= 200; $i++) {
             $gender = $i % 3 === 0 ? 'F' : 'M';
             $state = $states[array_rand($states)];
@@ -62,6 +79,9 @@ class VoterDemoSeeder extends Seeder
             $voterId = 'NEC26' . $gender . str_pad($i, 6, '0', STR_PAD_LEFT);
             $dob = "{$dobYear}-{$dobMonth}-{$dobDay}";
 
+            $constituency = $this->getRandomConstituency($state);
+            $station = $resolveStation($state, $constituency);
+
             DB::table('nec_voters')->updateOrInsert(
                 ['voter_id' => $voterId],
                 [
@@ -70,8 +90,10 @@ class VoterDemoSeeder extends Seeder
                     'gender' => $gender,
                     'dob' => $dob,
                     'state' => $state,
-                    'constituency' => $this->getRandomConstituency($state),
+                    'constituency' => $constituency,
                     'county' => $this->getRandomCounty($state),
+                    'polling_station' => $station?->name,
+                    'polling_station_id' => $station?->id,
                     'national_id' => 'SSN' . str_pad(rand(1000000, 9999999), 7, '0', STR_PAD_LEFT),
                     'phone' => '+2119' . str_pad(rand(10000000, 99999999), 8, '0', STR_PAD_LEFT),
                     'status' => $status,

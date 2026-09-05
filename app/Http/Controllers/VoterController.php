@@ -167,6 +167,13 @@ class VoterController extends Controller
             $validated['postal_code'] = null;
             $validated['diaspora_mission_id'] = null;
             $validated['passport_number'] = null;
+
+            if (!empty($validated['polling_station'])) {
+                $validated['polling_station_id'] = DB::table('nec_polling_stations')
+                    ->where('name', $validated['polling_station'])
+                    ->where('status', 'active')
+                    ->value('id');
+            }
         } else {
             $country = Country::find($validated['country_id']);
             $validated['country_name'] = $country->name ?? $validated['country_name'] ?? null;
@@ -310,6 +317,7 @@ class VoterController extends Controller
             'payam' => $pending['payam'] ?? null,
             'boma' => $pending['boma'] ?? null,
             'polling_station' => $pending['polling_station'] ?? null,
+            'polling_station_id' => $pending['polling_station_id'] ?? null,
             'registration_center' => $pending['registration_center'] ?? null,
             'photo' => $pending['photo'] ?? null,
             'document_photo' => $pending['document_photo'] ?? null,

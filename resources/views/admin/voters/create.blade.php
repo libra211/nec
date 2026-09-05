@@ -68,7 +68,16 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Polling Station</label>
-                    <input type="text" name="polling_station" class="form-control" value="{{ old('polling_station') }}">
+                    <select name="polling_station_id" class="form-select">
+                        <option value="">-- Select Polling Station --</option>
+                        @foreach($pollingStations->groupBy('state') as $stName => $group)
+                        <optgroup label="{{ $stName ?? 'N/A' }}">
+                            @foreach($group as $ps)
+                            <option value="{{ $ps->id }}" {{ old('polling_station_id') == $ps->id ? 'selected' : '' }}>{{ $ps->code }} — {{ $ps->name }}</option>
+                            @endforeach
+                        </optgroup>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Status *</label>

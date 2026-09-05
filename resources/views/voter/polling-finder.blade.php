@@ -53,7 +53,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5>Your Polling Station</h5>
-                        <p><strong>Station:</strong> {{ $polling_station->name }}</p>
+                        <p><strong>Station:</strong> {{ $polling_station->name }} @if(!empty($polling_station->code))<span class="badge" style="background:rgba(46,139,87,0.12);color:#166534;">{{ $polling_station->code }}</span>@endif</p>
                         <p><strong>Address:</strong> {{ $polling_station->address }}</p>
                         <p><strong>Constituency:</strong> {{ $polling_station->constituency->name ?? 'N/A' }}</p>
                         <p><strong>Operating Hours:</strong> 6:00 AM - 6:00 PM</p>

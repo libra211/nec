@@ -107,6 +107,11 @@ class Voter extends Model
         return $this->belongsTo(Constituency::class);
     }
 
+    public function pollingStation()
+    {
+        return $this->belongsTo(PollingStation::class, 'polling_station_id');
+    }
+
     public function country()
     {
         return $this->belongsTo(Country::class, 'country_id');

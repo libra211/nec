@@ -325,10 +325,16 @@ class GeographicSeeder extends Seeder
             'Nzara Town Hall' => 720,
         ];
 
+        $stateCodeCache = collect($states)->mapWithKeys(fn ($s) => [$s['name'] => $s['code']]);
+        $stationCounters = [];
+
         foreach ($pollingStations as $ps) {
-            do {
-                $code = 'PS' . strtoupper(substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 6));
-            } while (DB::table('nec_polling_stations')->where('code', $code)->exists());
+            $stateCode = $stateCodeCache[$ps['state']] ?? preg_replace('/[^A-Z]/', '', strtoupper($ps['state'])) ?? 'UNK';
+            if (strlen($stateCode) !== 3) {
+                $stateCode = substr($stateCode . 'XXX', 0, 3);
+            }
+            $stationCounters[$stateCode] = ($stationCounters[$stateCode] ?? 0) + 1;
+            $code = $stateCode . '-PS-' . str_pad($stationCounters[$stateCode], 3, '0', STR_PAD_LEFT);
 
             DB::table('nec_polling_stations')->updateOrInsert(
                 ['name' => $ps['name']],

@@ -145,7 +145,7 @@
                     <tr><th class="text-muted">Constituency</th><td>{{ $voter->constituency ?? 'N/A' }}</td></tr>
                     <tr><th class="text-muted">Payam</th><td>{{ $voter->payam ?? 'N/A' }}</td></tr>
                     <tr><th class="text-muted">Boma</th><td>{{ $voter->boma ?? 'N/A' }}</td></tr>
-                    <tr><th class="text-muted">Polling Station</th><td>{{ $voter->polling_station ?? 'N/A' }}</td></tr>
+                    <tr><th class="text-muted">Polling Station</th><td>{{ $voter->polling_station ?? 'N/A' }} @if($voter->pollingStation?->code)<span class="badge" style="background:rgba(46,139,87,0.12);color:#166534;">{{ $voter->pollingStation->code }}</span>@endif</td></tr>
                     <tr><th class="text-muted">Registration Center</th><td>{{ $voter->registration_center ?? 'N/A' }}</td></tr>
                 </table>
             </div>

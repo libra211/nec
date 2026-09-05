@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PollingStation;
 use App\Models\Voter;
 use App\Models\VoterTransfer;
 use Illuminate\Http\Request;
@@ -76,6 +77,14 @@ class AdminVoterController extends Controller
         }
 
         return DB::table('nec_states')->where('status', 'active')->orderBy('name')->get();
+    }
+
+    private function stationOptions()
+    {
+        return PollingStation::where('status', 'active')
+            ->orderBy('state')
+            ->orderBy('name')
+            ->get(['id', 'name', 'code', 'state', 'constituency']);
     }
 
     private function findScopedVoter($id)
@@ -175,8 +184,9 @@ class AdminVoterController extends Controller
     public function create()
     {
         $states = $this->scopedStates();
+        $pollingStations = $this->stationOptions();
 
-        return view('admin.voters.create', compact('states'));
+        return view('admin.voters.create', compact('states', 'pollingStations'));
     }
 
     public function store(Request $request)
@@ -194,12 +204,21 @@ class AdminVoterController extends Controller
             'county' => 'required|string|max:100',
             'constituency' => 'required|string|max:100',
             'payam' => 'nullable|string|max:100',
+            'polling_station_id' => 'nullable|exists:nec_polling_stations,id',
             'polling_station' => 'nullable|string|max:100',
             'registration_center' => 'nullable|string|max:100',
             'status' => 'required|in:active,inactive,suspended',
         ]);
 
         $validated['state'] = $this->writeState() ?? $validated['state'];
+
+        if (!empty($validated['polling_station_id'])) {
+            $station = PollingStation::find($validated['polling_station_id']);
+            $validated['polling_station'] = $station?->name;
+        } elseif (!empty($validated['polling_station'])) {
+            $station = PollingStation::where('name', $validated['polling_station'])->first();
+            $validated['polling_station_id'] = $station?->id;
+        }
 
         $validated['registered_at'] = now();
         $validated['created_at'] = now();
@@ -220,6 +239,7 @@ class AdminVoterController extends Controller
             'account',
             'country',
             'diasporaMission',
+            'pollingStation',
         ]);
 
         $this->logActivity('voter_viewed', "Viewed voter profile: {$voter->full_name}", $voter);
@@ -231,8 +251,9 @@ class AdminVoterController extends Controller
     {
         $voter = $this->findScopedVoter($id);
         $states = $this->scopedStates();
+        $pollingStations = $this->stationOptions();
 
-        return view('admin.voters.edit', compact('voter', 'states'));
+        return view('admin.voters.edit', compact('voter', 'states', 'pollingStations'));
     }
 
     public function update(Request $request, $id)
@@ -252,12 +273,22 @@ class AdminVoterController extends Controller
             'county' => 'required|string|max:100',
             'constituency' => 'required|string|max:100',
             'payam' => 'nullable|string|max:100',
+            'polling_station_id' => 'nullable|exists:nec_polling_stations,id',
             'polling_station' => 'nullable|string|max:100',
             'registration_center' => 'nullable|string|max:100',
             'status' => 'required|in:active,inactive,suspended',
         ]);
 
         $validated['state'] = $this->writeState() ?? $validated['state'];
+
+        if (!empty($validated['polling_station_id'])) {
+            $station = PollingStation::find($validated['polling_station_id']);
+            $validated['polling_station'] = $station?->name;
+        } elseif (!empty($validated['polling_station'])) {
+            $station = PollingStation::where('name', $validated['polling_station'])->first();
+            $validated['polling_station_id'] = $station?->id;
+        }
+
         $validated['updated_at'] = now();
 
         $voter->update($validated);
@@ -561,7 +592,11 @@ class AdminVoterController extends Controller
         $errors = [];
         $now = now();
 
-        DB::transaction(function () use ($rows, $get, $state, $county, $constituency, $now, &$imported, &$duplicates, &$invalid, &$errors) {
+        $stationIdByName = PollingStation::whereNotNull('code')->where('status', 'active')
+            ->pluck('id', 'name')
+            ->toArray();
+
+        DB::transaction(function () use ($rows, $get, $state, $county, $constituency, $now, $stationIdByName, &$imported, &$duplicates, &$invalid, &$errors) {
             foreach ($rows as $line => $data) {
                 $rowNo = $line + 2;
 
@@ -618,6 +653,7 @@ class AdminVoterController extends Controller
                     'payam' => $payam ?: null,
                     'boma' => $boma ?: null,
                     'polling_station' => $pollingStation,
+                    'polling_station_id' => $stationIdByName[$pollingStation] ?? null,
                     'registration_center' => $registrationCenter ?: null,
                     'state' => $state,
                     'county' => $county ?: null,
