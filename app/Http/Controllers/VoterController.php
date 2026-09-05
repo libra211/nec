@@ -325,6 +325,7 @@ class VoterController extends Controller
             $agent = Agent::find($pending['agent_id']);
             if ($agent) {
                 $voterData['registered_by_user_id'] = $agent->id;
+                $voterData['registered_by_code'] = $agent->agent_code;
                 $voterData['registered_by_name'] = $agent->full_name;
                 $voterData['registered_by_title'] = $agent->title;
                 $voterData['registered_by_location'] = $agent->assigned_state . ($agent->assigned_constituency ? ', ' . $agent->assigned_constituency : '');

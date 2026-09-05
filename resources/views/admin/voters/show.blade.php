@@ -151,9 +151,9 @@
             <div class="card-body">
                 <table class="table table-borderless mb-0">
                     <tr><th class="text-muted" style="width:180px">Registration Type</th><td>{{ $voter->registration_type === 'agent' ? 'Agent-Assisted' : 'Self-Registration' }}</td></tr>
-                    <tr><th class="text-muted">Registered By</th><td>{{ $voter->registered_by_name ?? 'System' }}</td></tr>
-                    <tr><th class="text-muted">Title/Role</th><td>{{ $voter->registered_by_title ?? 'Online Portal' }}</td></tr>
-                    <tr><th class="text-muted">Location</th><td>{{ $voter->registered_by_location ?? 'NEC Portal' }}</td></tr>
+                    <tr><th class="text-muted">Registered By</th><td>{{ $voter->registered_by_code ?? ($voter->registration_type === 'agent' ? 'NEC Registration Team' : 'NEC Online Portal') }}</td></tr>
+                    <tr><th class="text-muted">Title/Role</th><td>{{ $voter->registered_by_title ?? ($voter->registration_type === 'agent' ? 'Registration Officer' : 'Online Portal') }}</td></tr>
+                    <tr><th class="text-muted">Location</th><td>{{ $voter->registered_by_location ?? ($voter->registration_type === 'agent' ? 'NEC Field Office' : 'NEC Portal') }}</td></tr>
                     <tr><th class="text-muted">Registration Date</th><td>{{ $voter->registered_at ? date('d M Y, h:i A', strtotime($voter->registered_at)) : 'N/A' }}</td></tr>
                 </table>
             </div>

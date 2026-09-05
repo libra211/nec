@@ -7,6 +7,7 @@ use App\Models\Voter;
 use App\Models\VoterTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AdminVoterController extends Controller
 {
@@ -284,7 +285,8 @@ class AdminVoterController extends Controller
             fputcsv($handle, [
                 'Voter ID', 'National ID', 'Reg Number', 'Full Name', 'DOB', 'Gender',
                 'Phone', 'Email', 'State', 'County', 'Constituency', 'Payam',
-                'Polling Station', 'Registration Center', 'Status', 'Registered At',
+                'Polling Station', 'Registration Center', 'Status', 'Registration Type',
+                'Registered By Code', 'Registered By Location', 'Registered At',
             ]);
 
             foreach ($voters as $voter) {
@@ -304,6 +306,11 @@ class AdminVoterController extends Controller
                     $voter->polling_station,
                     $voter->registration_center,
                     $voter->status,
+                    $voter->registration_type === 'agent'
+                        ? ($voter->registered_by_name === 'Bulk Import' ? 'Bulk Import' : 'Agent Assisted')
+                        : 'Self Registration',
+                    $voter->registered_by_code ?? ($voter->registration_type === 'agent' ? 'NEC Registration Team' : 'NEC Online Portal'),
+                    $voter->registered_by_location,
                     $voter->registered_at,
                 ]);
             }
@@ -348,5 +355,213 @@ class AdminVoterController extends Controller
         $this->logActivity('voter_bulk_action', "Bulk {$action} on {$count} voters", $firstVoter);
 
         return back()->with('success', "{$count} voters processed successfully.");
+    }
+
+    public function importTemplate()
+    {
+        $filename = 'voter_import_template.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, [
+                'voter_id', 'full_name', 'gender', 'dob', 'national_id', 'phone', 'email',
+                'payam', 'boma', 'polling_station', 'registration_center',
+            ]);
+            fputcsv($handle, [
+                'N/A (auto)', 'Deng Akech', 'M', '1990-01-15', 'NID-00000001', '+211912000001', 'voter@example.com',
+                'Juba Town', 'Kator', 'Juba Primary School', 'Juba Center',
+            ]);
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function import(Request $request)
+    {
+        $validated = $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:5120',
+            'import_state' => 'required|string|max:100',
+            'import_county' => 'nullable|string|max:100',
+            'import_constituency' => 'nullable|string|max:255',
+        ]);
+
+        $state = $validated['import_state'];
+        $county = $validated['import_county'] ?? null;
+        $constituency = $validated['import_constituency'] ?? null;
+
+        $stateExists = DB::table('nec_states')->where('name', $state)->exists();
+        if (!$stateExists) {
+            return back()->with('error', "The state \"{$state}\" is not a recognized NEC state.");
+        }
+
+        $handle = fopen($request->file('csv_file')->getRealPath(), 'r');
+        if (!$handle) {
+            return back()->with('error', 'Could not read the uploaded CSV file.');
+        }
+
+        $header = fgetcsv($handle);
+        if (!$header) {
+            fclose($handle);
+            return back()->with('error', 'The CSV file is empty.');
+        }
+
+        $header = array_map(fn ($h) => strtolower(trim($h)), $header);
+        $col = [
+            'voter_id' => array_search('voter_id', $header),
+            'full_name' => array_search('full_name', $header) ?: array_search('fullname', $header),
+            'gender' => array_search('gender', $header),
+            'dob' => array_search('dob', $header) ?: array_search('date_of_birth', $header),
+            'national_id' => array_search('national_id', $header),
+            'phone' => array_search('phone', $header),
+            'email' => array_search('email', $header),
+            'payam' => array_search('payam', $header),
+            'boma' => array_search('boma', $header),
+            'polling_station' => array_search('polling_station', $header),
+            'registration_center' => array_search('registration_center', $header),
+        ];
+
+        if (($col['full_name'] === false) || ($col['gender'] === false) || ($col['dob'] === false) || ($col['phone'] === false)) {
+            fclose($handle);
+            return back()->with('error', 'The CSV must include at least these columns: full_name, gender, dob, phone.');
+        }
+
+        $rows = [];
+        while (($data = fgetcsv($handle)) !== false) {
+            if (empty(array_filter($data))) {
+                continue;
+            }
+            $rows[] = $data;
+        }
+        fclose($handle);
+
+        if (empty($rows)) {
+            return back()->with('error', 'The CSV file contains no data rows.');
+        }
+
+        $get = function ($data, $key) use ($col) {
+            $idx = $col[$key];
+            return ($idx !== false && $idx !== null && isset($data[$idx])) ? trim((string) $data[$idx]) : null;
+        };
+
+        $imported = 0;
+        $duplicates = 0;
+        $invalid = 0;
+        $errors = [];
+        $now = now();
+
+        DB::transaction(function () use ($rows, $get, $state, $county, $constituency, $now, &$imported, &$duplicates, &$invalid, &$errors) {
+            foreach ($rows as $line => $data) {
+                $rowNo = $line + 2;
+
+                $fullName = $get($data, 'full_name');
+                $gender = strtoupper((string) $get($data, 'gender'));
+                $dob = $get($data, 'dob');
+                $phone = $get($data, 'phone');
+
+                $nationalId = $get($data, 'national_id');
+                $email = $get($data, 'email');
+                $payam = $get($data, 'payam');
+                $boma = $get($data, 'boma');
+                $pollingStation = $get($data, 'polling_station') ?? 'Central Polling Station';
+                $registrationCenter = $get($data, 'registration_center');
+
+                if (!$fullName || !$gender || !$dob || !$phone) {
+                    $invalid++;
+                    $errors[] = "Row {$rowNo}: missing required field (full_name, gender, dob or phone).";
+                    continue;
+                }
+
+                if (!in_array($gender, ['M', 'F'], true)) {
+                    $invalid++;
+                    $errors[] = "Row {$rowNo}: gender must be M or F (got \"{$gender}\").";
+                    continue;
+                }
+
+                if (!strtotime($dob) || strtotime($dob) > time() || substr($dob, 0, 4) < 1900) {
+                    $invalid++;
+                    $errors[] = "Row {$rowNo}: invalid date of birth \"{$dob}\".";
+                    continue;
+                }
+
+                if (preg_match('/[a-zA-Z]/', $phone) || strlen(preg_replace('/\D/', '', $phone)) < 7) {
+                    $invalid++;
+                    $errors[] = "Row {$rowNo}: invalid phone number \"{$phone}\".";
+                    continue;
+                }
+
+                if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $invalid++;
+                    $errors[] = "Row {$rowNo}: invalid email \"{$email}\".";
+                    continue;
+                }
+
+                // Scope enforcement: every imported row is stamped into the chosen area.
+                $voterData = [
+                    'full_name' => $fullName,
+                    'gender' => $gender,
+                    'dob' => date('Y-m-d', strtotime($dob)),
+                    'phone' => $phone,
+                    'email' => $email ?: null,
+                    'national_id' => $nationalId ?: null,
+                    'payam' => $payam ?: null,
+                    'boma' => $boma ?: null,
+                    'polling_station' => $pollingStation,
+                    'registration_center' => $registrationCenter ?: null,
+                    'state' => $state,
+                    'county' => $county ?: null,
+                    'constituency' => $constituency ?: null,
+                    'country_name' => 'South Sudan',
+                    'nationality' => 'South Sudanese',
+                    'registration_type' => 'agent',
+                    'status' => 'active',
+                    'registered_at' => $now,
+                ];
+
+                $elig = \App\Helpers\NecHelper::eligibility_date(\Carbon\Carbon::parse($voterData['dob']));
+                $voterData['eligibility_date'] = $elig;
+                $voterData['eligible_to_vote'] = \Carbon\Carbon::parse($voterData['dob'])->age >= \App\Helpers\NecHelper::voting_age();
+                $voterData['pre_registered'] = \Carbon\Carbon::parse($voterData['dob'])->age < \App\Helpers\NecHelper::voting_age();
+                $voterData['voter_id'] = \App\Helpers\NecHelper::generate_voter_id($gender, date('Y'));
+
+                // Wire the registration source back to the interoperable fields.
+                $voterData['registered_by_name'] = 'Bulk Import';
+                $voterData['registered_by_title'] = 'NEC Batch Import';
+                $voterData['registered_by_location'] = $state . ($county ? ', ' . $county : '');
+
+                try {
+                    Voter::create($voterData);
+                } catch (\Illuminate\Database\QueryException $e) {
+                    $code = $e->errorInfo[1] ?? null;
+                    if ($code === 1062) {
+                        $duplicates++;
+                        $errors[] = "Row {$rowNo}: skipped — voter with matching national ID, phone or voter ID already exists.";
+                    } else {
+                        $invalid++;
+                        $errors[] = "Row {$rowNo}: database error — " . $e->getMessage();
+                    }
+                    continue;
+                }
+
+                $imported++;
+            }
+        });
+
+        $summary = compact('imported', 'duplicates', 'invalid');
+
+        if ($imported === 0) {
+            return back()->with('error', 'No voters were imported. ' . $summary['duplicates'] . ' duplicate(s) and ' . $summary['invalid'] . ' invalid row(s).')
+                ->with('import_errors', $errors);
+        }
+
+        $this->logActivity('voters_imported', "Imported {$imported} voters to {$state}" . ($county ? " / {$county}" : '') . ($constituency ? " / {$constituency}" : ''));
+
+        return back()->with('success', "Imported {$imported} voter(s) successfully under {$state}" . ($county ? " / {$county}" : '') . ($constituency ? " / {$constituency}" : '') . ". {$summary['duplicates']} duplicate(s) and {$summary['invalid']} invalid row(s) were skipped.")
+            ->with('import_summary', $summary)
+            ->with('import_errors', $errors);
     }
 }

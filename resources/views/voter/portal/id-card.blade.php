@@ -267,16 +267,16 @@
                                 <div class="attr-row">
                                     <span class="attr-icon"><i class="bi bi-person-check"></i></span>
                                     <span class="attr-label">Registered by:</span>
-                                    <span class="attr-value">{{ $voter->registered_by_name ?? 'System' }}</span>
+                                    <span class="attr-value">{{ $voter->registered_by_code ?? ($voter->registered_by_title && $voter->registration_type === 'self' ? 'NEC Online Portal' : 'NEC Registration Team') }}</span>
                                 </div>
-                                @if($voter->registered_by_title)
+                                @if($voter->registration_type === 'agent')
                                 <div class="attr-row">
                                     <span class="attr-icon"><i class="bi bi-briefcase"></i></span>
                                     <span class="attr-label">Title:</span>
                                     <span class="attr-value">{{ $voter->registered_by_title }}</span>
                                 </div>
                                 @endif
-                                @if($voter->registered_by_location)
+                                @if($voter->registration_type === 'agent' && $voter->registered_by_location)
                                 <div class="attr-row">
                                     <span class="attr-icon"><i class="bi bi-geo-alt"></i></span>
                                     <span class="attr-label">Location:</span>

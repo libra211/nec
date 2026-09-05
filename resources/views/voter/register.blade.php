@@ -402,16 +402,17 @@
 
                     <div class="agent-panel" id="agentPanel">
                         <div class="field-group">
-                            <label class="field-label"><span class="req">*</span> Select Registration Agent</label>
+                            <label class="field-label"><span class="req">*</span> Registration Agent (code)</label>
                             <div class="field-input-wrap">
                                 <i class="fas fa-user-tie field-input-icon"></i>
                                 <select name="agent_id" id="agent_id" class="form-select">
-                                    <option value="">-- Choose an agent --</option>
+                                    <option value="">-- Choose an agent code --</option>
                                     @foreach($agents as $agent)
-                                        <option value="{{ $agent->id }}">{{ $agent->full_name }} — {{ $agent->title ?? 'Registration Officer' }} ({{ $agent->assigned_state ?? $agent->state }})</option>
+                                        <option value="{{ $agent->id }}">{{ $agent->agent_code }} — {{ $agent->assigned_state ?? $agent->state }}</option>
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="field-hint" style="margin-top:6px;color:#64748b;font-size:0.78rem;">Select the code of the NEC agent who is assisting you. You will be asked to verify your details with the agent's device.</div>
                         </div>
                     </div>
 

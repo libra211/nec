@@ -241,6 +241,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('voters', [AdminVoterController::class, 'store'])->name('voters.store');
     Route::get('voters/trashed', [AdminVoterController::class, 'trashed'])->name('voters.trashed');
     Route::get('voters/export', [AdminVoterController::class, 'export'])->name('voters.export');
+    Route::get('voters/import/template', [AdminVoterController::class, 'importTemplate'])->name('voters.import-template');
+    Route::post('voters/import', [AdminVoterController::class, 'import'])->name('voters.import');
     Route::post('voters/bulk-action', [AdminVoterController::class, 'bulkAction'])->name('voters.bulk-action');
     Route::get('voters/{voter}', [AdminVoterController::class, 'show'])->name('voters.show');
     Route::get('voters/{voter}/edit', [AdminVoterController::class, 'edit'])->name('voters.edit');

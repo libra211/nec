@@ -70,7 +70,8 @@ class AgentController extends Controller
         $validated['voters_registered'] = 0;
 
         $agent = Agent::create($validated);
-        $this->logActivity('agent_created', "Created registration agent: {$agent->full_name}", $agent);
+        $agent->update(['agent_code' => $agent->area_code . '-' . str_pad((string) $agent->id, 3, '0', STR_PAD_LEFT)]);
+        $this->logActivity('agent_created', "Created registration agent: {$agent->full_name} ({$agent->agent_code})", $agent);
 
         return redirect()->route('admin.agents.index')->with('success', 'Registration agent created successfully.');
     }
@@ -100,8 +101,15 @@ class AgentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        $oldState = $agent->assigned_state;
         $agent->update($validated);
-        $this->logActivity('agent_updated', "Updated registration agent: {$agent->full_name}", $agent);
+
+        if ($oldState !== $agent->assigned_state || empty($agent->getRawOriginal('agent_code'))) {
+            $agent->update(['agent_code' => null]);
+            $agent->update(['agent_code' => $agent->agent_code]);
+        }
+
+        $this->logActivity('agent_updated', "Updated registration agent: {$agent->full_name} ({$agent->agent_code})", $agent);
 
         return redirect()->route('admin.agents.index')->with('success', 'Agent updated successfully.');
     }

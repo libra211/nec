@@ -35,6 +35,20 @@ class Voter extends Model
         return $this->dob ? $this->dob->age : 0;
     }
 
+    public function getRegisteredByCodeAttribute(): ?string
+    {
+        if (!empty($this->attributes['registered_by_code'])) {
+            return $this->attributes['registered_by_code'];
+        }
+
+        if ($this->registration_type === 'agent' && $this->registered_by_user_id) {
+            $agent = \App\Models\Agent::find($this->registered_by_user_id);
+            return $agent?->agent_code;
+        }
+
+        return null;
+    }
+
     public function ageAtElection(): int
     {
         return $this->dob ? \App\Helpers\NecHelper::age_at($this->dob) : 0;

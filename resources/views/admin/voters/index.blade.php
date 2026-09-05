@@ -22,6 +22,7 @@
     </div>
     <div class="d-flex gap-2">
         <a href="{{ route('admin.voters.export', request()->only(['search','status','state','county','constituency','gender'])) }}" class="btn btn-outline-success btn-sm px-3 rounded-3"><i class="fas fa-file-export me-1"></i> Export CSV</a>
+        <button type="button" class="btn btn-outline-dark btn-sm px-3 rounded-3" data-bs-toggle="modal" data-bs-target="#importVotersModal"><i class="fas fa-file-import me-1"></i> Import CSV</button>
         <a href="{{ route('admin.voters.create') }}" class="btn btn-primary btn-sm px-3 rounded-3 shadow-sm">
             <i class="fas fa-plus me-1"></i> Register Voter
         </a>
@@ -299,6 +300,96 @@
     @endif
     @endisset
 </div>
+
+<div class="modal fade" id="importVotersModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4" style="box-shadow:0 20px 60px rgba(0,0,0,.15);">
+            <form method="POST" action="{{ route('admin.voters.import') }}" enctype="multipart/form-data" id="voterImportForm">
+                @csrf
+                <div class="modal-header" style="background:#2E8B57;color:#fff;border-radius:calc(.75rem - 1px) calc(.75rem - 1px) 0 0;">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-file-import me-2"></i> Import Voters (CSV)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info rounded-3 py-2 px-3 mb-3" style="font-size:.8rem;">
+                        <i class="fas fa-info-circle me-1"></i> Upload a CSV of voters. Every row is stamped into the
+                        administrative area you choose below. Rows with a duplicate National ID, phone, or Voter ID are
+                        skipped automatically.
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">State <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-sm" name="import_state" id="import_state" required>
+                                <option value="">-- Select State --</option>
+                                @foreach($states as $st)
+                                    <option value="{{ $st }}">{{ $st }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">County <span class="text-muted">(optional)</span></label>
+                            <select class="form-select form-select-sm" name="import_county" id="import_county">
+                                <option value="">-- All Counties --</option>
+                                @foreach($counties as $co)
+                                    <option value="{{ $co }}">{{ $co }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Constituency <span class="text-muted">(optional)</span></label>
+                            <select class="form-select form-select-sm" name="import_constituency" id="import_constituency">
+                                <option value="">-- All Constituencies --</option>
+                                @foreach($constituencies as $cst)
+                                    <option value="{{ $cst }}">{{ $cst }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label fw-semibold small">CSV File <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control form-control-sm" name="csv_file" accept=".csv,.txt" required>
+                        <div class="form-text">Required columns: <code>full_name</code>, <code>gender</code> (M/F), <code>dob</code> (YYYY-MM-DD), <code>phone</code>. Optional: <code>voter_id</code>, <code>national_id</code>, <code>email</code>, <code>payam</code>, <code>boma</code>, <code>polling_station</code>, <code>registration_center</code>.</div>
+                        <a href="{{ route('admin.voters.import-template') }}" class="btn btn-link btn-sm p-0 mt-1" style="font-size:.8rem;"><i class="fas fa-download me-1"></i> Download CSV template</a>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light rounded-bottom">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success btn-sm rounded-3 px-4"><i class="fas fa-upload me-1"></i> Import Voters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if(session('import_summary') || session('import_errors') || session('success'))
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1080;">
+    @if(session('success') && !session('import_summary'))
+    <div class="toast show align-items-center border-0 text-bg-success mb-2" role="alert">
+        <div class="d-flex"><div class="toast-body">{{ session('success') }}</div><button type="button" class="btn-close me-2 m-auto btn-close-white" data-bs-dismiss="toast"></button></div>
+    </div>
+    @endif
+    @if($summary = session('import_summary'))
+    <div class="toast show border-0 text-bg-dark mb-2" role="alert">
+        <div class="d-flex"><div class="toast-body">
+            <strong>Import complete</strong><br>
+            <span class="text-success">Imported: {{ $summary['imported'] }}</span> &middot;
+            <span class="text-warning">Duplicates skipped: {{ $summary['duplicates'] }}</span> &middot;
+            <span class="text-danger">Invalid: {{ $summary['invalid'] }}</span>
+        </div><button type="button" class="btn-close me-2 m-auto btn-close-white" data-bs-dismiss="toast"></button></div>
+    </div>
+    @endif
+    @if($errors = session('import_errors'))
+    <div class="toast show border-0 text-bg-light shadow" role="alert" style="max-width:420px;">
+        <div class="d-flex"><div class="toast-body" style="max-height:240px;overflow:auto;font-size:.75rem;">
+            <strong>Details ({{ count($errors) }}):</strong>
+            @foreach($errors as $e)<div class="text-muted">- {{ $e }}</div>@endforeach
+        </div><button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>
+    </div>
+    @endif
+</div>
+@endif
 @endsection
 
 @section('extra_scripts')

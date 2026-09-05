@@ -130,6 +130,7 @@
                 <thead>
                     <tr>
                         <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 8px 10px 16px;font-size:0.75rem;letter-spacing:0.3px;">#</th>
+                        <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Code</th>
                         <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Name</th>
                         <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Phone</th>
                         <th style="background:#2E8B57;color:#fff;font-weight:600;border-bottom:2px solid #1f6b3f;padding:10px 12px;font-size:0.75rem;letter-spacing:0.3px;">Email</th>
@@ -145,6 +146,9 @@
                     <tr style="border-bottom:1px solid #f1f3f5;">
                         <td style="padding:10px 8px 10px 16px;color:#64748b;">{{ $agents->firstItem() + $loop->index }}</td>
                         <td style="padding:10px 12px;">
+                            <span class="badge rounded-pill" style="background:rgba(46,139,87,0.1);color:#2E8B57;font-weight:700;font-size:0.78rem;letter-spacing:0.3px;">{{ $agent->agent_code }}</span>
+                        </td>
+                        <td style="padding:10px 12px;">
                             <div class="d-flex align-items-center">
                                 <img src="{{ asset('assets/images/default-avatar.png') }}" alt="" class="rounded-circle me-2" width="32" height="32">
                                 <strong style="color:#1e293b;">{{ $agent->first_name }} {{ $agent->last_name }}</strong>
@@ -153,7 +157,7 @@
                         <td style="padding:10px 12px;color:#475569;">{{ $agent->phone ?? '-' }}</td>
                         <td style="padding:10px 12px;color:#475569;">{{ $agent->email ?? '-' }}</td>
                         <td style="padding:10px 12px;color:#475569;">{{ $agent->title ?? '-' }}</td>
-                        <td style="padding:10px 12px;color:#475569;">{{ $agent->assigned_area ?? '-' }}</td>
+                        <td style="padding:10px 12px;color:#475569;">{{ $agent->assigned_state }}{{ $agent->assigned_constituency ? ', ' . $agent->assigned_constituency : '' }}</td>
                         <td style="padding:10px 12px;">
                             @php
                                 $statusClasses = [
