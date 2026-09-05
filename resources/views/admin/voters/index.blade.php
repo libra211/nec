@@ -116,12 +116,17 @@
             </div>
             <div class="col-lg-2 col-md-4">
                 <label class="small text-muted mb-1" style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;"><i class="fas fa-map-marker-alt me-1"></i>STATE</label>
+                @if($scopedState)
+                <input type="hidden" name="state" value="{{ $scopedState }}">
+                <input type="text" class="form-control" value="{{ $scopedState }}" disabled style="font-size:13px;border-radius:8px;background:#eef2f6;color:#495057;">
+                @else
                 <select name="state" class="form-select" style="font-size:13px;border-radius:8px;" onchange="this.form.submit()">
                     <option value="">All States</option>
                     @foreach($states ?? [] as $s)
-                        <option value="{{ $s }}" {{ request('state') === $s ? 'selected' : '' }}>{{ $s }}</option>
+                        <option value="{{ $s->name }}" {{ request('state') === $s->name ? 'selected' : '' }}>{{ $s->name }}</option>
                     @endforeach
                 </select>
+                @endif
             </div>
             <div class="col-lg-2 col-md-4">
                 <label class="small text-muted mb-1" style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;"><i class="fas fa-map-pin me-1"></i>COUNTY</label>
@@ -134,12 +139,17 @@
             </div>
             <div class="col-lg-2 col-md-4">
                 <label class="small text-muted mb-1" style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;"><i class="fas fa-city me-1"></i>CONSTITUENCY</label>
+                @if($scopedConstituency)
+                <input type="hidden" name="constituency" value="{{ $scopedConstituency }}">
+                <input type="text" class="form-control" value="{{ $scopedConstituency }}" disabled style="font-size:13px;border-radius:8px;background:#eef2f6;color:#495057;">
+                @else
                 <select name="constituency" class="form-select" style="font-size:13px;border-radius:8px;" onchange="this.form.submit()">
                     <option value="">All Constituencies</option>
                     @foreach($constituencies ?? [] as $c)
                         <option value="{{ $c }}" {{ request('constituency') === $c ? 'selected' : '' }}>{{ $c }}</option>
                     @endforeach
                 </select>
+                @endif
             </div>
             <div class="col-lg-1 col-md-3">
                 <label class="small text-muted mb-1" style="font-size:0.7rem;font-weight:500;letter-spacing:0.3px;"><i class="fas fa-flag me-1"></i>STATUS</label>
@@ -335,12 +345,17 @@
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small">State <span class="text-danger">*</span></label>
+                            @if($scopedState)
+                            <input type="hidden" name="import_state" value="{{ $scopedState }}">
+                            <input type="text" class="form-control form-control-sm" value="{{ $scopedState }}" disabled>
+                            @else
                             <select class="form-select form-select-sm" name="import_state" id="import_state" required>
                                 <option value="">-- Select State --</option>
                                 @foreach($states as $st)
-                                    <option value="{{ $st }}">{{ $st }}</option>
+                                    <option value="{{ $st->name }}">{{ $st->name }}</option>
                                 @endforeach
                             </select>
+                            @endif
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small">County <span class="text-muted">(optional)</span></label>

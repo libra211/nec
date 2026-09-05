@@ -11,9 +11,100 @@ use Illuminate\Support\Str;
 
 class AdminVoterController extends Controller
 {
+    private function writeState(): ?string
+    {
+        $role = (string) session('admin_role');
+
+        if (in_array($role, ['state_coordinator', 'constituency_officer', 'registration_officer', 'data_entry'])) {
+            $state = trim((string) session('admin_state'));
+
+            return $state !== '' ? $state : null;
+        }
+
+        return null;
+    }
+
+    private function roleScopedToState(): ?string
+    {
+        $role = (string) session('admin_role');
+        $state = trim((string) session('admin_state'));
+
+        if (in_array($role, ['state_coordinator', 'registration_officer', 'data_entry'])) {
+            return $state !== '' ? $state : null;
+        }
+
+        if ($role === 'constituency_officer' && trim((string) session('admin_constituency')) === '') {
+            return $state !== '' ? $state : null;
+        }
+
+        return null;
+    }
+
+    private function roleScopedToConstituency(): ?string
+    {
+        if ((string) session('admin_role') === 'constituency_officer') {
+            $constituency = trim((string) session('admin_constituency'));
+
+            return $constituency !== '' ? $constituency : null;
+        }
+
+        return null;
+    }
+
+    private function applyRoleScope($query)
+    {
+        if ($state = $this->roleScopedToState()) {
+            return $query->where('state', $state);
+        }
+
+        if ($constituency = $this->roleScopedToConstituency()) {
+            return $query->where('constituency', $constituency);
+        }
+
+        return $query;
+    }
+
+    private function roleScopedBase()
+    {
+        return $this->applyRoleScope(Voter::query()->whereNull('deleted_at'));
+    }
+
+    private function scopedStates()
+    {
+        if ($state = $this->writeState()) {
+            return collect([(object) ['name' => $state]]);
+        }
+
+        return DB::table('nec_states')->where('status', 'active')->orderBy('name')->get();
+    }
+
+    private function findScopedVoter($id)
+    {
+        return $this->roleScopedBase()->where('id', $id)->firstOrFail();
+    }
+
+    private function scopedPendingTransfers()
+    {
+        $base = VoterTransfer::query()->where('status', 'pending');
+
+        if ($state = $this->roleScopedToState()) {
+            return (clone $base)->where(function ($q) use ($state) {
+                $q->where('from_state', $state)->orWhere('to_state', $state);
+            })->count();
+        }
+
+        if ($constituency = $this->roleScopedToConstituency()) {
+            return (clone $base)->where(function ($q) use ($constituency) {
+                $q->where('from_constituency', $constituency)->orWhere('to_constituency', $constituency);
+            })->count();
+        }
+
+        return (clone $base)->count();
+    }
+
     public function index(Request $request)
     {
-        $query = Voter::query()->whereNull('deleted_at');
+        $query = $this->roleScopedBase();
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -34,8 +125,10 @@ class AdminVoterController extends Controller
             $query->where('gender', $gender);
         }
 
-        if ($state = $request->input('state')) {
-            $query->where('state', $state);
+        if (!$this->roleScopedToState()) {
+            if ($state = $request->input('state')) {
+                $query->where('state', $state);
+            }
         }
 
         if ($county = $request->input('county')) {
@@ -58,26 +151,30 @@ class AdminVoterController extends Controller
         }
 
         $voters = $query->orderBy($sortColumn, $sortDirection)->paginate(20);
-        $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->pluck('name');
-        $counties = Voter::whereNull('deleted_at')->whereNotNull('county')->distinct()->pluck('county')->filter()->sort()->values();
-        $constituencies = Voter::whereNull('deleted_at')->whereNotNull('constituency')->distinct()->pluck('constituency')->filter()->sort()->values();
+        $states = $this->scopedStates();
+        $scopeBase = $this->roleScopedBase();
+        $counties = (clone $scopeBase)->whereNotNull('county')->distinct()->pluck('county')->filter()->sort()->values();
+        $constituencies = (clone $scopeBase)->whereNotNull('constituency')->distinct()->pluck('constituency')->filter()->sort()->values();
 
         $stats = [
-            'total_voters' => Voter::whereNull('deleted_at')->count(),
-            'active_voters' => Voter::whereNull('deleted_at')->where('status', 'active')->whereNull('deceased_date')->count(),
-            'suspended_voters' => Voter::whereNull('deleted_at')->where('status', 'suspended')->count(),
-            'deceased_voters' => Voter::whereNull('deleted_at')->where(fn($q) => $q->where('status', 'deceased')->orWhereNotNull('deceased_date'))->count(),
-            'male_voters' => Voter::whereNull('deleted_at')->where('gender', 'M')->count(),
-            'female_voters' => Voter::whereNull('deleted_at')->where('gender', 'F')->count(),
-            'pending_transfers' => \App\Models\VoterTransfer::where('status', 'pending')->count(),
+            'total_voters' => (clone $scopeBase)->count(),
+            'active_voters' => (clone $scopeBase)->where('status', 'active')->whereNull('deceased_date')->count(),
+            'suspended_voters' => (clone $scopeBase)->where('status', 'suspended')->count(),
+            'deceased_voters' => (clone $scopeBase)->where(fn($q) => $q->where('status', 'deceased')->orWhereNotNull('deceased_date'))->count(),
+            'male_voters' => (clone $scopeBase)->where('gender', 'M')->count(),
+            'female_voters' => (clone $scopeBase)->where('gender', 'F')->count(),
+            'pending_transfers' => $this->scopedPendingTransfers(),
         ];
 
-        return view('admin.voters.index', compact('voters', 'states', 'counties', 'constituencies', 'stats'));
+        $scopedState = $this->roleScopedToState();
+        $scopedConstituency = $this->roleScopedToConstituency();
+
+        return view('admin.voters.index', compact('voters', 'states', 'counties', 'constituencies', 'stats', 'scopedState', 'scopedConstituency'));
     }
 
     public function create()
     {
-        $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->get();
+        $states = $this->scopedStates();
 
         return view('admin.voters.create', compact('states'));
     }
@@ -102,6 +199,8 @@ class AdminVoterController extends Controller
             'status' => 'required|in:active,inactive,suspended',
         ]);
 
+        $validated['state'] = $this->writeState() ?? $validated['state'];
+
         $validated['registered_at'] = now();
         $validated['created_at'] = now();
         $validated['updated_at'] = now();
@@ -115,7 +214,7 @@ class AdminVoterController extends Controller
 
     public function show($id)
     {
-        $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
+        $voter = $this->findScopedVoter($id);
         $transfers = VoterTransfer::where('voter_id', $voter->id)->orderByDesc('created_at')->get();
 
         $this->logActivity('voter_viewed', "Viewed voter profile: {$voter->full_name}", $voter);
@@ -125,15 +224,15 @@ class AdminVoterController extends Controller
 
     public function edit($id)
     {
-        $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
-        $states = DB::table('nec_states')->where('status', 'active')->orderBy('name')->get();
+        $voter = $this->findScopedVoter($id);
+        $states = $this->scopedStates();
 
         return view('admin.voters.edit', compact('voter', 'states'));
     }
 
     public function update(Request $request, $id)
     {
-        $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
+        $voter = $this->findScopedVoter($id);
 
         $validated = $request->validate([
             'voter_id' => 'required|string|max:50|unique:nec_voters,voter_id,' . $id,
@@ -153,6 +252,7 @@ class AdminVoterController extends Controller
             'status' => 'required|in:active,inactive,suspended',
         ]);
 
+        $validated['state'] = $this->writeState() ?? $validated['state'];
         $validated['updated_at'] = now();
 
         $voter->update($validated);
@@ -164,7 +264,7 @@ class AdminVoterController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
+        $voter = $this->findScopedVoter($id);
 
         $validated = $request->validate([
             'status' => 'required|in:active,inactive,suspended,deceased',
@@ -180,7 +280,7 @@ class AdminVoterController extends Controller
 
     public function markDeceased(Request $request, $id)
     {
-        $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
+        $voter = $this->findScopedVoter($id);
 
         $validated = $request->validate([
             'deceased_date' => 'required|date|before_or_equal:today',
@@ -204,7 +304,7 @@ class AdminVoterController extends Controller
 
     public function revive($id)
     {
-        $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
+        $voter = $this->findScopedVoter($id);
 
         $voter->revive();
 
@@ -215,7 +315,7 @@ class AdminVoterController extends Controller
 
     public function destroy($id)
     {
-        $voter = Voter::where('id', $id)->whereNull('deleted_at')->findOrFail($id);
+        $voter = $this->findScopedVoter($id);
         $now = now();
         $voter->update(['deleted_at' => $now, 'updated_at' => $now]);
 
@@ -230,7 +330,7 @@ class AdminVoterController extends Controller
 
     public function trashed(Request $request)
     {
-        $query = Voter::onlyTrashed();
+        $query = $this->applyRoleScope(Voter::onlyTrashed());
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -246,7 +346,7 @@ class AdminVoterController extends Controller
 
     public function restore($id)
     {
-        $voter = Voter::onlyTrashed()->findOrFail($id);
+        $voter = $this->applyRoleScope(Voter::onlyTrashed())->where('id', $id)->firstOrFail();
         $voter->update(['deleted_at' => null, 'updated_at' => now()]);
 
         $this->logActivity('voter_restored', "Restored voter: {$voter->full_name}", $voter);
@@ -256,13 +356,15 @@ class AdminVoterController extends Controller
 
     public function export(Request $request)
     {
-        $query = Voter::whereNull('deleted_at');
+        $query = $this->roleScopedBase();
 
         if ($status = $request->input('status')) {
             $query->where('status', $status);
         }
-        if ($state = $request->input('state')) {
-            $query->where('state', $state);
+        if (!$this->roleScopedToState()) {
+            if ($state = $request->input('state')) {
+                $query->where('state', $state);
+            }
         }
         if ($county = $request->input('county')) {
             $query->where('county', $county);
@@ -390,7 +492,7 @@ class AdminVoterController extends Controller
             'import_constituency' => 'nullable|string|max:255',
         ]);
 
-        $state = $validated['import_state'];
+        $state = $this->writeState() ?? $validated['import_state'];
         $county = $validated['import_county'] ?? null;
         $constituency = $validated['import_constituency'] ?? null;
 

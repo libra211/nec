@@ -90,4 +90,39 @@ class AdminPermissionGateTest extends TestCase
             ->assertSee('Add New User')
             ->assertDontSee('Delete Selected');
     }
+
+    public function test_superadmin_still_sees_all_states_filter_on_voters_page(): void
+    {
+        $this->loginAs('super_admin');
+        $this->get('/admin/voters')
+            ->assertStatus(200)
+            ->assertSee('All States');
+    }
+
+    public function test_state_coordinator_voters_page_is_scoped_to_their_state(): void
+    {
+        $this->loginAs('state_coordinator', 'coord.ee@nec.gov.ss');
+        $this->get('/admin/voters')
+            ->assertStatus(200)
+            ->assertSee('Eastern Equatoria')
+            ->assertDontSee('All States');
+    }
+
+    public function test_registration_officer_voters_page_is_scoped_to_their_state(): void
+    {
+        $this->loginAs('registration_officer', 'reg.ee1@nec.gov.ss');
+        $this->get('/admin/voters')
+            ->assertStatus(200)
+            ->assertSee('Eastern Equatoria')
+            ->assertDontSee('All States');
+    }
+
+    public function test_constituency_officer_without_constituency_is_scoped_to_their_state(): void
+    {
+        $this->loginAs('constituency_officer', 'const.juba1@nec.gov.ss');
+        $this->get('/admin/voters')
+            ->assertStatus(200)
+            ->assertSee('Central Equatoria')
+            ->assertDontSee('All States');
+    }
 }
